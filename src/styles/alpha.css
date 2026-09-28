@@ -710,7 +710,12 @@ body:before{display:none!important}
   visibility:visible!important;
   transform:translate(-50%,0)!important;
 }
-.alpha-shell .route-node:disabled .route-node-tooltip{
-  opacity:0!important;
-  visibility:hidden!important;
+
+/* disabled revealed nodes still explain themselves on hover */
+.alpha-shell .route-node:disabled{pointer-events:auto!important;cursor:not-allowed!important}
+.alpha-shell .route-node:disabled:hover .route-node-tooltip{
+  opacity:1!important;
+  visibility:visible!important;
+  transform:translate(-50%,0)!important;
 }
+.alpha-shell .route-node.node-unknown:disabled{pointer-events:none!important}
