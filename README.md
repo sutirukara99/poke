@@ -2,11 +2,16 @@
 
 Recovered source workspace for **PokéRogue Regions**.
 
-## Current recovery baseline
+## Status
 
-This repository was rebuilt after the previous GitHub account became unavailable. The latest browser-cached production build we could recover is **v0.9.4**, from 2026-09-28 02:30.
+The repository has been rebuilt around the latest complete browser-cached production build we recovered: **v0.9.4**, cached on 2026-09-28 at 02:30.
 
-The original production JavaScript and CSS are preserved under `src/recovered/` and `src/styles/`. The app currently boots that recovered build through a small Vite/TypeScript shell so we have a stable, deployable baseline before rebuilding the 1.0 systems.
+The exact deployed source tree was not recoverable, but the production JavaScript and CSS were. They are preserved in:
+
+- `public/recovered/v0.9.4.js`
+- `public/recovered/v0.9.4.css`
+
+The current Vite shell boots that preserved production build directly. This gives us a stable playable baseline while the readable React/TypeScript 1.0 source is rebuilt under `src/app/`.
 
 ## Stack
 
@@ -16,11 +21,17 @@ The original production JavaScript and CSS are preserved under `src/recovered/` 
 - LocalStorage save data
 - Static hosting compatible with Cloudflare Pages
 
-## Commands
+## Local development
 
 ```bash
 npm install
+npm run check
 npm run dev
+```
+
+Production build:
+
+```bash
 npm run build
 npm run preview
 ```
@@ -29,13 +40,16 @@ npm run preview
 
 - Build command: `npm run build`
 - Output directory: `dist`
+- SPA fallback: included via `public/_redirects`
 
-## Recovery policy
+## Recovery rule
 
-Do not delete `src/recovered/v0.9.4.bundle.js` or `src/styles/v0.9.4.css` until the clean-source rewrite has feature parity. They are the preserved reference for the last recovered playable build.
+Do not edit or remove the files in `public/recovered/` until the clean-source rewrite reaches feature parity. They are the behavioral reference for v0.9.4.
 
-See [RECOVERY.md](./RECOVERY.md) for details.
+See [RECOVERY.md](./RECOVERY.md).
 
 ## Next milestone
 
-Rebuild the editable 1.0 Alpha systems on top of this recovered v0.9.4 baseline without reintroducing a team/build-synergy layer.
+**1.0 Alpha — Roguelike Depth & Progression**
+
+The 1.0 rebuild will restore the planned progression, daily, ascension, relic, mastery, elite, event-chain, secret-route and completion systems as editable TypeScript. Team/build synergy remains intentionally excluded.

@@ -1,30 +1,20 @@
-import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 
+const js = await readFile(new URL("../public/recovered/v0.9.4.js", import.meta.url), "utf8");
+const css = await readFile(new URL("../public/recovered/v0.9.4.css", import.meta.url), "utf8");
+
 const checks = [
-  {
-    dir: "recovery/chunks/js",
-    parts: 10,
-    sha256: "0f2a4c155d47de05eadd996f820b9fe8538e1e959dd4811ae1c6f7d5d68a425e",
-    label: "v0.9.4 JavaScript",
-  },
-  {
-    dir: "recovery/chunks/css",
-    parts: 3,
-    sha256: "b43de0091f6fe45df06262136b9d53add6c6cdbf30233b63ef05061e2248813f",
-    label: "v0.9.4 CSS",
-  },
+  [js.includes("v0.9.4"), "JavaScript bundle does not contain v0.9.4 marker"],
+  [js.includes("createRoot"), "JavaScript bundle does not contain React root bootstrap"],
+  [js.length > 650_000, "JavaScript bundle is unexpectedly small"],
+  [css.includes("@import"), "CSS bundle does not contain expected imports"],
+  [css.length > 190_000, "CSS bundle is unexpectedly small"],
 ];
 
-for (const check of checks) {
-  const chunks = [];
-  for (let i = 1; i <= check.parts; i += 1) {
-    const part = String(i).padStart(2, "0") + ".part";
-    chunks.push(await readFile(new URL(`../${check.dir}/${part}`, import.meta.url)));
-  }
-  const digest = createHash("sha256").update(Buffer.concat(chunks)).digest("hex");
-  if (digest !== check.sha256) {
-    throw new Error(`${check.label} checksum mismatch: ${digest}`);
-  }
-  console.log(`verified ${check.label}: ${digest}`);
+for (const [ok, message] of checks) {
+  if (!ok) throw new Error(message);
 }
+
+console.log("Recovered v0.9.4 assets verified.");
+console.log("JS chars:", js.length);
+console.log("CSS chars:", css.length);

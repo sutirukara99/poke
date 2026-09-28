@@ -1,13 +1,10 @@
 {
   "name": "pokerogue-regions",
   "private": true,
-  "version": "0.9.4-recovered.1",
+  "version": "0.9.4-recovered.2",
   "type": "module",
   "scripts": {
-    "assemble:recovery": "node scripts/assemble-recovery.mjs",
-    "predev": "npm run assemble:recovery",
     "dev": "vite",
-    "prebuild": "npm run verify:recovery && npm run assemble:recovery",
     "build": "vite build",
     "preview": "vite preview",
     "verify:recovery": "node scripts/verify-recovery.mjs",

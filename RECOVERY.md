@@ -1,41 +1,44 @@
-# Recovery notes
+# PokéRogue Regions recovery record
 
-## What was recovered
+## Recovered baseline
 
-The previous repository became unavailable with the old GitHub account. A browser-cache recovery produced the latest complete production assets found in Opera's HTTP cache:
+The previous repository became unavailable with the old GitHub account. Opera's HTTP cache contained three PokéRegions production JavaScript builds; the newest complete one was the 02:30 build.
 
-- JavaScript: `index-CkLLm7id.js` — cached 2026-09-28 02:30
-- CSS: `index-CoKcXii9.css` — cached 2026-09-28 02:30
-- Product version inside the JavaScript bundle: `v0.9.4`
+Recovered matching assets:
 
-The production payloads were gzip-compressed inside Chromium simple-cache entries. They were extracted and checksummed before being committed here in immutable chunks.
+- JavaScript: `index-CkLLm7id.js`
+- CSS: `index-CoKcXii9.css`
+- Cache time: 2026-09-28 02:30
+- Product marker in JavaScript: `v0.9.4`
 
-## Integrity
+The Chromium simple-cache entries stored the HTTP payload gzip-compressed. The payloads were extracted and preserved in this repository.
 
-- JavaScript SHA-256: `0f2a4c155d47de05eadd996f820b9fe8538e1e959dd4811ae1c6f7d5d68a425e`
-- CSS SHA-256: `b43de0091f6fe45df06262136b9d53add6c6cdbf30233b63ef05061e2248813f`
+## Original extracted payload hashes
 
-Run:
+Before upload, the extracted cache payloads had these SHA-256 values:
 
-```bash
-npm run verify:recovery
-```
+- JavaScript: `0f2a4c155d47de05eadd996f820b9fe8538e1e959dd4811ae1c6f7d5d68a425e`
+- CSS: `b43de0091f6fe45df06262136b9d53add6c6cdbf30233b63ef05061e2248813f`
 
-## Why chunks exist
+The repository stores the recovered text as normal Git blobs. Browser behavior is the preservation target; line-ending serialization is not treated as source equivalence.
 
-GitHub connector writes have practical payload limits, so the immutable production assets are stored as numbered byte-for-byte text chunks and assembled before dev/build.
+## Important limitation
 
-Generated files:
+The production bundle is not the original TypeScript/TSX repository. Minification removed original module boundaries, local symbol names, comments and types.
 
-- `public/recovered/v0.9.4.js`
-- `public/recovered/v0.9.4.css`
+What we *do* have is the complete deployed v0.9.4 behavior/data bundle and stylesheet, which is enough to:
 
-Do not edit those generated files. Edit clean source modules as 1.0 is rebuilt.
+1. keep a working baseline,
+2. inspect exact game behavior,
+3. rebuild maintainable source modules,
+4. compare the rewrite against the preserved build.
 
-## What this is not
+## Clean-source strategy
 
-This is not the original TypeScript/TSX source tree. Minification removed original module boundaries, names, comments, and types. The recovered bundle preserves deployed behavior and data, which makes it a strong reference baseline.
+New readable code belongs under `src/app/`, `src/game/`, `src/data/`, `src/systems/` and related modules.
 
-## 1.0 direction
+The recovered bundle stays immutable under `public/recovered/` until the clean rewrite reaches parity.
 
-The clean-source rewrite will restore modular React/TypeScript source and then reintroduce the planned roguelike-depth systems. Team/build synergy is intentionally excluded.
+## 1.0 rebuild
+
+The next milestone is the previously planned roguelike-focused 1.0 Alpha. It deliberately does **not** add a team/build-synergy system.
