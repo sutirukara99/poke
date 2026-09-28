@@ -649,3 +649,68 @@ body:before{display:none!important}
   .alpha-shell .party-heading{position:static!important;background:transparent!important}
   .alpha-shell .alpha-run-flags .flag-score{margin-left:0!important}
 }
+
+
+/* === r5 node hover help === */
+.alpha-shell .route-map,
+.alpha-shell .route-row,
+.alpha-shell .node-options{
+  overflow:visible!important;
+}
+.alpha-shell .route-node{
+  position:relative!important;
+  overflow:visible!important;
+}
+.alpha-shell .route-node-tooltip{
+  position:absolute!important;
+  z-index:80!important;
+  left:50%!important;
+  bottom:calc(100% + 10px)!important;
+  width:210px!important;
+  padding:10px 11px!important;
+  transform:translate(-50%,6px)!important;
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+  background:#08151e!important;
+  color:#edf5f8!important;
+  border:2px solid #627b8a!important;
+  border-radius:6px!important;
+  box-shadow:0 5px 0 #050c12,0 12px 28px rgba(0,0,0,.45)!important;
+  text-align:left!important;
+  transition:opacity .12s ease,transform .12s ease,visibility .12s ease!important;
+}
+.alpha-shell .route-node-tooltip:after{
+  content:""!important;
+  position:absolute!important;
+  left:50%!important;
+  top:100%!important;
+  transform:translateX(-50%)!important;
+  border:7px solid transparent!important;
+  border-top-color:#627b8a!important;
+}
+.alpha-shell .route-node-tooltip b,
+.alpha-shell .route-node-tooltip small{
+  display:block!important;
+}
+.alpha-shell .route-node-tooltip b{
+  margin-bottom:4px!important;
+  color:#f0d577!important;
+  font-size:10px!important;
+  letter-spacing:.06em!important;
+}
+.alpha-shell .route-node-tooltip small{
+  color:#c3d0d8!important;
+  font-size:10px!important;
+  line-height:1.35!important;
+}
+.alpha-shell .route-node:hover .route-node-tooltip,
+.alpha-shell .route-node:focus-visible .route-node-tooltip{
+  opacity:1!important;
+  visibility:visible!important;
+  transform:translate(-50%,0)!important;
+}
+.alpha-shell .route-node:disabled .route-node-tooltip{
+  opacity:0!important;
+  visibility:hidden!important;
+}
