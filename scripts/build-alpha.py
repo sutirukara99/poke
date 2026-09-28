@@ -190,6 +190,21 @@ must('l.jsxs("div",{className:"modifier-strip",children:[a.modifiers.nuzlocke&&l
 must('l.jsxs("small",{children:["Klasse · Meta ",m,"/3"]})',
      'l.jsx("small",{children:a.dailyChallenge?"Klasse · DAILY FAIR":`Klasse · Meta ${m}/3`})','daily hud class label')
 
+
+# --- retire legacy in-run quests ---
+must('d.run.ascension=Math.max(0,Math.min(QalphaAscensionMax,i.alpha?.ascension??0)),d.run.dailyChallenge=',
+     'd.run.quests=[],d.run.ascension=Math.max(0,Math.min(QalphaAscensionMax,i.alpha?.ascension??0)),d.run.dailyChallenge=','new runs clear legacy quests')
+must('if(d.run){d.run.ascension??=0,d.run.dailyChallenge??=null,',
+     'if(d.run){d.run.quests=[],d.run.ascension??=0,d.run.dailyChallenge??=null,','migrated active run clears legacy quests')
+must('m.title="Zwischenstopp",m.detail="Center · Markt · Move-Tutor · Quest-Brett"',
+     'm.title="Zwischenstopp",m.detail="Center · Markt · Move-Tutor · PC"','city route detail')
+must('l.jsxs("button",{onClick:()=>i({type:"cityService",service:"quest"}),children:[l.jsx("b",{children:"! Quest-Brett"}),l.jsx("small",{children:"Eine weitere Nebenmission annehmen"})]})',
+     'l.jsxs("button",{disabled:!0,children:[l.jsx("b",{children:"! Questboard"}),l.jsx("small",{children:"Meta-Aufträge findest du im Hauptmenü"})]})','city quest button retired')
+must('i.service==="quest"&&(ix(r,u)?r.message="Quest-Brett: Eine neue Nebenaufgabe wurde angenommen.":r.message="Quest-Brett: Du hast bereits alle verfügbaren Aufgaben gesehen.")',
+     'i.service==="quest"&&(r.message="Questboard: Meta-Aufträge findest du im Hauptmenü.")','city quest reducer retired')
+must('r.message+=" Stadt-Hub: Center, Markt, Move-Tutor und Quest-Brett stehen bereit."',
+     'r.message+=" Stadt-Hub: Center, Markt, Move-Tutor und PC stehen bereit."','city hub message')
+
 out=ROOT/'public/recovered/v1.0.0-alpha.1-r4.js'
 out.write_text(s)
 print('built',out,len(s))
