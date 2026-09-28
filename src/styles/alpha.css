@@ -104,3 +104,98 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
   .alpha-shell{padding:0 6px}.alpha-shell .panel{border-width:2px!important}.alpha-shell .run-strip{overflow-x:auto;display:flex!important;flex-wrap:nowrap!important}.alpha-shell .hud-stat{min-width:104px}.completion-grid,.alpha-codex-grid,.alpha-mastery-grid{grid-template-columns:1fr}.alpha-score-card{grid-template-columns:62px 1fr}.alpha-tutorial-card{padding:18px}.alpha-shell .battle-actions{grid-template-columns:1fr 1fr!important}
 }
 @media(prefers-reduced-motion:reduce){.alpha-shell .route-node.node-accessible,.alpha-telegraph-pill{animation:none!important}}
+/* === 1.0 Alpha Hotfix · Dark handheld pass, spacious party, overlay safety === */
+:root{
+  --alpha-ink:#eef4f8;--alpha-ink-soft:#b9c7d3;--alpha-paper:#172532;--alpha-paper-2:#1e3140;
+  --alpha-shadow:#071019;--alpha-line:#4c6170;
+}
+html,body{background:#0b131b!important;color:#eef4f8!important}
+body{
+  background:
+    radial-gradient(circle at 12% 0%,rgba(57,100,133,.18),transparent 34%),
+    radial-gradient(circle at 90% 18%,rgba(114,82,143,.10),transparent 28%),
+    linear-gradient(180deg,#101b26 0%,#0a1219 100%)!important;
+}
+body:before{z-index:0!important;opacity:.18}
+.alpha-shell{position:relative;z-index:1}
+.alpha-shell .topbar,.alpha-shell .site-header{
+  background:linear-gradient(180deg,#182b3a,#101e2a)!important;color:#eef4f8!important;
+  border-color:#5c7180!important;
+}
+.alpha-shell .panel{
+  background:linear-gradient(180deg,#1a2b39,#14232f)!important;color:#eef4f8!important;
+  border-color:#526978!important;box-shadow:0 4px 0 #08121b,0 14px 34px rgba(0,0,0,.30)!important;
+}
+.alpha-shell .panel:before{border-color:rgba(255,255,255,.06)!important}
+.alpha-shell h1,.alpha-shell h2,.alpha-shell h3{color:#f5f8fa!important;text-shadow:none!important}
+.alpha-shell p,.alpha-shell small,.alpha-shell label{color:#bac8d2}
+.alpha-shell .eyebrow{color:#84b7dc!important}
+.alpha-shell button,.alpha-shell .button{
+  background:linear-gradient(#263a48,#1a2b37)!important;color:#eef4f8!important;
+  border-color:#627887!important;box-shadow:0 3px 0 #08121b!important;
+}
+.alpha-shell button:hover:not(:disabled),.alpha-shell .button:hover{background:linear-gradient(#304a5b,#213644)!important;filter:none!important}
+.alpha-shell button.primary,.alpha-shell .primary{background:linear-gradient(#d24c5d,#9e2a3b)!important;border-color:#ef7382!important;color:#fff!important}
+.alpha-shell input,.alpha-shell select{background:#111e28!important;color:#eef4f8!important;border-color:#526b7a!important}
+.alpha-shell .hero,.alpha-shell .menu-hero{
+  background:linear-gradient(135deg,#1b2d3b 0 56%,#132430 56% 100%)!important;
+  border-color:#607786!important;box-shadow:0 6px 0 #08131d,0 16px 38px rgba(0,0,0,.32)!important;
+}
+.alpha-shell .hero:after,.alpha-shell .menu-hero:after,
+.alpha-shell .menu-grid>button:after,.alpha-shell .mode-card:after,.alpha-shell .region-card:after{
+  content:none!important;display:none!important
+}
+.alpha-shell .play-layout{grid-template-columns:minmax(0,1fr) 350px!important;gap:22px!important;align-items:start}
+.alpha-shell .party{padding:18px!important;min-width:0}
+.alpha-shell .party-member{grid-template-columns:98px minmax(0,1fr)!important;gap:14px!important;padding:16px 0!important}
+.alpha-shell .party-sprite-wrap{min-height:108px!important;border-radius:8px;background:radial-gradient(circle at 50% 38%,#314958,#172834 70%)!important}
+.alpha-shell .party-sprite-wrap>.sprite{width:94px!important;height:104px!important;object-fit:contain!important;image-rendering:pixelated}
+.alpha-shell .party-member-toggle{min-height:48px!important;padding:6px 4px!important}
+.alpha-shell .party-member-toggle strong{font-size:14px!important}
+.alpha-shell .party-member-toggle small{font-size:10px!important}
+.alpha-shell .party-identity-row{gap:7px!important;flex-wrap:wrap}
+.alpha-shell .party-details{margin-top:10px!important}
+.alpha-shell .enemy-sprite,.alpha-shell .player-sprite{pointer-events:none!important;user-select:none!important;-webkit-user-drag:none}
+.alpha-shell .enemy-sprite{width:165px!important;height:165px!important;right:24px!important;top:42px!important}
+.alpha-shell .player-sprite{width:195px!important;height:195px!important;left:22px!important;bottom:-4px!important}
+.alpha-shell .dex-detail-overlay{
+  z-index:9990!important;display:flex!important;align-items:flex-start!important;justify-content:center!important;
+  padding:5vh 24px 28px!important;background:rgba(4,9,15,.82)!important;backdrop-filter:blur(2px)
+}
+.alpha-shell .dex-detail{
+  display:block!important;position:relative!important;z-index:9991!important;visibility:visible!important;opacity:1!important;transform:none!important;
+  width:min(860px,calc(100vw - 32px))!important;max-height:88vh!important;overflow:auto!important;
+  background:#172733!important;color:#eef4f8!important;border:3px solid #6a8290!important;
+  box-shadow:0 12px 0 #071019,0 28px 70px rgba(0,0,0,.58)!important;
+}
+.alpha-shell .dex-detail:before{display:none!important}
+.alpha-shell .dex-detail-hero{background:#11202a;border:1px solid #455d6b;border-radius:8px;padding:14px 48px 14px 14px}
+.alpha-shell .dex-detail-sprite-wrap{min-width:160px;display:grid;place-items:center}
+.alpha-shell .dex-detail-sprite-wrap>.sprite{width:150px!important;height:150px!important;object-fit:contain!important;image-rendering:pixelated}
+.alpha-shell .dex-run-stats article,.alpha-shell .dex-stat-grid span,.alpha-shell .dex-evolutions article,.alpha-shell .dex-ability{
+  background:#101d26!important;border-color:#435966!important;color:#eef4f8!important
+}
+.alpha-shell .run-quests{display:none!important}
+.alpha-quest-board{max-width:1050px;margin:20px auto!important}
+.alpha-quest-intro{max-width:760px}
+.alpha-account-quest-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}
+.alpha-account-quest-grid article{padding:14px;border:2px solid #425b69;border-radius:8px;background:#101e28;box-shadow:0 3px 0 #071019}
+.alpha-account-quest-grid article.done{border-color:#9a7b35}
+.alpha-account-quest-grid article.claimed{border-color:#3c7357;opacity:.78}
+.alpha-account-quest-grid header{display:grid;grid-template-columns:32px 1fr;gap:10px;align-items:start}
+.alpha-account-quest-grid header strong,.alpha-account-quest-grid header small{display:block}
+.alpha-account-quest-grid .quest-state{display:grid;place-items:center;width:28px;height:28px;border:2px solid #687d8b;background:#152733;font-weight:900}
+.alpha-account-quest-grid .quest-progress{height:7px;margin:12px 0;background:#08141c;border:1px solid #354c59;overflow:hidden}
+.alpha-account-quest-grid .quest-progress i{display:block;height:100%;background:linear-gradient(90deg,#d3ad45,#f2d875)}
+.alpha-quest-meta{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px}
+.alpha-quest-meta b{color:#f0d577;font-size:.8rem}
+@media(max-width:1150px){
+  .alpha-shell .play-layout{grid-template-columns:minmax(0,1fr) 310px!important}
+  .alpha-shell .party-member{grid-template-columns:82px minmax(0,1fr)!important}
+  .alpha-shell .party-sprite-wrap>.sprite{width:80px!important;height:90px!important}
+}
+@media(max-width:1000px){
+  .alpha-shell .play-layout{grid-template-columns:1fr!important}
+  .alpha-shell .party{position:relative!important;top:auto!important}
+  .alpha-account-quest-grid{grid-template-columns:1fr}
+}
