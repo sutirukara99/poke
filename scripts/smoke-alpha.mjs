@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-const js = await readFile(new URL("../public/recovered/v1.0.0-alpha.1.js", import.meta.url), "utf8");
+const js = await readFile(new URL("../public/recovered/v1.0.0-alpha.1-r3.js", import.meta.url), "utf8");
 const required = [
   "1.0.0-alpha.1",
   "QalphaAscensionMax",
