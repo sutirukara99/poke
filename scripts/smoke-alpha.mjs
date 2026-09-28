@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-const js = await readFile(new URL("../public/recovered/v1.0.0-alpha.1-r5.js", import.meta.url), "utf8");
+const js = await readFile(new URL("../public/recovered/v1.0.0-alpha.1-r6.js", import.meta.url), "utf8");
 const required = [
   "1.0.0-alpha.1",
   "QalphaAscensionMax",
@@ -24,6 +24,8 @@ const required = [
   "Auftragsprofi",
   "QalphaNodeHelp",
   "60% · FOLGE 10%",
+  "QalphaRepairRoute",
+  "Wegschutz: Ein blockierter Pfad wurde automatisch freigelegt.",
 ];
 
 const missing = required.filter((needle) => !js.includes(needle));
@@ -67,3 +69,6 @@ if (!js.includes("★ ELITE · ")) throw new Error("Elite archetype battle label
 if (!js.includes('!oe.shiny&&!i.dailyChallenge&&Sy(a)>1')) throw new Error("daily persistent shiny bonus guard missing");
 
 if (!js.includes('W("protect","Schutzschild","normal","status",0,1,4')) throw new Error("protect PP nerf missing");
+
+if (!js.includes("QalphaRow.length===3")) throw new Error("safe secret generation missing");
+if (!js.includes("QalphaRepairRoute(a)")) throw new Error("route advance repair hook missing");
