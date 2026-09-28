@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import "./styles/alpha.css";
 import { ACTIVE_BUILD, RECOVERY_BASELINE } from "./recovery/version";
 
