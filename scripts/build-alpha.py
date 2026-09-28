@@ -229,6 +229,11 @@ must('});i.mode==="endless"&&r.id.startsWith("endless-boss")',
 must('r.eliteTrainer&&_.push(`ELITE-TRAINER · ${(r.eliteArchetype??"veteran").toUpperCase()}: höheres Level, stärkeres Team und hochwertiger Loot.`)',
      'r.eliteTrainer&&_.push(`ELITE-TRAINER · ${(r.eliteArchetype??"veteran").toUpperCase()}: ${r.eliteArchetype==="iv-specialist"?"optimierte IVs":r.eliteArchetype==="weather-ace"?"Typ-Verstärker":r.eliteArchetype==="relic-keeper"?"Überreste + besserer Loot":r.eliteArchetype==="hunter"?"Scope-Linsen und Krit-Fokus":"Fokusgurt auf dem Lead"}.`)','elite flavor details')
 
+
+# --- elite battle UI label ---
+must('l.jsx("span",{className:"elite-pill",children:"★ ELITE"})',
+     'l.jsxs("span",{className:"elite-pill",children:["★ ELITE · ",(a.node?.eliteArchetype??"veteran").toUpperCase()]})','elite battle archetype label')
+
 out=ROOT/'public/recovered/v1.0.0-alpha.1-r4.js'
 out.write_text(s)
 print('built',out,len(s))
