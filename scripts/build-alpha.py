@@ -244,6 +244,29 @@ must('l.jsxs("span",{children:["🏆 Rekord ",i.endlessHighScore]})]})',
 must('!oe.shiny&&Sy(a)>1&&d.chance(Ve.shinyRate*(Sy(a)-1))&&(oe.shiny=!0)',
      '!oe.shiny&&!i.dailyChallenge&&Sy(a)>1&&d.chance(Ve.shinyRate*(Sy(a)-1))&&(oe.shiny=!0)','daily ignores persistent shiny bonus')
 
-out=ROOT/'public/recovered/v1.0.0-alpha.1-r4.js'
+# --- r5 balance + node clarity ---
+# Schutzschild: strong roguelike nerf. 4 PP, 60% base success, 10% if repeated.
+must('W("protect","Schutzschild","normal","status",0,1,10,void 0,{protect:!0,priority:4})',
+     'W("protect","Schutzschild","normal","status",0,1,4,void 0,{protect:!0,priority:4})','protect pp nerf')
+
+must('if(d.protect&&y&&p&&(p==="player"?y.playerProtect=!0:y.enemyProtect=!0,k.push("schützt sich bis zum Rundenende")),d.screen&&y&&p&&',
+     'if(d.protect&&y&&p){const A=p==="player"?"playerProtectFatigue":"enemyProtectFatigue",R=y[A]??0,_=R>0?.1:.6;if(!r.chance(_))return y[A]=Math.min(3,R+1),`${m}: ${d.name} schlägt fehl!`;y[A]=Math.min(3,R+1),p==="player"?y.playerProtect=!0:y.enemyProtect=!0,k.push(R>0?"schützt sich trotz Schutz-Ermüdung":"schützt sich bis zum Rundenende")}if(d.screen&&y&&p&&','protect success nerf')
+
+must('const A=v?{...mt.tackle,name:"Verzweifler",power:35}:k,R=K[a.species].name,_=K[i.species];if(!v&&A.category==="status")return Sk(a,i,A,r,h,y);const L=y==null?void 0:y.battle,U=y==null?void 0:y.defenderSide;',
+     'const A=v?{...mt.tackle,name:"Verzweifler",power:35}:k,R=K[a.species].name,_=K[i.species],L=y==null?void 0:y.battle,U=y==null?void 0:y.defenderSide,P=y==null?void 0:y.attackerSide;if(L&&P&&!A.protect)(P==="player"?L.playerProtectFatigue=0:L.enemyProtectFatigue=0);if(!v&&A.category==="status")return Sk(a,i,A,r,h,y);','protect fatigue reset')
+
+must('a.protect&&(u+=i.hp/Math.max(1,i.maxHp)<.4?65:28)',
+     'a.protect&&(u+=i.hp/Math.max(1,i.maxHp)<.25?18:4)','protect ai nerf')
+
+must('me.category==="status"?"SETUP":me.statusEffect?"STATUS":me.nextLevel?`Lv.${me.nextLevel} ↑`:"MAX"',
+     'me.id==="protect"?"60% · FOLGE 10%":me.category==="status"?"SETUP":me.statusEffect?"STATUS":me.nextLevel?`Lv.${me.nextLevel} ↑`:"MAX"','protect ui hint')
+
+# Hover/focus help for every revealed route node.
+must('const v4={wild:"WILD",trainer:"TRAINER",shop:"SHOP",mystery:"EVENT",heal:"HEILUNG",item:"FUND",city:"STADT",tutor:"TUTOR",boss:"RIVALE",gym:"ARENALEITER",league:"LIGA",legendary:"SELTEN"},_c=',
+     'const v4={wild:"WILD",trainer:"TRAINER",shop:"SHOP",mystery:"EVENT",heal:"HEILUNG",item:"FUND",city:"STADT",tutor:"TUTOR",boss:"RIVALE",gym:"ARENALEITER",league:"LIGA",legendary:"SELTEN"},QalphaNodeHelp={wild:["WILDE BEGEGNUNG","Kampf gegen ein wildes Pokémon · kann gefangen werden"],trainer:["TRAINERKAMPF","Trainerduell · Geld, Fortschritt und mögliche Beute"],shop:["MARKT","Items, Heilung und Build-Werkzeuge kaufen"],mystery:["EVENT","Unvorhersehbares Ereignis mit Entscheidungen"],heal:["HEILUNG","Team regenerieren und Statusprobleme entfernen"],item:["FUND","Kostenlose Beute oder Verbrauchsgegenstand"],city:["STADT","Service-Knoten mit PC, Shop oder weiteren Optionen"],tutor:["MOVE-TUTOR","Attacken deines Teams anpassen"],boss:["RIVALENKAMPF","Gefährlicher Schlüsselkampf mit erhöhtem Druck"],gym:["ARENA","Arenaleiter besiegen und Orden verdienen"],league:["POKÉMON-LIGA","Endgame-Kampf auf Champion-Niveau"],legendary:["LEGENDÄR","Mini-Boss-Begegnung mit besonderer Fangchance"]},_c=','node help dictionary')
+
+must('children:v&&(!R.secret||r)?l.jsxs(l.Fragment,{children:[l.jsxs("span",{className:"node-icon-shell"',
+     'children:v&&(!R.secret||r)?l.jsxs(l.Fragment,{children:[l.jsxs("span",{className:"route-node-tooltip",role:"tooltip",children:[l.jsx("b",{children:(QalphaNodeHelp[R.kind]??["KNOTEN","Unbekannter Routentyp"])[0]}),l.jsx("small",{children:(QalphaNodeHelp[R.kind]??["KNOTEN",R.detail])[1]})]}),l.jsxs("span",{className:"node-icon-shell"','node hover tooltip')
+out=ROOT/'public/recovered/v1.0.0-alpha.1-r5.js'
 out.write_text(s)
 print('built',out,len(s))
