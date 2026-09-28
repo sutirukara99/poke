@@ -1,0 +1,27 @@
+{
+  "name": "pokerogue-regions",
+  "private": true,
+  "version": "0.9.4-recovered.1",
+  "type": "module",
+  "scripts": {
+    "assemble:recovery": "node scripts/assemble-recovery.mjs",
+    "predev": "npm run assemble:recovery",
+    "dev": "vite",
+    "prebuild": "npm run verify:recovery && npm run assemble:recovery",
+    "build": "vite build",
+    "preview": "vite preview",
+    "verify:recovery": "node scripts/verify-recovery.mjs",
+    "check": "tsc --noEmit && npm run verify:recovery"
+  },
+  "dependencies": {
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.16",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^5.0.4",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.7"
+  }
+}
