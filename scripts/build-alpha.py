@@ -222,6 +222,17 @@ must('l.jsxs("span",{children:[l.jsx("b",{children:r.quests.filter(b=>b.complete
 must('l.jsxs("article",{children:[l.jsx("b",{children:"Dauer"}),l.jsx("small",{children:Ou(r)})]})',
      'l.jsxs("article",{children:[l.jsx("b",{children:"Dauer"}),l.jsx("small",{children:Ou(r)})]}),l.jsxs("article",{children:[l.jsx("b",{children:"Regeln"}),l.jsx("small",{children:r.dailyChallenge?`Daily ${r.dailyChallenge.date} · fair`:r.mode==="story"?`Ascension ${r.ascension??0}`:"Endless"})]})','history build rules')
 
+
+# --- elite archetype mechanics ---
+must('});i.mode==="endless"&&r.id.startsWith("endless-boss")',
+     '});if(r.eliteTrainer){if(r.eliteArchetype==="iv-specialist")p.forEach(F=>ik(F,{hp:Math.max(F.ivs.hp,26),attack:Math.max(F.ivs.attack,26),defense:Math.max(F.ivs.defense,26),specialAttack:Math.max(F.ivs.specialAttack,26),specialDefense:Math.max(F.ivs.specialDefense,26),speed:Math.max(F.ivs.speed,26)}));else if(r.eliteArchetype==="hunter")p.forEach(F=>F.heldItem="scope-lens");else if(r.eliteArchetype==="relic-keeper")p[0]&&(p[0].heldItem="leftovers")}i.mode==="endless"&&r.id.startsWith("endless-boss")','elite roster mechanics')
+must('const A=(v==null?void 0:v.weather)??gx(k)??Fk(r.biome,d);i.team.forEach',
+     'let A=(v==null?void 0:v.weather)??gx(k)??Fk(r.biome,d);r.eliteArchetype==="weather-ace"&&(A=gx(K[m[0]].types[0])??A??d.pick(["rain","sun","sand","hail"]));i.team.forEach','elite weather ace')
+must('F.specialDefenseStage=0,F.speedStage=Math.max(-6,Math.min(6,(v==null?void 0:v.enemySpeedStage)??0)),F.abilityOverride=null}),v!=null&&v.screen',
+     'F.specialDefenseStage=r.eliteArchetype==="veteran"?1:0,F.speedStage=Math.max(-6,Math.min(6,(v==null?void 0:v.enemySpeedStage)??0))+(r.eliteArchetype==="hunter"?1:0),F.attackStage=Math.min(6,F.attackStage+(r.eliteArchetype==="veteran"?1:0)),F.abilityOverride=null}),v!=null&&v.screen','elite stage mechanics')
+must('r.eliteTrainer&&_.push(`ELITE-TRAINER · ${(r.eliteArchetype??"veteran").toUpperCase()}: höheres Level, stärkeres Team und hochwertiger Loot.`)',
+     'r.eliteTrainer&&_.push(`ELITE-TRAINER · ${(r.eliteArchetype??"veteran").toUpperCase()}: ${r.eliteArchetype==="iv-specialist"?"optimierte IVs":r.eliteArchetype==="weather-ace"?"kontrolliert das Wetter":r.eliteArchetype==="relic-keeper"?"defensiver Träger + besserer Loot":r.eliteArchetype==="hunter"?"höhere Initiative + kritische Treffer":"erhöhte Startwerte"}.`)','elite flavor details')
+
 out=ROOT/'public/recovered/v1.0.0-alpha.1-r4.js'
 out.write_text(s)
 print('built',out,len(s))
