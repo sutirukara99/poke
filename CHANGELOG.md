@@ -2,6 +2,13 @@
 
 ## 1.0.0-alpha.1 — 2026-09-28
 
+### Route safety pass
+- Fixed optional-node exits such as Move-Tutor, Shop, Heal, Item and City being able to lead into a route with no selectable continuation.
+- Added a route watchdog that repairs already-stuck active saves on reload.
+- Secret routes now only replace nodes in full three-lane rows, so hiding a secret can never remove the sole valid path.
+- Schutzschild is limited to 4 PP, 60% first-use success and 10% on consecutive uses.
+- Revealed route nodes now explain their function on hover/focus.
+
 ### Protect balance & route clarity
 - Schutzschild heavily nerfed: 4 PP, 60% base success, only 10% when repeated until another move is used.
 - Reduced AI value for repeated Protect stalling and exposed the success rule directly on the move button.
