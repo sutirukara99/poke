@@ -3,6 +3,8 @@
 ## 1.0.0-alpha.1 — 2026-09-28
 
 ### Quality & fairness pass
+- Elite archetypes now have distinct mechanics: IV Specialists, Hunter crit focus, Relic Keeper sustain/loot, Veteran lead protection and Weather Ace type boosters.
+- Run History now exposes Daily runs, score/rank, Ascension, elite battles and secret routes.
 - Daily Expeditions now isolate persistent account power: no equipped relics, Meta-Starters, Bottle-Cap starter IVs, Mastery moves or trainer-class upgrades.
 - Converted the obsolete per-run quest achievement into an account Questboard milestone.
 - Added live run-condition chips for Daily/Ascension, challenge rules, active relics, loot rerolls and live score.
