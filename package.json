@@ -1,14 +1,18 @@
 {
   "name": "pokerogue-regions",
   "private": true,
-  "version": "0.9.4-recovered.2",
+  "version": "1.0.0-alpha.1",
   "type": "module",
   "scripts": {
+    "rebuild:alpha": "python3 scripts/build-alpha.py",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "verify:recovery": "node scripts/verify-recovery.mjs",
-    "check": "tsc --noEmit && npm run verify:recovery"
+    "verify:alpha": "npm run rebuild:alpha && node --check public/recovered/v1.0.0-alpha.1.js && node scripts/smoke-alpha.mjs",
+    "check": "tsc --noEmit && npm run verify:recovery && npm run verify:alpha",
+    "predev": "npm run rebuild:alpha",
+    "prebuild": "npm run rebuild:alpha"
   },
   "dependencies": {
     "react": "^19.1.1",
