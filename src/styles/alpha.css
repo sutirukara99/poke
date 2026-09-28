@@ -210,3 +210,85 @@ body:before{z-index:0!important;opacity:.18}
 .alpha-shell .alpha-ascension strong,.alpha-shell .alpha-ascension b{color:#f0d577!important}
 .alpha-shell .alpha-ascension small,.alpha-shell .alpha-ascension label{color:#b9c8d1!important}
 .alpha-shell .alpha-ascension input[type="range"]{accent-color:#d84b5b!important}
+
+/* === 1.0 Alpha polish cleanup: remove leftover parchment/bright surfaces === */
+body:before{display:none!important}
+.alpha-shell .alpha-run-setup,
+.alpha-shell .new-run-screen,
+.alpha-shell .setup,
+.alpha-shell .secondary,
+.alpha-shell .starter-panel,
+.alpha-shell .adventure-board,
+.alpha-shell .retro-battle-shell,
+.alpha-shell .gba-textbox,
+.alpha-shell .combatant-card,
+.alpha-shell .battle-info,
+.alpha-shell .battle-log,
+.alpha-shell .mystery-event-card,
+.alpha-shell .shop-screen,
+.alpha-shell .catch-swap,
+.alpha-shell .summary{
+  background:linear-gradient(180deg,#182a37,#111f2a)!important;
+  color:#eef4f8!important;
+  border-color:#526977!important;
+  box-shadow:0 4px 0 #071019,0 14px 30px rgba(0,0,0,.28)!important;
+}
+.alpha-shell .alpha-daily-card,
+.alpha-shell .challenge-panel,
+.alpha-shell .mode-pills button,
+.alpha-shell .alpha-ascension,
+.alpha-shell .trainer-level-card,
+.alpha-shell .settings-block{
+  background:linear-gradient(180deg,#1b303e,#13232e)!important;
+  color:#eef4f8!important;
+  border-color:#526b79!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.04),0 3px 0 #071019!important;
+}
+.alpha-shell .alpha-daily-card:before{
+  background:#65428d!important;color:#fff!important;border-color:#b392d2!important
+}
+.alpha-shell .region-card,
+.alpha-shell .route-node{
+  background:linear-gradient(180deg,#203747,#162733)!important;
+  color:#eef4f8!important;
+  border-color:#5a7281!important;
+}
+.alpha-shell .route-node.path-chosen{background:linear-gradient(180deg,#254a61,#193548)!important}
+.alpha-shell .route-node.node-goal{background:linear-gradient(180deg,#5c4821,#342b1a)!important;border-color:#d1aa4e!important}
+.alpha-shell .route-node.elite-trainer{background:linear-gradient(180deg,#49345e,#2b2237)!important;border-color:#9e77bd!important}
+.alpha-shell .route-node.secret-route{background:linear-gradient(180deg,#44315b,#241d32)!important}
+.alpha-shell .modifier-strip span{
+  background:#2d2a1e!important;color:#f0d577!important;border-color:#806c35!important
+}
+.alpha-shell .combatant-card strong,.alpha-shell .battle-info strong,
+.alpha-shell .gba-hp-box strong,.alpha-shell .battle-log p{color:#eef4f8!important}
+.alpha-shell .retro-battle-title{background:linear-gradient(#294d78,#173453)!important;color:#fff!important}
+.alpha-shell .gba-hp-box{
+  background:rgba(16,31,42,.94)!important;color:#eef4f8!important;border-color:#5d7381!important
+}
+.alpha-shell .battle-command-bar{
+  background:#0f1c25!important;color:#dce7ed!important;border-color:#465e6c!important
+}
+.alpha-shell .dex-card{
+  background:linear-gradient(180deg,#1d303d,#14232d)!important;color:#eef4f8!important;border-color:#4b6371!important
+}
+.alpha-shell .dex-card:hover:not(:disabled){background:linear-gradient(180deg,#284252,#1c303c)!important}
+.alpha-shell .pokedex-head,.alpha-shell .national-dex-grid{color:#eef4f8}
+.alpha-shell .alpha-ascension{background:#142630!important}
+.alpha-shell .alpha-ascension *{background-color:transparent}
+.alpha-shell .hero:before,.alpha-shell .menu-hero:before,
+.alpha-shell .panel:after,.alpha-shell .playful-setup:before,.alpha-shell .starter-panel:before,
+.alpha-shell .adventure-board:before,.alpha-shell .playful-event:before,.alpha-shell .playful-party:before{
+  display:none!important
+}
+.alpha-fatal-recovery{
+  width:min(760px,calc(100vw - 32px));margin:8vh auto;padding:28px;
+  color:#eef4f8;background:#172833;border:3px solid #607785;
+  box-shadow:0 6px 0 #071019,0 24px 60px rgba(0,0,0,.45);font-family:system-ui,sans-serif
+}
+.alpha-fatal-recovery h1{font-size:clamp(24px,5vw,42px);margin:8px 0 16px}
+.alpha-fatal-recovery button{margin-top:14px}
+.alpha-battle-recovery{min-height:220px;display:grid;place-content:center;text-align:center}
+
+/* All game sprites are decorative pixels; parent buttons/cards own interaction. */
+.alpha-shell img.sprite{pointer-events:none!important;user-select:none!important;-webkit-user-drag:none!important}
