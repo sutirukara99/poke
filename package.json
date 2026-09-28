@@ -12,7 +12,8 @@
     "verify:alpha": "npm run rebuild:alpha && node --check public/recovered/v1.0.0-alpha.1-r6.js && node scripts/smoke-alpha.mjs",
     "check": "tsc --noEmit && npm run verify:recovery && npm run verify:alpha",
     "predev": "npm run rebuild:alpha",
-    "prebuild": "npm run rebuild:alpha"
+    "prebuild": "npm run rebuild:alpha",
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
     "react": "^19.1.1",
@@ -23,6 +24,7 @@
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.4",
     "typescript": "^5.9.2",
-    "vite": "^7.1.7"
+    "vite": "^7.1.7",
+    "wrangler": "^4.102.0"
   }
 }
