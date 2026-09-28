@@ -71,3 +71,4 @@ npm run preview
 ## Recovery documentation
 
 See [`RECOVERY.md`](./RECOVERY.md) for what was recovered and what was reconstructed.
+<!-- pages-redeploy: 2026-09-28 -->
