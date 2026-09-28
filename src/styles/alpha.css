@@ -199,3 +199,14 @@ body:before{z-index:0!important;opacity:.18}
   .alpha-shell .party{position:relative!important;top:auto!important}
   .alpha-account-quest-grid{grid-template-columns:1fr}
 }
+
+/* Ascension must follow the dark handheld palette too. */
+.alpha-shell .alpha-ascension{
+  background:linear-gradient(180deg,#162833,#10202a)!important;
+  border-color:#536d7b!important;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.035),0 3px 0 #071019!important;
+  color:#eef4f8!important;
+}
+.alpha-shell .alpha-ascension strong,.alpha-shell .alpha-ascension b{color:#f0d577!important}
+.alpha-shell .alpha-ascension small,.alpha-shell .alpha-ascension label{color:#b9c8d1!important}
+.alpha-shell .alpha-ascension input[type="range"]{accent-color:#d84b5b!important}
