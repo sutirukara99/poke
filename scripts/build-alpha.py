@@ -205,6 +205,23 @@ must('i.service==="quest"&&(ix(r,u)?r.message="Quest-Brett: Eine neue Nebenaufga
 must('r.message+=" Stadt-Hub: Center, Markt, Move-Tutor und Quest-Brett stehen bereit."',
      'r.message+=" Stadt-Hub: Center, Markt, Move-Tutor und PC stehen bereit."','city hub message')
 
+
+# --- alpha history polish ---
+must('m=h.filter(b=>i==="all"||b.mode===i),y=h.filter(b=>b.result==="win"&&b.mode==="story").length',
+     'm=h.filter(b=>i==="all"||i==="daily"&&!!b.dailyChallenge||i==="story"&&b.mode==="story"&&!b.dailyChallenge||i==="endless"&&b.mode==="endless"),y=h.filter(b=>b.result==="win"&&b.mode==="story").length','history alpha filter')
+must('[["all","Alle"],["story","Story"],["endless","Endless"]].map',
+     '[["all","Alle"],["story","Story"],["daily","Daily"],["endless","Endless"]].map','history daily filter')
+must('children:b.mode==="endless"?`Endless · Etappe ${b.endlessStage}`:`${we[b.region].name} · ${b.result==="win"?"Champion":"Niederlage"}`',
+     'children:b.dailyChallenge?`Daily ${b.dailyChallenge.date} · ${we[b.region].name}`:b.mode==="endless"?`Endless · Etappe ${b.endlessStage}`:`${we[b.region].name} · ${b.result==="win"?"Champion":"Niederlage"}`','history row title')
+must('children:[Gy(b.trainerClass)," · ",b.seed," · ",b.defeated," Siege · ",b.caught," gefangen · ",Ou(b)]',
+     'children:[Gy(b.trainerClass)," · ",b.score?`Score ${b.score.rank} ${b.score.total.toLocaleString("de-DE")} · `:"",b.dailyChallenge?"DAILY FAIR · ":b.mode==="story"?`Asc ${b.ascension??0} · `:"",b.defeated," Siege · ",b.caught," gefangen · ",Ou(b)]','history row alpha stats')
+must('children:r.mode==="story"&&r.result==="win"?"HALL OF FAME · CHAMPION-KARTE":r.mode==="story"?"RUNARCHIV":"BATTLE TOWER · RUNARCHIV"',
+     'children:r.dailyChallenge?"DAILY EXPEDITION · RUNARCHIV":r.mode==="story"&&r.result==="win"?"HALL OF FAME · CHAMPION-KARTE":r.mode==="story"?"RUNARCHIV":"BATTLE TOWER · RUNARCHIV"','history daily eyebrow')
+must('l.jsxs("span",{children:[l.jsx("b",{children:r.quests.filter(b=>b.completed).length}),l.jsx("small",{children:"Quests"})]}),l.jsxs("span",{children:[l.jsx("b",{children:Ou(r)}),l.jsx("small",{children:"Run-Dauer"})]})',
+     'l.jsxs("span",{children:[l.jsx("b",{children:r.score?.rank??"—"}),l.jsx("small",{children:"Score-Rang"})]}),l.jsxs("span",{children:[l.jsx("b",{children:r.score?.total?.toLocaleString("de-DE")??"—"}),l.jsx("small",{children:"Score"})]}),l.jsxs("span",{children:[l.jsx("b",{children:r.ascension??0}),l.jsx("small",{children:"Ascension"})]}),l.jsxs("span",{children:[l.jsx("b",{children:r.eliteBattles??0}),l.jsx("small",{children:"Elite"})]}),l.jsxs("span",{children:[l.jsx("b",{children:r.secretsFound??0}),l.jsx("small",{children:"Secrets"})]}),l.jsxs("span",{children:[l.jsx("b",{children:Ou(r)}),l.jsx("small",{children:"Run-Dauer"})]})','history detail alpha stats')
+must('l.jsxs("article",{children:[l.jsx("b",{children:"Dauer"}),l.jsx("small",{children:Ou(r)})]})',
+     'l.jsxs("article",{children:[l.jsx("b",{children:"Dauer"}),l.jsx("small",{children:Ou(r)})]}),l.jsxs("article",{children:[l.jsx("b",{children:"Regeln"}),l.jsx("small",{children:r.dailyChallenge?`Daily ${r.dailyChallenge.date} · fair`:r.mode==="story"?`Ascension ${r.ascension??0}`:"Endless"})]})','history build rules')
+
 out=ROOT/'public/recovered/v1.0.0-alpha.1-r4.js'
 out.write_text(s)
 print('built',out,len(s))
