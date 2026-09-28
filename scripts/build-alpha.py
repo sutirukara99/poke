@@ -267,6 +267,26 @@ must('const v4={wild:"WILD",trainer:"TRAINER",shop:"SHOP",mystery:"EVENT",heal:"
 
 must('children:v&&(!R.secret||r)?l.jsxs(l.Fragment,{children:[l.jsxs("span",{className:"node-icon-shell"',
      'children:v&&(!R.secret||r)?l.jsxs(l.Fragment,{children:[l.jsxs("span",{className:"route-node-tooltip",role:"tooltip",children:[l.jsx("b",{children:(QalphaNodeHelp[R.kind]??["KNOTEN","Unbekannter Routentyp"])[0]}),l.jsx("small",{children:(QalphaNodeHelp[R.kind]??["KNOTEN",R.detail])[1]})]}),l.jsxs("span",{className:"node-icon-shell"','node hover tooltip')
-out=ROOT/'public/recovered/v1.0.0-alpha.1-r5.js'
+
+# --- r6 route deadlock hardening ---
+# Secret routes may only replace nodes in full three-lane rows, so hiding one never removes the only valid continuation.
+must('const Qs=y.flat().filter(R=>!R.special&&!R.eliteTrainer&&!["city","boss","gym","league"].includes(R.kind));if(Qs.length&&r.chance(.58))',
+     'const Qs=y.flatMap(QalphaRow=>QalphaRow.length===3?QalphaRow:[]).filter(R=>!R.special&&!R.eliteTrainer&&!["city","boss","gym","league"].includes(R.kind));if(Qs.length&&r.chance(.58))','safe secret generation')
+
+# Runtime route watchdog. If any generated/migrated route still has no valid next node,
+# unhide/re-lane one fallback instead of soft-locking the run.
+must('const Dc=()=>({',
+     'const QalphaRepairRoute=a=>{if(!a||a.result!=="active"||a.phase!=="map")return!1;const i=a.arena?.route??a.route,d=a.arena?.step??a.step,r=a.arena?.path??a.path??[];if(!Array.isArray(i)||d<0||d>=i.length)return!1;const u=i[d]??[],h=!!a.fogRevealed||a.activeRelics?.includes?.("cracked-compass"),m=u.filter(y=>(!y.secret||h)&&qu(i,d,r,y));if(m.length)return!1;const y=u.filter(p=>qu(i,d,r,p));if(y.length){const p=y[0];p.secret=!1,delete p.secretHint,a.message=(a.message?a.message+" ":"")+"Wegschutz: Ein blockierter Pfad wurde automatisch freigelegt.";return!0}const p=u[0];if(!p)return!1;const b=i[d-1]??[],v=b.find(k=>k.id===r[d-1]);p.secret=!1,delete p.secretHint,p.lane=v?Rc(v,b):1,a.message=(a.message?a.message+" ":"")+"Wegschutz: Die Route wurde repariert, damit der Run fortgesetzt werden kann.";return!0};const Dc=()=>({','route continuation watchdog')
+
+# Every normal node exit, battle completion, loot completion and flee path ultimately calls Ke.
+# Repair immediately after the step changes, including arena/endless transitions.
+must('function Ke(a,i){if(a.shopTransactions=[],a.arena){a.arena.step++,a.phase="map",a.node=null,a.battle=null;return}if(a.mode==="endless"){a.endlessStage++,a.step+1>=a.route.length?rx(a,i):(a.step++,a.phase="map",a.node=null,a.battle=null);return}a.step++,a.phase="map",a.node=null,a.battle=null}',
+     'function Ke(a,i){if(a.shopTransactions=[],a.arena){a.arena.step++,a.phase="map",a.node=null,a.battle=null,QalphaRepairRoute(a);return}if(a.mode==="endless"){a.endlessStage++,a.step+1>=a.route.length?rx(a,i):(a.step++,a.phase="map",a.node=null,a.battle=null),QalphaRepairRoute(a);return}a.step++,a.phase="map",a.node=null,a.battle=null,QalphaRepairRoute(a)}','repair every route advance')
+
+# Existing saves can already be stuck. Repair them during load so a refresh fixes the current run.
+must('Te.runBossKos??=0}if(!fe(d)||',
+     'Te.runBossKos??=0;d.run&&d.run.result==="active"&&QalphaRepairRoute(d.run)}if(!fe(d)||','repair migrated active save')
+
+out=ROOT/'public/recovered/v1.0.0-alpha.1-r6.js'
 out.write_text(s)
 print('built',out,len(s))
