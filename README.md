@@ -36,7 +36,7 @@ Preserved assets:
 
 Reconstructed active build:
 
-- `public/recovered/v1.0.0-alpha.1.js`
+- `public/recovered/v1.0.0-alpha.1-r4.js`
 - `src/styles/alpha.css`
 
 The generated Alpha JS is committed so static hosts can serve it without Python. To reproduce it from the preserved baseline:
