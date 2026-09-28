@@ -598,3 +598,54 @@ body:before{display:none!important}
     left:calc(24.5% - 78px)!important;width:156px!important;height:156px!important;bottom:50px!important
   }
 }
+
+
+/* === r4 run-information polish === */
+.alpha-shell .alpha-run-flags{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:7px!important;
+  margin:10px 0 14px!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+}
+.alpha-shell .alpha-run-flags span{
+  display:inline-flex!important;
+  align-items:center!important;
+  min-height:27px!important;
+  padding:5px 9px!important;
+  border:1px solid #4c6573!important;
+  border-radius:5px!important;
+  background:#142630!important;
+  color:#cbd9e0!important;
+  box-shadow:0 2px 0 #071019!important;
+  font-size:10px!important;
+  font-weight:800!important;
+}
+.alpha-shell .alpha-run-flags .flag-daily{
+  border-color:#b28c3f!important;
+  background:#332a18!important;
+  color:#f2d57a!important;
+}
+.alpha-shell .alpha-run-flags .flag-score{
+  margin-left:auto!important;
+  border-color:#5c83a0!important;
+  background:#142a39!important;
+  color:#9fd2f0!important;
+}
+.alpha-shell .party{
+  max-height:calc(100vh - 32px)!important;
+  overflow:auto!important;
+  scrollbar-width:thin;
+  scrollbar-color:#4d6877 #0e1b24;
+}
+.alpha-shell .party::-webkit-scrollbar{width:8px}
+.alpha-shell .party::-webkit-scrollbar-track{background:#0e1b24}
+.alpha-shell .party::-webkit-scrollbar-thumb{background:#4d6877;border:2px solid #0e1b24}
+.alpha-shell .party-heading{position:sticky;top:-14px;z-index:8;padding:10px 0 8px;background:#172a36}
+@media(max-width:1000px){
+  .alpha-shell .party{max-height:none!important;overflow:visible!important}
+  .alpha-shell .party-heading{position:static!important;background:transparent!important}
+  .alpha-shell .alpha-run-flags .flag-score{margin-left:0!important}
+}
