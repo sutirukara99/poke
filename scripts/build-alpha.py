@@ -103,7 +103,7 @@ must('*u*x0(h,A)*o0(a,A,i,h,m)*k0(a,A)*X5(i,A,V,h,a)*O5(i)))',
 
 # Hunter Mark and Black Feather.
 must('((v=a.node)==null?void 0:v.special)==="pokemon-nest"&&p.rarity==="rare"&&(b*=5),((k=a.node)==null?void 0:k.special)==="safari-zone"',
-     'QalphaRelic(a.activeRelics,"hunter-mark")&&p.rarity==="rare"&&(b*=2.4),((v=a.node)==null?void 0:v.special)==="pokemon-nest"&&p.rarity==="rare"&&(b*=5),((k=a.node)==null?void 0:k.special)==="safari-zone"','hunter mark encounters')
+     ' QalphaRelic(a.activeRelics,"hunter-mark")&&p.rarity==="rare"&&(b*=2.4),((v=a.node)==null?void 0:v.special)==="pokemon-nest"&&p.rarity==="rare"&&(b*=5),((k=a.node)==null?void 0:k.special)==="safari-zone"','hunter mark encounters')
 must('a.pendingLoot=ex(a,i,r||u),a.postLoot=d',
      'a.pendingLoot=ex(a,i,r||u||QalphaRelic(a.activeRelics,"black-feather")||a.node?.eliteArchetype==="relic-keeper"),a.postLoot=d','black feather loot')
 
