@@ -160,6 +160,17 @@ must('function QalphaTutorial(){',quest_view+'function QalphaTutorial(){','quest
 
 
 
+
+# --- sprite hardening + battle crash guard ---
+must('function xe({src:a,name:i,className:d=""}){return l.jsx("img",{className:\`sprite \${d}\`,src:a||Cy,alt:i,loading:"lazy",onError:r=>{r.currentTarget.onerror=null,r.currentTarget.src=Cy}})}',
+     'function xe({src:a,name:i,className:d=""}){return l.jsx("img",{className:\`sprite \${d}\`,src:a||Cy,alt:i,loading:"lazy",draggable:!1,style:{pointerEvents:"none",userSelect:"none"},onError:r=>{r.currentTarget.onerror=null,r.currentTarget.src=Cy}})}','sprite hardening')
+
+must('function p4({run:a,dispatch:i,classUpgrade:d=0,settings:r}){window.__POKEREGIONS_ACTIVE_RELICS__=a.activeRelics??[];var O,ae,pt,qa,Ut,St,it,Ye,Ft;const u=a.battle,h=a.team[u.active],m=u.enemies[u.enemyIndex],y=Ma(h),',
+     'function p4({run:a,dispatch:i,classUpgrade:d=0,settings:r}){window.__POKEREGIONS_ACTIVE_RELICS__=a.activeRelics??[];var O,ae,pt,qa,Ut,St,it,Ye,Ft;const u=a.battle;if(!u)return l.jsx("section",{className:"panel battle retro-battle-shell alpha-battle-recovery",children:"Kampfdaten werden neu geladen …"});const h=a.team[u.active]??a.team.find(ct),m=u.enemies[u.enemyIndex]??u.enemies[0];if(!h||!m)return l.jsxs("section",{className:"panel battle retro-battle-shell alpha-battle-recovery",children:[l.jsx("h2",{children:"Kampf konnte nicht dargestellt werden"}),l.jsx("p",{children:"Der Run bleibt erhalten. Öffne das Hauptmenü und setze den Run fort."})]});const y=Ma(h),','battle defensive render')
+
+must('p5.createRoot(document.getElementById("root")).render(l.jsx(c5.StrictMode,{children:l.jsx(H4,{})}));',
+     'class QalphaErrorBoundary extends X.Component{constructor(a){super(a),this.state={error:null}}static getDerivedStateFromError(a){return{error:a}}componentDidCatch(a,i){try{localStorage.setItem("pokerogue-alpha-last-error",JSON.stringify({message:String(a?.message??a),stack:String(a?.stack??""),componentStack:String(i?.componentStack??""),at:new Date().toISOString()}))}catch{}console.error("PokéRogue Regions render error",a,i)}render(){return this.state.error?l.jsxs("main",{className:"alpha-fatal-recovery",children:[l.jsx("p",{className:"eyebrow",children:"RECOVERY GUARD"}),l.jsx("h1",{children:"Die Ansicht ist abgestürzt – dein Spielstand ist sicher."}),l.jsx("p",{children:String(this.state.error?.message??"Unbekannter Darstellungsfehler")}),l.jsx("button",{className:"primary",onClick:()=>window.location.reload(),children:"Ansicht neu laden"})]}):this.props.children}}p5.createRoot(document.getElementById("root")).render(l.jsx(QalphaErrorBoundary,{children:l.jsx(H4,{})}));','global render guard')
+
 out=ROOT/'public/recovered/v1.0.0-alpha.1.js'
 out.write_text(s)
 print('built',out,len(s))
