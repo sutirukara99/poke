@@ -140,9 +140,9 @@ must('d.speciesMastery??={},d.tutorialSeen??=[];',
 
 quest_helpers=r'''const QalphaAccountQuests=[
 {id:"field-start",title:"Feldstart",text:"Fange dein erstes Pokémon.",xp:60,rogue:8,progress:a=>a.caught.length,target:1},
-{id:"battle-student",title:"Kampfschüler",text:"Besiege insgesamt 10 Gegner.",xp:90,rogue:12,progress:a=>[...a.history,...(a.run?[a.run]:[])].reduce((n,r)=>n+(r.defeated??0),0),target:10},
+{id:"battle-student",title:"Kampfschüler",text:"Besiege insgesamt 10 Gegner.",xp:90,rogue:12,progress:a=>[...a.history,...(a.run?.result==="active"?[a.run]:[])].reduce((n,r)=>n+(r.defeated??0),0),target:10},
 {id:"collector-10",title:"Sammler I",text:"Registriere 10 verschiedene Pokémon im Pokédex.",xp:120,rogue:15,progress:a=>a.caught.length,target:10},
-{id:"badge-hunter",title:"Ordenjäger",text:"Erreiche in einem Run mindestens 2 Orden.",xp:140,rogue:18,progress:a=>Math.max(0,...[...a.history,...(a.run?[a.run]:[])].map(r=>r.badges?.length??0)),target:2},
+{id:"badge-hunter",title:"Ordenjäger",text:"Erreiche in einem Run mindestens 2 Orden.",xp:140,rogue:18,progress:a=>Math.max(0,...[...a.history,...(a.run?.result==="active"?[a.run]:[])].map(r=>r.badges?.length??0)),target:2},
 {id:"relic-scout",title:"Reliktkundig",text:"Besitze 3 verschiedene Relikte.",xp:150,rogue:20,progress:a=>a.relicsOwned.length,target:3},
 {id:"veteran-runner",title:"Run-Veteran",text:"Starte insgesamt 5 Runs.",xp:170,rogue:22,progress:a=>a.profile?.totalRuns??0,target:5},
 {id:"champion-call",title:"Championruf",text:"Gewinne deinen ersten Story-Run.",xp:260,rogue:35,progress:a=>a.profile?.wins??0,target:1},
@@ -233,6 +233,11 @@ must('r.eliteTrainer&&_.push(`ELITE-TRAINER · ${(r.eliteArchetype??"veteran").t
 # --- elite battle UI label ---
 must('l.jsx("span",{className:"elite-pill",children:"★ ELITE"})',
      'l.jsxs("span",{className:"elite-pill",children:["★ ELITE · ",(a.node?.eliteArchetype??"veteran").toUpperCase()]})','elite battle archetype label')
+
+
+# --- main menu active-run score ---
+must('l.jsxs("span",{children:["🏆 Rekord ",i.endlessHighScore]})]})',
+     'l.jsxs("span",{children:["🏆 Rekord ",i.endlessHighScore]}),pe&&l.jsxs("span",{className:"hero-live-score",children:[pe.dailyChallenge?"☀ Daily ":"★ Run ",QalphaScore(pe,!1).total.toLocaleString("de-DE")]})]})','menu live run score')
 
 out=ROOT/'public/recovered/v1.0.0-alpha.1-r4.js'
 out.write_text(s)
