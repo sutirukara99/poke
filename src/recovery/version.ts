@@ -11,6 +11,6 @@ export const RECOVERY_BASELINE = {
 export const ACTIVE_BUILD = {
   version: "1.0.0-alpha.1",
   source: "reconstructed from recovered v0.9.4 production bundle",
-  javascriptAsset: "recovered/v1.0.0-alpha.1-r5.js",
+  javascriptAsset: "recovered/v1.0.0-alpha.1-r6.js",
   designLayer: "src/styles/alpha.css",
 } as const;
