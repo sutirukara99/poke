@@ -2,6 +2,13 @@
 
 ## 1.0.0-alpha.1 — 2026-09-28
 
+### Quality & fairness pass
+- Daily Expeditions now isolate persistent account power: no equipped relics, Meta-Starters, Bottle-Cap starter IVs, Mastery moves or trainer-class upgrades.
+- Converted the obsolete per-run quest achievement into an account Questboard milestone.
+- Added live run-condition chips for Daily/Ascension, challenge rules, active relics, loot rerolls and live score.
+- Added a dynamic main-menu count for Questboard rewards ready to claim.
+- Continued the unified dark-theme and sprite-alignment polish pass.
+
 ### Roguelike progression
 - Added region-specific Ascension 0–10 with difficulty, shop and score scaling.
 - Added deterministic Daily Expeditions with date seed, fixed rules and best-score records.
