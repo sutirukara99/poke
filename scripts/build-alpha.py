@@ -171,6 +171,6 @@ must('function p4({run:a,dispatch:i,classUpgrade:d=0,settings:r}){window.__POKER
 must('p5.createRoot(document.getElementById("root")).render(l.jsx(c5.StrictMode,{children:l.jsx(H4,{})}));',
      'class QalphaErrorBoundary extends X.Component{constructor(a){super(a),this.state={error:null}}static getDerivedStateFromError(a){return{error:a}}componentDidCatch(a,i){try{localStorage.setItem("pokerogue-alpha-last-error",JSON.stringify({message:String(a?.message??a),stack:String(a?.stack??""),componentStack:String(i?.componentStack??""),at:new Date().toISOString()}))}catch{}console.error("PokéRogue Regions render error",a,i)}render(){return this.state.error?l.jsxs("main",{className:"alpha-fatal-recovery",children:[l.jsx("p",{className:"eyebrow",children:"RECOVERY GUARD"}),l.jsx("h1",{children:"Die Ansicht ist abgestürzt – dein Spielstand ist sicher."}),l.jsx("p",{children:String(this.state.error?.message??"Unbekannter Darstellungsfehler")}),l.jsx("button",{className:"primary",onClick:()=>window.location.reload(),children:"Ansicht neu laden"})]}):this.props.children}}p5.createRoot(document.getElementById("root")).render(l.jsx(QalphaErrorBoundary,{children:l.jsx(H4,{})}));','global render guard')
 
-out=ROOT/'public/recovered/v1.0.0-alpha.1.js'
+out=ROOT/'public/recovered/v1.0.0-alpha.1-r3.js'
 out.write_text(s)
 print('built',out,len(s))
