@@ -72,3 +72,16 @@ npm run preview
 
 See [`RECOVERY.md`](./RECOVERY.md) for what was recovered and what was reconstructed.
 <!-- pages-redeploy: 2026-09-28 -->
+
+
+### Cloudflare Pages (production)
+
+Recommended production host:
+
+- Production branch: `main`
+- Build command: `npm run build`
+- Build output directory: `dist`
+- Root directory: repository root
+- Node.js: 22
+
+The Vite build uses relative asset paths so the same build also remains usable from the GitHub Pages project path.
