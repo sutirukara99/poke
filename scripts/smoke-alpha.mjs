@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-const js = await readFile(new URL("../public/recovered/v1.0.0-alpha.1-r4.js", import.meta.url), "utf8");
+const js = await readFile(new URL("../public/recovered/v1.0.0-alpha.1-r5.js", import.meta.url), "utf8");
 const required = [
   "1.0.0-alpha.1",
   "QalphaAscensionMax",
@@ -22,6 +22,8 @@ const required = [
   "QalphaQuestReady",
   "DAILY FAIR",
   "Auftragsprofi",
+  "QalphaNodeHelp",
+  "60% · FOLGE 10%",
 ];
 
 const missing = required.filter((needle) => !js.includes(needle));
@@ -63,3 +65,5 @@ if (!js.includes("optimierte IVs")) throw new Error("Elite archetype flavor miss
 if (!js.includes("★ ELITE · ")) throw new Error("Elite archetype battle label missing");
 
 if (!js.includes('!oe.shiny&&!i.dailyChallenge&&Sy(a)>1')) throw new Error("daily persistent shiny bonus guard missing");
+
+if (!js.includes('W("protect","Schutzschild","normal","status",0,1,4')) throw new Error("protect PP nerf missing");
