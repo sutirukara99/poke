@@ -26,6 +26,8 @@ const required = [
   "60% · FOLGE 10%",
   "QalphaRepairRoute",
   "Wegschutz: Ein blockierter Pfad wurde automatisch freigelegt.",
+  "emergencyLeave",
+  "Sicher weiterziehen →",
 ];
 
 const missing = required.filter((needle) => !js.includes(needle));
