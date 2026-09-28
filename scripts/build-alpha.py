@@ -287,6 +287,17 @@ must('function Ke(a,i){if(a.shopTransactions=[],a.arena){a.arena.step++,a.phase=
 must('Te.runBossKos??=0}if(!fe(d)||',
      'Te.runBossKos??=0;d.run&&d.run.result==="active"&&QalphaRepairRoute(d.run)}if(!fe(d)||','repair migrated active save')
 
+# --- r6 tooltip and event escape audit ---
+# Revealed nodes should explain themselves even when they are not the currently selectable row.
+must('disabled:!_,"aria-label":v&&(!R.secret||r)?R.title:"Unbekannter Knoten",onClick:()=>h({type:"node",id:R.id})',
+     'disabled:!_,title:v&&(!R.secret||r)?`${(QalphaNodeHelp[R.kind]??["KNOTEN"])[0]} · ${(QalphaNodeHelp[R.kind]??["",R.detail])[1]}`:void 0,"aria-label":v&&(!R.secret||r)?R.title:"Unbekannter Knoten",onClick:()=>h({type:"node",id:R.id})','node native hover help')
+
+# Corrupt/legacy mystery-event ids must never strand a run in phase=node.
+must('if(!h)return l.jsx("p",{children:"Der Weg ist still geworden."});',
+     'if(!h)return l.jsxs("div",{className:"mystery-event-card",children:[l.jsx("p",{children:"Der Weg ist still geworden."}),l.jsx("button",{className:"primary",onClick:()=>i({type:"emergencyLeave"}),children:"Sicher weiterziehen →"})]});','mystery fallback ui')
+must('if(i.type==="leave"&&r.phase==="node"&&((ve=r.node)==null?void 0:ve.kind)!=="mystery"&&Ke(r,u),i.type==="buy"',
+     'if(i.type==="emergencyLeave"&&r.phase==="node")return Ke(r,u),r.rng=u.state,d;if(i.type==="leave"&&r.phase==="node"&&((ve=r.node)==null?void 0:ve.kind)!=="mystery"&&Ke(r,u),i.type==="buy"','emergency node exit')
+
 out=ROOT/'public/recovered/v1.0.0-alpha.1-r6.js'
 out.write_text(s)
 print('built',out,len(s))
