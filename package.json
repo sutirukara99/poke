@@ -9,7 +9,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "verify:recovery": "node scripts/verify-recovery.mjs",
-    "verify:alpha": "npm run rebuild:alpha && node --check public/recovered/v1.0.0-alpha.1-r3.js && node scripts/smoke-alpha.mjs",
+    "verify:alpha": "npm run rebuild:alpha && node --check public/recovered/v1.0.0-alpha.1-r4.js && node scripts/smoke-alpha.mjs",
     "check": "tsc --noEmit && npm run verify:recovery && npm run verify:alpha",
     "predev": "npm run rebuild:alpha",
     "prebuild": "npm run rebuild:alpha"
