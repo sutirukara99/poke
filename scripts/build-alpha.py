@@ -132,6 +132,38 @@ must('return X.useEffect(()=>{_e&&Ix(V)},[_e,V]),p?',
 '''X.useEffect(()=>{QalphaSetLane(0)},[oe,a.mapIndex,a.arena?.step]);X.useEffect(()=>{if(a.phase!=="map")return;const O=J[oe]?.filter(ae=>qu(J,oe,x,Iy(ae,!!a.arena))&&(!ae.secret||a.fogRevealed||a.activeRelics.includes("cracked-compass")))??[];if(!O.length)return;const ae=pt=>{if(["INPUT","TEXTAREA","SELECT"].includes(pt.target?.tagName)||pt.metaKey||pt.ctrlKey||pt.altKey)return;const qa=pt.key.toLowerCase();if(qa==="a"||pt.key==="ArrowLeft")pt.preventDefault(),QalphaSetLane(Ut=>(Ut-1+O.length)%O.length);else if(qa==="d"||pt.key==="ArrowRight")pt.preventDefault(),QalphaSetLane(Ut=>(Ut+1)%O.length);else if(pt.key==="Enter"){pt.preventDefault();const Ut=O[Math.min(QalphaLane,O.length-1)];Ut&&r({type:"node",id:Ut.id})}};return window.addEventListener("keydown",ae),()=>window.removeEventListener("keydown",ae)},[a.phase,J,oe,x,a.arena,a.fogRevealed,a.activeRelics,QalphaLane,r]);return X.useEffect(()=>{_e&&Ix(V)},[_e,V]),p?''','route keyboard')
 
 
+# --- 1.0 Alpha UI/UX hotfix: hub quests, modal safety, no run quest clutter ---
+must('endlessBossHighScore:0,ascension:{},dailyRecords:{},speciesMastery:{},tutorialSeen:[],settings:{',
+     'endlessBossHighScore:0,ascension:{},dailyRecords:{},speciesMastery:{},tutorialSeen:[],alphaQuestClaims:[],settings:{','account quest claims default')
+must('d.speciesMastery??={},d.tutorialSeen??=[];',
+     'd.speciesMastery??={},d.tutorialSeen??=[],d.alphaQuestClaims??=[];','account quest claims migration')
+
+quest_helpers=r'''const QalphaAccountQuests=[
+{id:"field-start",title:"Feldstart",text:"Fange dein erstes Pokémon.",xp:60,rogue:8,progress:a=>a.caught.length,target:1},
+{id:"battle-student",title:"Kampfschüler",text:"Besiege insgesamt 10 Gegner.",xp:90,rogue:12,progress:a=>[...a.history,...(a.run?[a.run]:[])].reduce((n,r)=>n+(r.defeated??0),0),target:10},
+{id:"collector-10",title:"Sammler I",text:"Registriere 10 verschiedene Pokémon im Pokédex.",xp:120,rogue:15,progress:a=>a.caught.length,target:10},
+{id:"badge-hunter",title:"Ordenjäger",text:"Erreiche in einem Run mindestens 2 Orden.",xp:140,rogue:18,progress:a=>Math.max(0,...[...a.history,...(a.run?[a.run]:[])].map(r=>r.badges?.length??0)),target:2},
+{id:"relic-scout",title:"Reliktkundig",text:"Besitze 3 verschiedene Relikte.",xp:150,rogue:20,progress:a=>a.relicsOwned.length,target:3},
+{id:"veteran-runner",title:"Run-Veteran",text:"Starte insgesamt 5 Runs.",xp:170,rogue:22,progress:a=>a.profile?.totalRuns??0,target:5},
+{id:"champion-call",title:"Championruf",text:"Gewinne deinen ersten Story-Run.",xp:260,rogue:35,progress:a=>a.profile?.wins??0,target:1},
+{id:"mastery-path",title:"Artenkenner",text:"Erreiche Mastery bei 5 Arten (mindestens 5 Runs).",xp:220,rogue:30,progress:a=>Object.values(a.speciesMastery??{}).filter(r=>(r.runs??0)>=5).length,target:5}
+],QalphaQuestState=(a,q)=>{const p=Math.min(q.target,Math.max(0,q.progress(a)));return{progress:p,target:q.target,done:p>=q.target,claimed:(a.alphaQuestClaims??[]).includes(q.id)}},QalphaQuestById=id=>QalphaAccountQuests.find(q=>q.id===id);'''
+must('const Dc=()=>({',quest_helpers+'const Dc=()=>({','account quest helpers')
+
+must('if(i.type==="discardRun")return d.run=null,d;',
+     'if(i.type==="alphaClaimQuest"&&d.profile){d.alphaQuestClaims??=[];const q=QalphaQuestById(i.id);if(!q||d.alphaQuestClaims.includes(q.id))return a;const st=QalphaQuestState(d,q);if(!st.done)return a;C0(d.profile,q.xp),d.metaPoints+=q.rogue,d.alphaQuestClaims.push(q.id);return d}if(i.type==="discardRun")return d.run=null,d;','account quest claim action')
+
+must('l.jsx(i4,{run:a}),l.jsx(l4,{run:a})','l.jsx(i4,{run:a})','remove run quest panel')
+
+quest_view=r'''function QalphaQuestBoard({save:a,dispatch:i,onClose:d}){const r=QalphaAccountQuests.map(q=>({...q,state:QalphaQuestState(a,q)})),u=r.filter(q=>q.state.claimed).length;return l.jsxs("section",{className:"panel secondary alpha-quest-board",children:[l.jsx("button",{className:"secondary-back",onClick:d,children:"← Hauptmenü"}),l.jsx("p",{className:"eyebrow",children:"TRAINER-AUFTRÄGE"}),l.jsx("h1",{children:"Questboard"}),l.jsxs("p",{className:"alpha-quest-intro",children:["Quests gehören jetzt zum Trainerprofil und nicht mehr in einen einzelnen Run. ",u,"/",r.length," Belohnungen beansprucht."]}),l.jsx("div",{className:"alpha-account-quest-grid",children:r.map(q=>{const s=q.state,p=Math.min(100,s.progress/Math.max(1,s.target)*100);return l.jsxs("article",{className:(s.done?"done ":"")+(s.claimed?"claimed":""),children:[l.jsxs("header",{children:[l.jsx("span",{className:"quest-state",children:s.claimed?"✓":s.done?"!":"·"}),l.jsxs("div",{children:[l.jsx("strong",{children:q.title}),l.jsx("small",{children:q.text})]})]}),l.jsx("div",{className:"quest-progress",children:l.jsx("i",{style:{width:p+"%"}})}),l.jsxs("div",{className:"alpha-quest-meta",children:[l.jsxs("span",{children:[s.progress,"/",s.target]}),l.jsxs("b",{children:["+ ",q.xp," Trainer-EP · +",q.rogue," Rogue-Punkte"]})]}),l.jsx("button",{disabled:!s.done||s.claimed,onClick:()=>i({type:"alphaClaimQuest",id:q.id}),children:s.claimed?"Beansprucht":s.done?"Belohnung holen":"Noch offen"})]},q.id)})})]})}'''
+must('function QalphaTutorial(){',quest_view+'function QalphaTutorial(){','quest board view')
+
+must('h==="codex"?l.jsx(QalphaCodex,{onClose:()=>m("menu")}):h==="completion"?l.jsx(QalphaCompletionView,{save:i,onClose:()=>m("menu")}):h==="run"',
+     'h==="quests"?l.jsx(QalphaQuestBoard,{save:i,dispatch:le,onClose:()=>m("menu")}):h==="codex"?l.jsx(QalphaCodex,{onClose:()=>m("menu")}):h==="completion"?l.jsx(QalphaCompletionView,{save:i,onClose:()=>m("menu")}):h==="run"','quest route')
+must('["completion","Completion","◈",`${QalphaCompletion(i)} % Gesamtfortschritt`],["codex","Rogue Codex","⌘","1.0 Systeme & Regeln"]',
+     '["quests","Quests","!","Trainer-Aufträge · EP & Rogue-Punkte"],["completion","Completion","◈",`${QalphaCompletion(i)} % Gesamtfortschritt`],["codex","Rogue Codex","⌘","1.0 Systeme & Regeln"]','quest menu item')
+
+
 out=ROOT/'public/recovered/v1.0.0-alpha.1.js'
 out.write_text(s)
 print('built',out,len(s))
