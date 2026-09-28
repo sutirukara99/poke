@@ -49,3 +49,15 @@ if (!js.includes('const QalphaRelic=(a,i)=>a?.includes?.(i)')) {
 }
 
 if (!js.includes('classUpgrade:i.run.dailyChallenge?0:')) throw new Error("daily fair class-upgrade patch missing");
+
+if (!js.includes("Score-Rang")) throw new Error("Alpha history score detail missing");
+
+if (!js.includes("DAILY EXPEDITION · RUNARCHIV")) throw new Error("Daily history presentation missing");
+
+if (!js.includes("Meta-Aufträge findest du im Hauptmenü")) throw new Error("legacy run quest retirement missing");
+
+if (!js.includes("QalphaType")) throw new Error("Elite archetype item mechanic missing");
+
+if (!js.includes("optimierte IVs")) throw new Error("Elite archetype flavor missing");
+
+if (!js.includes("★ ELITE · ")) throw new Error("Elite archetype battle label missing");
