@@ -2,6 +2,11 @@
 
 ## 1.0.0-alpha.1 — 2026-09-28
 
+### Protect balance & route clarity
+- Schutzschild heavily nerfed: 4 PP, 60% base success, only 10% when repeated until another move is used.
+- Reduced AI value for repeated Protect stalling and exposed the success rule directly on the move button.
+- Added hover/focus tooltips to revealed route nodes explaining Wild Battle, Trainer Battle, Market, Event, Healing, Tutor, Arena, League and Legendary nodes.
+
 ### Quality & fairness pass
 - Elite archetypes now have distinct mechanics: IV Specialists, Hunter crit focus, Relic Keeper sustain/loot, Veteran lead protection and Weather Ace type boosters.
 - Run History now exposes Daily runs, score/rank, Ascension, elite battles and secret routes.
