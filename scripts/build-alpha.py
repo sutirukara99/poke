@@ -176,19 +176,19 @@ must('p5.createRoot(document.getElementById("root")).render(l.jsx(c5.StrictMode,
 must('classUpgrade:i.classUpgrades[i.run.trainerClass]??0,settings:i.settings',
      'classUpgrade:i.run.dailyChallenge?0:i.classUpgrades[i.run.trainerClass]??0,settings:i.settings','daily fair class upgrades')
 must('const w=d.starterIvs[i.species]??Mc(i.species,Eu(d));d.starterIvs[i.species]={...w};const C=Ku(i.species,5,u,w),N=(d.starterMastery[i.species]??0)>=60?d.starterMasteryMoves[i.species]:void 0;',
-     'const w=r.dailyChallenge?Mc(i.species,\`daily|\${r.dailyChallenge.date}|\${i.species}\`):d.starterIvs[i.species]??Mc(i.species,Eu(d));r.dailyChallenge||(d.starterIvs[i.species]={...w});const C=Ku(i.species,5,u,w),N=r.dailyChallenge?void 0:(d.starterMastery[i.species]??0)>=60?d.starterMasteryMoves[i.species]:void 0;','daily fair starter ivs and mastery')
+     'const w=r.dailyChallenge?Mc(i.species,`daily|${r.dailyChallenge.date}|${i.species}`):d.starterIvs[i.species]??Mc(i.species,Eu(d));r.dailyChallenge||(d.starterIvs[i.species]={...w});const C=Ku(i.species,5,u,w),N=r.dailyChallenge?void 0:(d.starterMastery[i.species]??0)>=60?d.starterMasteryMoves[i.species]:void 0;','daily fair starter ivs and mastery')
 must('{id:"quest-3",icon:"!",name:"Nebenmissionen",text:"Schließe in einem Run mindestens 3 Quests ab.",reward:15,unlock:"Questmeister-Titel",test:a=>_a(a).some(i=>(i.quests??[]).filter(d=>d.completed).length>=3)}',
      '{id:"quest-3",icon:"!",name:"Auftragsprofi",text:"Beanspruche 3 Belohnungen am Questboard.",reward:15,unlock:"Questmeister-Titel",test:a=>(a.alphaQuestClaims??[]).length>=3}','account quest achievement')
 must('QalphaQuestById=id=>QalphaAccountQuests.find(q=>q.id===id);const Dc=',
      'QalphaQuestById=id=>QalphaAccountQuests.find(q=>q.id===id),QalphaQuestReady=a=>QalphaAccountQuests.filter(q=>{const s=QalphaQuestState(a,q);return s.done&&!s.claimed}).length;const Dc=','quest ready helper')
 must('["quests","Quests","!","Trainer-Aufträge · EP & Rogue-Punkte"]',
-     '["quests","Quests","!",\`\${QalphaQuestReady(i)} Belohnungen bereit · EP & Rogue-Punkte\`]','quest ready menu')
+     '["quests","Quests","!",`${QalphaQuestReady(i)} Belohnungen bereit · EP & Rogue-Punkte`]','quest ready menu')
 must('["BOSS TELEGRAPHS","Signatur-Züge werden vor ihrer Ausführung angekündigt"]',
      '["BOSS TELEGRAPHS","Signatur-Züge werden vor ihrer Ausführung angekündigt"],["QUESTBOARD","Accountweite Aufträge geben Trainer-EP und Rogue-Punkte"],["DAILY FAIRNESS","Daily deaktiviert Relikte, Meta-Starter, Starter-IV-Upgrades, Mastery-Moves und Klassen-Upgrades"]','codex quality entries')
 must('l.jsxs("div",{className:"modifier-strip",children:[a.modifiers.nuzlocke&&l.jsx("span",{children:"💀 Nuzlocke"}),a.modifiers.monotype&&l.jsxs("span",{children:["🎲 Monotype: ",Ka[a.modifiers.monotype]]}),a.mode==="endless"&&l.jsx("span",{children:"♾ Endless"})]})',
      'l.jsxs("div",{className:"modifier-strip alpha-run-flags",children:[a.dailyChallenge&&l.jsx("span",{className:"flag-daily",children:"☀ DAILY FAIR"}),!a.dailyChallenge&&a.mode==="story"&&l.jsxs("span",{children:["△ Ascension ",a.ascension??0]}),a.modifiers.nuzlocke&&l.jsx("span",{children:"💀 Nuzlocke"}),a.modifiers.monotype&&l.jsxs("span",{children:["🎲 Monotype: ",Ka[a.modifiers.monotype]]}),a.mode==="endless"&&l.jsx("span",{children:"♾ Endless"}),(a.activeRelics??[]).length>0&&l.jsxs("span",{children:["◇ Relikte ",a.activeRelics.length,"/3"]}),a.phase==="loot"&&l.jsxs("span",{children:["↻ Rerolls ",Math.max(0,(a.lootRerolls??1)-(a.lootRerollsUsed??0))]}),l.jsxs("span",{className:"flag-score",children:["★ ",QalphaScore(a,!1).total.toLocaleString("de-DE")]})]})','live run flags')
 must('l.jsxs("small",{children:["Klasse · Meta ",m,"/3"]})',
-     'l.jsx("small",{children:a.dailyChallenge?"Klasse · DAILY FAIR":\`Klasse · Meta \${m}/3\`})','daily hud class label')
+     'l.jsx("small",{children:a.dailyChallenge?"Klasse · DAILY FAIR":`Klasse · Meta ${m}/3`})','daily hud class label')
 
 out=ROOT/'public/recovered/v1.0.0-alpha.1-r4.js'
 out.write_text(s)
