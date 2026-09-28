@@ -1,27 +1,52 @@
 # PokéRogue Regions
 
-Recovered source workspace for **PokéRogue Regions**.
+**Current build: `1.0.0-alpha.1` — Roguelike Depth & Progression**
 
-## Status
+PokéRogue Regions is back on a new repository after the previous GitHub source became unavailable. The last complete deployed build we could recover was **v0.9.4** from Opera's browser cache. That immutable production bundle is preserved as the baseline, and the current 1.0 Alpha is a reproducible reconstruction layered on top of it.
 
-The repository has been rebuilt around the latest complete browser-cached production build we recovered: **v0.9.4**, cached on 2026-09-28 at 02:30.
+> Important: this repository does **not** pretend to be the lost original TypeScript tree. `public/recovered/v0.9.4.js` is the recovered deployed behavior; `scripts/build-alpha.py` documents and reproduces the 1.0 reconstruction while readable source is progressively restored.
 
-The exact deployed source tree was not recoverable, but the production JavaScript and CSS were. They are preserved in:
+## 1.0 Alpha systems
+
+- Ascension 0–10 per region with enemy/shop/score scaling
+- deterministic Daily Expeditions and personal best records
+- Run Score with D → S+ ranks
+- Relics 2.0: 18 type plates + 8 rogue relics
+- Loot Control: lock, reroll and skip rewards
+- Boss Telegraphs
+- five-stat stage system: Attack, Defense, Sp. Atk, Sp. Def, Speed
+- Species Mastery and Pokédex Challenges
+- Elite archetypes
+- chained Mystery Events
+- Secret Routes and Cracked Compass discovery
+- Rogue Codex
+- first-run Alpha tutorial
+- Completion dashboard
+- keyboard controls for menus, routes and battles
+- broad handheld/Pokémon-inspired visual polish
+
+A team/build-synergy layer is deliberately **not** part of the design. The project is being pushed further toward a run-based roguelike identity instead.
+
+## Recovery baseline
+
+Preserved assets:
 
 - `public/recovered/v0.9.4.js`
 - `public/recovered/v0.9.4.css`
 
-The current Vite shell boots that preserved production build directly. This gives us a stable playable baseline while the readable React/TypeScript 1.0 source is rebuilt under `src/app/`.
+Reconstructed active build:
 
-## Stack
+- `public/recovered/v1.0.0-alpha.1.js`
+- `src/styles/alpha.css`
 
-- React production bundle (recovered)
-- TypeScript
-- Vite
-- LocalStorage save data
-- Static hosting compatible with Cloudflare Pages
+The generated Alpha JS is committed so static hosts can serve it without Python. To reproduce it from the preserved baseline:
 
-## Local development
+```bash
+npm run rebuild:alpha
+npm run verify:alpha
+```
+
+## Development
 
 ```bash
 npm install
@@ -38,18 +63,11 @@ npm run preview
 
 ## Cloudflare Pages
 
+- Framework preset: Vite
 - Build command: `npm run build`
 - Output directory: `dist`
-- SPA fallback: included via `public/_redirects`
+- SPA fallback: `public/_redirects`
 
-## Recovery rule
+## Recovery documentation
 
-Do not edit or remove the files in `public/recovered/` until the clean-source rewrite reaches feature parity. They are the behavioral reference for v0.9.4.
-
-See [RECOVERY.md](./RECOVERY.md).
-
-## Next milestone
-
-**1.0 Alpha — Roguelike Depth & Progression**
-
-The 1.0 rebuild will restore the planned progression, daily, ascension, relic, mastery, elite, event-chain, secret-route and completion systems as editable TypeScript. Team/build synergy remains intentionally excluded.
+See [`RECOVERY.md`](./RECOVERY.md) for what was recovered and what was reconstructed.
