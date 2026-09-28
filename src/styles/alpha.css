@@ -292,3 +292,309 @@ body:before{display:none!important}
 
 /* All game sprites are decorative pixels; parent buttons/cards own interaction. */
 .alpha-shell img.sprite{pointer-events:none!important;user-select:none!important;-webkit-user-drag:none!important}
+
+
+/* === 1.0 Alpha r4 · unified dark UI + sprite alignment pass === */
+:root{
+  --surface-0:#09131b;
+  --surface-1:#101f2a;
+  --surface-2:#172a36;
+  --surface-3:#203845;
+  --surface-line:#4d6675;
+  --surface-line-soft:#344b58;
+  --text-main:#edf5f8;
+  --text-soft:#aebfc9;
+  --accent-gold:#e2c45f;
+  --accent-blue:#73a9d2;
+}
+
+/* Kill the remaining parchment/cream cards across Alpha screens. */
+.alpha-shell .alpha-codex-grid article,
+.alpha-shell .completion-grid article,
+.alpha-shell .alpha-mastery-grid article,
+.alpha-shell .alpha-score-card,
+.alpha-shell .alpha-tutorial-card,
+.alpha-shell .alpha-loot .loot-card,
+.alpha-shell .alpha-loot .loot-card.legendary,
+.alpha-shell .alpha-challenges span,
+.alpha-shell .iv-hover-card,
+.alpha-shell .caught-focus,
+.alpha-shell .shop-buyback,
+.alpha-shell .danger-zone,
+.alpha-shell .item-chip-grid button,
+.alpha-shell .shop-grid button,
+.alpha-shell .catch-decisions button,
+.alpha-shell .evolution-options button,
+.alpha-shell .pc-mon,
+.alpha-shell .meta-section,
+.alpha-shell .achievement-card,
+.alpha-shell .history-row,
+.alpha-shell .trainer-card,
+.alpha-shell .pokemon-card,
+.alpha-shell .pc-card{
+  background:linear-gradient(180deg,var(--surface-2),var(--surface-1))!important;
+  color:var(--text-main)!important;
+  border-color:var(--surface-line)!important;
+  box-shadow:0 3px 0 #071019!important;
+}
+.alpha-shell .alpha-codex-grid article strong,
+.alpha-shell .completion-grid article strong,
+.alpha-shell .alpha-mastery-grid article strong,
+.alpha-shell .alpha-score-card strong,
+.alpha-shell .alpha-score-card b,
+.alpha-shell .alpha-tutorial-card strong,
+.alpha-shell .alpha-loot .loot-card strong,
+.alpha-shell .iv-hover-card strong,
+.alpha-shell .iv-hover-card b{
+  color:var(--text-main)!important;
+}
+.alpha-shell .alpha-codex-grid article small,
+.alpha-shell .completion-grid article small,
+.alpha-shell .alpha-mastery-grid article small,
+.alpha-shell .alpha-score-card small,
+.alpha-shell .alpha-tutorial-card p,
+.alpha-shell .alpha-loot .loot-card small,
+.alpha-shell .iv-hover-card small{
+  color:var(--text-soft)!important;
+}
+.alpha-shell .alpha-completion-ring{
+  background:#132530!important;
+  color:var(--text-main)!important;
+  border-color:#8e7f42!important;
+  border-top-color:#5f99c7!important;
+  border-right-color:#c34b5a!important;
+  box-shadow:inset 0 0 0 4px #0b1720,0 4px 0 #071019!important;
+}
+.alpha-shell .alpha-challenges span{
+  border-color:#526977!important;
+}
+.alpha-shell .alpha-challenges .done{
+  background:#173c2b!important;
+  border-color:#4e9269!important;
+  color:#bde5cb!important;
+}
+.alpha-shell .alpha-tutorial-card:after{display:none!important}
+.alpha-shell .iv-grid span{
+  background:#10202a!important;
+  border-color:#435d69!important;
+  color:#edf5f8!important;
+}
+
+/* Generic controls: no surprise cream button can leak back in. */
+.alpha-shell button:not(.primary):not(.type-badge),
+.alpha-shell .button:not(.primary){
+  background:linear-gradient(180deg,#263b48,#182a35)!important;
+  color:#eaf2f6!important;
+  border-color:#536d7b!important;
+}
+.alpha-shell button:not(.primary):not(.type-badge):hover:not(:disabled){
+  background:linear-gradient(180deg,#314b5a,#203744)!important;
+}
+.alpha-shell button:disabled,
+.alpha-shell .button:disabled{
+  background:#18242d!important;
+  color:#677985!important;
+  border-color:#334650!important;
+  opacity:.72!important;
+  box-shadow:none!important;
+}
+.alpha-shell .gba-battle-actions button,
+.alpha-shell .battle-actions button,
+.alpha-shell .move-button{
+  background:linear-gradient(180deg,#263b48,#172934)!important;
+  color:#edf5f8!important;
+  border-color:#587180!important;
+}
+.alpha-shell .gba-attack-button{
+  background:linear-gradient(180deg,#29465a,#1a3140)!important;
+  color:#fff!important;
+}
+.alpha-shell .gba-battle-actions button:last-child:not(:disabled){
+  background:linear-gradient(180deg,#3c4550,#242f38)!important;
+  color:#e5edf1!important;
+}
+.alpha-shell .muted{color:#9dafba!important}
+
+/* Party panel: one coherent card, sprite fully inside the active outline. */
+.alpha-shell .play-layout{
+  grid-template-columns:minmax(0,1fr) minmax(320px,340px)!important;
+  gap:18px!important;
+  align-items:start!important;
+}
+.alpha-shell .party{
+  width:100%!important;
+  padding:14px!important;
+  position:sticky!important;
+  top:16px!important;
+  overflow:visible!important;
+}
+.alpha-shell .party-heading{
+  align-items:center!important;
+  margin-bottom:8px!important;
+}
+.alpha-shell .party-member{
+  display:grid!important;
+  grid-template-columns:92px minmax(0,1fr)!important;
+  gap:12px!important;
+  align-items:center!important;
+  margin:10px 0!important;
+  padding:10px!important;
+  border:1px solid #405967!important;
+  border-radius:8px!important;
+  background:linear-gradient(180deg,#162934,#10202a)!important;
+  overflow:hidden!important;
+  box-shadow:none!important;
+}
+.alpha-shell .party-member.is-active{
+  margin:10px 0!important;
+  padding:9px!important;
+  border:2px solid #c9aa4d!important;
+  background:linear-gradient(180deg,#1b3340,#142834)!important;
+  box-shadow:inset 0 0 0 1px rgba(229,199,101,.14)!important;
+}
+.alpha-shell .playful-party .party-member.is-active{
+  border-color:#c9aa4d!important;
+  box-shadow:inset 0 0 0 1px rgba(229,199,101,.14)!important;
+}
+.alpha-shell .party-sprite-wrap{
+  width:92px!important;
+  height:102px!important;
+  min-height:102px!important;
+  display:grid!important;
+  place-items:center!important;
+  align-self:center!important;
+  justify-self:center!important;
+  overflow:hidden!important;
+  border:1px solid #415c69!important;
+  border-radius:7px!important;
+  background:radial-gradient(circle at 50% 46%,#35505c 0,#182b35 68%)!important;
+}
+.alpha-shell .party-sprite-wrap>.sprite{
+  display:block!important;
+  width:88px!important;
+  height:96px!important;
+  margin:auto!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+  transform:none!important;
+  filter:drop-shadow(0 5px 2px rgba(0,0,0,.45))!important;
+}
+.alpha-shell .party-copy{
+  min-width:0!important;
+  align-self:stretch!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+}
+.alpha-shell .party-member-toggle{
+  padding:4px 3px!important;
+  min-height:42px!important;
+}
+.alpha-shell .party-identity-row{
+  grid-template-columns:auto minmax(0,1fr) minmax(0,1fr)!important;
+  gap:6px!important;
+}
+.alpha-shell .identity-chip{
+  background:#10212b!important;
+  border-color:#3e5662!important;
+}
+.alpha-shell .empty-slot{
+  margin-top:10px!important;
+  border:1px dashed #3b5360!important;
+  border-radius:7px!important;
+  background:#0f1e27!important;
+  padding:14px 8px!important;
+}
+
+/* Battle sprites: position the image boxes over the centers of their platforms. */
+.alpha-shell .gba-battlefield .enemy-sprite{
+  left:calc(79% - 84px)!important;
+  right:auto!important;
+  top:70px!important;
+  bottom:auto!important;
+  width:168px!important;
+  height:168px!important;
+  object-fit:contain!important;
+  object-position:50% 100%!important;
+  margin:0!important;
+}
+.alpha-shell .gba-battlefield .player-sprite{
+  left:calc(24.5% - 102px)!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:42px!important;
+  width:204px!important;
+  height:204px!important;
+  object-fit:contain!important;
+  object-position:50% 100%!important;
+  margin:0!important;
+}
+.alpha-shell .gba-battlefield .enemy-sprite,
+.alpha-shell .gba-battlefield .player-sprite{
+  transform-origin:50% 100%!important;
+}
+
+/* Center Pokémon consistently anywhere a fixed display slot is used. */
+.alpha-shell .starter-panel .sprite,
+.alpha-shell .starters .sprite,
+.alpha-shell .dex-card .sprite,
+.alpha-shell .pc-mon .sprite,
+.alpha-shell .caught-focus .sprite,
+.alpha-shell .champion-team-grid .sprite,
+.alpha-shell .swap-team-grid .sprite,
+.alpha-shell .alpha-mastery-grid img{
+  display:block!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+}
+
+/* Route/codex/loot accents stay colorful, but surfaces remain dark. */
+.alpha-shell .alpha-codex-grid article:nth-child(3n+1){border-top-color:#c44b5b!important}
+.alpha-shell .alpha-codex-grid article:nth-child(3n+2){border-top-color:#5f9fd0!important}
+.alpha-shell .alpha-codex-grid article:nth-child(3n){border-top-color:#c8a84b!important}
+.alpha-shell .alpha-loot .loot-card.legendary{
+  border-color:#a88a39!important;
+  box-shadow:0 3px 0 #071019,0 0 18px rgba(201,167,72,.16)!important;
+}
+.alpha-shell .alpha-score-card{
+  border-color:#526c7a!important;
+}
+.alpha-shell .alpha-score-rank{
+  background:#a83143!important;
+  border-color:#6f7f89!important;
+}
+.alpha-shell .alpha-telegraph-pill{
+  background:repeating-linear-gradient(135deg,#5c481d 0 12px,#493918 12px 24px)!important;
+  color:#ffe49a!important;
+  border-color:#a56a43!important;
+  box-shadow:0 3px 0 #071019!important;
+}
+.alpha-shell .alpha-telegraph-pill:before{
+  background:#2b2418!important;
+  color:#ffd56d!important;
+  border-color:#a56a43!important;
+}
+
+@media(max-width:1150px){
+  .alpha-shell .play-layout{grid-template-columns:minmax(0,1fr) 310px!important}
+  .alpha-shell .party-member{grid-template-columns:82px minmax(0,1fr)!important}
+  .alpha-shell .party-sprite-wrap{width:82px!important;height:92px!important;min-height:92px!important}
+  .alpha-shell .party-sprite-wrap>.sprite{width:78px!important;height:86px!important}
+}
+@media(max-width:1000px){
+  .alpha-shell .play-layout{grid-template-columns:1fr!important}
+  .alpha-shell .party{position:relative!important;top:auto!important;max-width:none!important}
+}
+@media(max-width:620px){
+  .alpha-shell .party-member{grid-template-columns:74px minmax(0,1fr)!important}
+  .alpha-shell .party-sprite-wrap{width:74px!important;height:84px!important;min-height:84px!important}
+  .alpha-shell .party-sprite-wrap>.sprite{width:70px!important;height:78px!important}
+  .alpha-shell .gba-battlefield .enemy-sprite{
+    left:calc(79% - 64px)!important;width:128px!important;height:128px!important;top:92px!important
+  }
+  .alpha-shell .gba-battlefield .player-sprite{
+    left:calc(24.5% - 78px)!important;width:156px!important;height:156px!important;bottom:50px!important
+  }
+}
