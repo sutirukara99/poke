@@ -20,4 +20,4 @@ This is an intentional bridge architecture. It lets the game move forward now wi
 `npm run verify:alpha` checks JavaScript syntax and verifies markers for the major systems. `npm run check` also runs TypeScript and recovery checks.
 ## Competitive fairness
 
-Daily Expeditions deliberately ignore persistent equipped relics, Meta-Starters, Bottle-Cap starter IV upgrades, Mastery moves and trainer-class upgrades. Daily score should reflect the shared daily seed and run decisions rather than permanent account power.
+Daily Expeditions deliberately ignore persistent equipped relics, Meta-Starters, Bottle-Cap starter IV upgrades, Mastery moves, trainer-class upgrades and persistent shiny-rate bonuses. Daily score should reflect the shared daily seed and run decisions rather than permanent account power.
