@@ -239,6 +239,11 @@ must('l.jsx("span",{className:"elite-pill",children:"★ ELITE"})',
 must('l.jsxs("span",{children:["🏆 Rekord ",i.endlessHighScore]})]})',
      'l.jsxs("span",{children:["🏆 Rekord ",i.endlessHighScore]}),pe&&l.jsxs("span",{className:"hero-live-score",children:[pe.dailyChallenge?"☀ Daily ":"★ Run ",QalphaScore(pe,!1).total.toLocaleString("de-DE")]})]})','menu live run score')
 
+
+# --- Daily shiny fairness ---
+must('!oe.shiny&&Sy(a)>1&&d.chance(Ve.shinyRate*(Sy(a)-1))&&(oe.shiny=!0)',
+     '!oe.shiny&&!i.dailyChallenge&&Sy(a)>1&&d.chance(Ve.shinyRate*(Sy(a)-1))&&(oe.shiny=!0)','daily ignores persistent shiny bonus')
+
 out=ROOT/'public/recovered/v1.0.0-alpha.1-r4.js'
 out.write_text(s)
 print('built',out,len(s))
