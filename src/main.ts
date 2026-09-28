@@ -13,7 +13,7 @@ window.__POKEREGIONS_RECOVERY__ = RECOVERY_BASELINE;
 window.__POKEREGIONS_BUILD__ = ACTIVE_BUILD;
 
 const script = document.createElement("script");
-script.src = ACTIVE_BUILD.javascriptAsset;
+script.src = `${import.meta.env.BASE_URL}${ACTIVE_BUILD.javascriptAsset}`;
 script.async = false;
 script.dataset.recoveredBuild = RECOVERY_BASELINE.version;
 script.dataset.activeBuild = ACTIVE_BUILD.version;
