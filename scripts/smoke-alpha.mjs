@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-const js = await readFile(new URL("../public/recovered/v1.0.0-alpha.1-r3.js", import.meta.url), "utf8");
+const js = await readFile(new URL("../public/recovered/v1.0.0-alpha.1-r4.js", import.meta.url), "utf8");
 const required = [
   "1.0.0-alpha.1",
   "QalphaAscensionMax",
@@ -19,6 +19,9 @@ const required = [
   "secret-route",
   "QalphaCompletion",
   "QalphaSetLane",
+  "QalphaQuestReady",
+  "DAILY FAIR",
+  "Auftragsprofi",
 ];
 
 const missing = required.filter((needle) => !js.includes(needle));
@@ -44,3 +47,5 @@ if (accidentalTokens.length) {
 if (!js.includes('const QalphaRelic=(a,i)=>a?.includes?.(i)')) {
   throw new Error("Alpha relic helper missing from generated bundle.");
 }
+
+if (!js.includes('classUpgrade:i.run.dailyChallenge?0:')) throw new Error("daily fair class-upgrade patch missing");
