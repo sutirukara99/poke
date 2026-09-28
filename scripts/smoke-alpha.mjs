@@ -61,3 +61,5 @@ if (!js.includes("QalphaType")) throw new Error("Elite archetype item mechanic m
 if (!js.includes("optimierte IVs")) throw new Error("Elite archetype flavor missing");
 
 if (!js.includes("★ ELITE · ")) throw new Error("Elite archetype battle label missing");
+
+if (!js.includes('!oe.shiny&&!i.dailyChallenge&&Sy(a)>1')) throw new Error("daily persistent shiny bonus guard missing");
