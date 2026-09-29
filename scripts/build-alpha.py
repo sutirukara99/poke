@@ -279,8 +279,8 @@ must('function px(a,i){if(a.mode==="endless"){const h=Math.pow(1.05,Math.floor(a
 must('const oe=Ku(F,h+Math.floor(J/2)+(r.special==="pokemon-nest"?2:0),d,void 0,r.kind==="legendary"||!!r.eliteTrainer||r.special==="pokemon-nest");',
      'const oe=Ku(F,h+Math.floor(J/2)+(r.special==="pokemon-nest"?2:0),d,void 0,r.kind==="legendary"||!!r.eliteTrainer||r.special==="pokemon-nest",i.mode==="endless"?Infinity:Ve.maxPokemonLevel);','endless enemy factory uncap')
 
-must('const S=Ku("shedinja",C.level,Te);',
-     'const S=Ku("shedinja",C.level,Te,void 0,!1,r.mode==="endless"?Infinity:Ve.maxPokemonLevel);','endless shedinja level preservation')
+must(',S=Ku("shedinja",C.level,Te);',
+     ',S=Ku("shedinja",C.level,Te,void 0,!1,r.mode==="endless"?Infinity:Ve.maxPokemonLevel);','endless shedinja level preservation')
 
 must('if(i.type==="useCandy"&&r.phase!=="battle"&&r.rareCandies>0){const w=r.team[i.pokemonIndex];if(w&&!w.dead)if(w.level>=Ve.maxPokemonLevel)r.message=`${K[w.species].name} ist bereits auf Level ${Ve.maxPokemonLevel}.`;else{',
      'if(i.type==="useCandy"&&r.phase!=="battle"&&r.rareCandies>0){const w=r.team[i.pokemonIndex],C=r.mode==="endless"?Infinity:Ve.maxPokemonLevel;if(w&&!w.dead)if(w.level>=C)r.message=`${K[w.species].name} ist bereits auf Level ${C}.`;else{','endless rare candy beyond 100')
