@@ -1178,3 +1178,66 @@ body:before{display:none!important}
 .alpha-shell .champion-team-grid .pokemon-special-tag{
   margin:3px auto 2px!important;
 }
+
+
+/* FIRST WAVE SPECIAL ACHIEVEMENT · 2026-09-29 */
+.alpha-shell .special-achievement-toast{
+  border-color:#d9bb5a!important;
+  background:
+    radial-gradient(circle at 16% 50%,rgba(255,226,112,.15),transparent 30%),
+    linear-gradient(135deg,#241f10,#14242e 58%,#1b2d38)!important;
+  box-shadow:0 5px 0 #071019,0 0 0 2px rgba(217,187,90,.16),0 18px 42px rgba(0,0,0,.42)!important;
+}
+.alpha-shell .special-achievement-toast .toast-trophy{
+  color:#ffe484!important;
+  filter:drop-shadow(0 0 7px rgba(255,224,105,.35))!important;
+}
+.alpha-shell .special-achievement-toast strong{
+  color:#ffe79a!important;
+}
+.alpha-shell .special-achievement-badge{
+  padding:6px 8px!important;
+  border:1px solid #d9bb5a!important;
+  border-radius:5px!important;
+  background:#392f14!important;
+  color:#ffedab!important;
+  font-size:9px!important;
+  letter-spacing:.1em!important;
+  white-space:nowrap!important;
+}
+.alpha-shell .special-achievement-card{
+  position:relative!important;
+  overflow:hidden!important;
+  border-color:#d9bb5a!important;
+  background:
+    radial-gradient(circle at 15% 25%,rgba(255,225,105,.12),transparent 28%),
+    linear-gradient(180deg,#1b3038,#11222b)!important;
+  box-shadow:0 4px 0 #071019,0 0 0 2px rgba(217,187,90,.1),0 0 26px rgba(217,187,90,.08)!important;
+}
+.alpha-shell .special-achievement-card:after{
+  content:"FIRST WAVE"!important;
+  position:absolute!important;
+  top:11px!important;
+  right:-31px!important;
+  width:122px!important;
+  transform:rotate(35deg)!important;
+  padding:4px 0!important;
+  border-top:1px solid rgba(255,239,177,.55)!important;
+  border-bottom:1px solid rgba(255,239,177,.55)!important;
+  background:#8c7328!important;
+  color:#fff0b1!important;
+  font-size:7px!important;
+  font-weight:1000!important;
+  letter-spacing:.11em!important;
+  text-align:center!important;
+  pointer-events:none!important;
+}
+.alpha-shell .special-achievement-card .achievement-medal{
+  border-color:#d9bb5a!important;
+  color:#ffe484!important;
+  box-shadow:0 0 14px rgba(255,225,104,.16)!important;
+}
+.alpha-shell .special-achievement-label{
+  color:#ffe18a!important;
+  letter-spacing:.07em!important;
+}
