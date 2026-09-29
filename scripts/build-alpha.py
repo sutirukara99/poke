@@ -128,8 +128,8 @@ must('return X.useEffect(()=>{_e&&Ix(V)},[_e,V]),p?',
 
 must('endlessBossHighScore:0,ascension:{},dailyRecords:{},speciesMastery:{},tutorialSeen:[],redeemedCodes:[],giftStarters:{},settings:{',
      'endlessBossHighScore:0,ascension:{},dailyRecords:{},speciesMastery:{},tutorialSeen:[],redeemedCodes:[],giftStarters:{},alphaQuestClaims:[],settings:{','account quest claims default')
-must('d.speciesMastery??={},d.tutorialSeen??=[],d.redeemedCodes??=[],d.giftStarters??={};',
-     'd.speciesMastery??={},d.tutorialSeen??=[],d.redeemedCodes??=[],d.giftStarters??={},d.alphaQuestClaims??=[];','account quest claims migration')
+must('d.speciesMastery??={},d.tutorialSeen??=[],d.redeemedCodes??=[],d.giftStarters??={},d.achievements??=[];d.redeemedCodes.includes("ALPHA2026")&&!d.achievements.includes("first-wave")&&d.achievements.push("first-wave");',
+     'd.speciesMastery??={},d.tutorialSeen??=[],d.redeemedCodes??=[],d.giftStarters??={},d.achievements??=[],d.alphaQuestClaims??=[];d.redeemedCodes.includes("ALPHA2026")&&!d.achievements.includes("first-wave")&&d.achievements.push("first-wave");','account quest claims migration')
 
 quest_helpers=r'''const QalphaAccountQuests=[
 {id:"field-start",title:"Feldstart",text:"Fange dein erstes Pokémon.",xp:60,rogue:8,progress:a=>a.caught.length,target:1},
