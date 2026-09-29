@@ -2,6 +2,14 @@
 
 ## 1.0.0-alpha.1 launch candidate r7 — 2026-09-29
 
+### Final audit
+- Re-read every tracked repository file, including the preserved baseline assets, launch styles, scripts, workflows, configuration and project documentation.
+- Production Pages deployment now runs the full Alpha validation before publishing; manual Wrangler deploys do the same.
+- Hardened the boot watchdog so it cancels as soon as the app mounts and no longer relies on an inline click handler.
+- Strengthened recovery and launch smoke checks and added typed recovery/build manifests.
+- Updated stale recovery/rewrite documentation and corrected launch cache guidance.
+- Confirmed limited event achievements do not block standard 100% completion.
+
 ### Launch polish
 - Added a final responsive pass for desktop, tablet and phone layouts, including Meta-Shop, PC, inventory, achievements, starter selection, settings and loot screens.
 - Improved touch targets, safe-area handling, text overflow, modal scrolling and reduced-motion behavior.
