@@ -271,8 +271,8 @@ must('function cx(a,i){let d=0;for(let r=0;r<i&&a.level+r<Ve.maxPokemonLevel;r++
      'function cx(a,i,d=Ve.maxPokemonLevel){let r=0;for(let u=0;u<i&&a.level+u<d;u++)r+=ch(a.level+u);return r}','xp grant optional cap')
 must('function ox(a,i,d){if(!ct(i)||d<=0||i.level>=Ve.maxPokemonLevel)return[];i.xp+=Math.max(0,Math.floor(d));const r=[];let u=0;for(;i.level<Ve.maxPokemonLevel&&u++<10;){const h=ch(i.level);if(i.xp<h)break;i.xp-=h,r.push(...Pu(a,i))}return i.level>=Ve.maxPokemonLevel&&(i.xp=0),r}',
      'function ox(a,i,d){const r=a.mode==="endless"?Infinity:Ve.maxPokemonLevel;if(!ct(i)||d<=0||i.level>=r)return[];i.xp+=Math.max(0,Math.floor(d));const u=[];let h=0;for(;i.level<r&&h++<10;){const m=ch(i.level);if(i.xp<m)break;i.xp-=m,u.push(...Pu(a,i))}return i.level>=r&&(i.xp=0),u}','endless xp beyond 100')
-must('const V=cx(U,y),he=q===p?V:b?Math.round(V*.5):0;',
-     'const V=cx(U,y,i.mode==="endless"?Infinity:Ve.maxPokemonLevel),he=q===p?V:b?Math.round(V*.5):0;','endless xp reward beyond 100')
+must('const V=Math.round(cx(U,y)*QalphaXp(i.activeRelics)),he=q===p?V:b?Math.round(V*.5):0;',
+     'const V=Math.round(cx(U,y,i.mode==="endless"?Infinity:Ve.maxPokemonLevel)*QalphaXp(i.activeRelics)),he=q===p?V:b?Math.round(V*.5):0;','endless xp reward beyond 100')
 
 must('function px(a,i){if(a.mode==="endless"){const h=Math.pow(1.05,Math.floor(a.endlessStage/10)),m=5+Math.floor(a.endlessStage*.45);return Math.min(100,Math.max(5,Math.floor(m*h)+(i==="boss"?4:0)))}',
      'function px(a,i){if(a.mode==="endless"){const h=Math.pow(1.05,Math.floor(a.endlessStage/10)),m=5+Math.floor(a.endlessStage*.45);return Math.max(5,Math.floor(m*h)+(i==="boss"?4:0))}','endless enemy level uncap')
