@@ -22,7 +22,6 @@ const ensureHost = () => {
   return host;
 };
 
-const escapeText = (value: unknown) => String(value ?? "");
 
 const render = async (host: HTMLElement, session: Session | null, status = "") => {
   if (!cloudConfigured) {
@@ -75,12 +74,18 @@ const render = async (host: HTMLElement, session: Session | null, status = "") =
 
   const intro = document.createElement("p");
   intro.textContent = session
-    ? `${escapeText(session.user.email ?? session.user.user_metadata?.full_name ?? "Account")} · ${cloudUpdated}`
+    ? `${String(session.user.email ?? session.user.user_metadata?.full_name ?? "Account")} · ${cloudUpdated}`
     : "Optional anmelden, um deinen lokalen Spielstand später geräteübergreifend zu sichern.";
 
   const localCard = document.createElement("div");
   localCard.className = "cloud-save-summary";
-  localCard.innerHTML = `<strong>Lokal</strong><span>${escapeText(local.trainerName)}</span><small>${local.totalRuns} Runs · ${local.wins} Siege · ${local.caught} Arten</small>`;
+  const localLabel = document.createElement("strong");
+  localLabel.textContent = "Lokal";
+  const localTrainer = document.createElement("span");
+  localTrainer.textContent = local.trainerName;
+  const localMeta = document.createElement("small");
+  localMeta.textContent = `${local.totalRuns} Runs · ${local.wins} Siege · ${local.caught} Arten`;
+  localCard.append(localLabel, localTrainer, localMeta);
 
   const actions = document.createElement("div");
   actions.className = "cloud-account-actions";
