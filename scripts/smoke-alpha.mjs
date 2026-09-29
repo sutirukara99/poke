@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-const js = await readFile(new URL("../public/recovered/v1.0.0-alpha.1-r6.js", import.meta.url), "utf8");
+const js = await readFile(new URL("../public/recovered/v1.0.0-alpha.1-r7.js", import.meta.url), "utf8");
 const required = [
   "1.0.0-alpha.1",
   "QalphaAscensionMax",
@@ -28,6 +28,11 @@ const required = [
   "Wegschutz: Ein blockierter Pfad wurde automatisch freigelegt.",
   "emergencyLeave",
   "Sicher weiterziehen →",
+  "Alpha2026",
+  "first-wave",
+  "achievement-toast-stack",
+  "aria-live",
+  "PokéRegions Hauptmenü",
 ];
 
 const missing = required.filter((needle) => !js.includes(needle));
@@ -74,3 +79,29 @@ if (!js.includes('W("protect","Schutzschild","normal","status",0,1,4')) throw ne
 
 if (!js.includes("QalphaRow.length===3")) throw new Error("safe secret generation missing");
 if (!js.includes("QalphaRepairRoute(a)")) throw new Error("route advance repair hook missing");
+
+
+const launchForbidden = [
+  "PokéRogue Regions",
+  "PokéRogue-Regions",
+  "POKÉROGUE REGIONS",
+  "/test/regions/",
+];
+
+const launchForbiddenHits = launchForbidden.filter((needle) => js.includes(needle));
+if (launchForbiddenHits.length) {
+  throw new Error(`Launch bundle still contains retired branding/paths: ${launchForbiddenHits.join(", ")}`);
+}
+
+if (!js.includes('ALPHA2026:{display:"Alpha2026"')) {
+  throw new Error("Alpha2026 gift code missing from launch bundle.");
+}
+if (!js.includes('achievement:"first-wave"')) {
+  throw new Error("First Wave gift achievement hook missing.");
+}
+if (!js.includes('className:"achievement-toast-stack"')) {
+  throw new Error("Stacked achievement notifications missing.");
+}
+if (!js.includes('onError:d=>{d.currentTarget.style.display="none"}')) {
+  throw new Error("Region artwork fallback missing.");
+}
