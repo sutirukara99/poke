@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.0.0-alpha.1 launch candidate r7 — 2026-09-29
+
+### Launch polish
+- Added a final responsive pass for desktop, tablet and phone layouts, including Meta-Shop, PC, inventory, achievements, starter selection, settings and loot screens.
+- Improved touch targets, safe-area handling, text overflow, modal scrolling and reduced-motion behavior.
+- Added clearer accessibility state for mode/region selection and live gift-code status feedback.
+- Added a boot recovery screen instead of leaving players on a silent blank page if startup is interrupted.
+- Added social/share metadata and connection warm-up for external sprite/map hosts.
+- Bumped the reconstructed runtime to r7 and added cache controls to reduce stale-build issues at launch.
+
+### Alpha tester rewards
+- Added gift-code redemption to the region selection screen.
+- Added `Alpha2026`: permanent Shiny Riolu Meta-Starter with the `First Wave` tag.
+- Added the special `First Wave` achievement/title and migration for testers who redeemed the code before the achievement shipped.
+- Multiple achievements unlocked by one action now display as a vertical toast stack.
+
+### Region & combat UI
+- Restored region artwork with polished hover/selected states and graceful image fallback.
+- Added short move descriptions on hover/focus in battle, tutor and party views.
+- Compacted the party sidebar when a run only contains one Pokémon.
+- Renamed visible legacy PokéRogue Regions branding to PokéRegions while retaining internal legacy save keys for compatibility.
+
 ## 1.0.0-alpha.1 — 2026-09-28
 
 ### Route safety pass

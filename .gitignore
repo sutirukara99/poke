@@ -3,6 +3,6 @@ dist/
 .DS_Store
 *.log
 
-public/recovered/v1.0.0-alpha.1-r6.js
+public/recovered/v1.0.0-alpha.1-r*.js
 .wrangler/
 .dev.vars*

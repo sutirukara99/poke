@@ -1290,3 +1290,476 @@ body:before{display:none!important}
     gap:9px!important;
   }
 }
+
+
+/* ALPHA LAUNCH POLISH · r7 · 2026-09-29 */
+html{
+  color-scheme:dark;
+  min-width:320px;
+}
+body{
+  overflow-x:hidden!important;
+  min-width:320px;
+  min-height:100vh;
+  min-height:100dvh;
+}
+.alpha-shell,
+.alpha-shell *,
+.alpha-shell *::before,
+.alpha-shell *::after{
+  box-sizing:border-box;
+}
+.alpha-shell{
+  width:100%;
+  min-width:0;
+  padding-left:max(0px,env(safe-area-inset-left));
+  padding-right:max(0px,env(safe-area-inset-right));
+}
+.alpha-shell .content,
+.alpha-shell .dashboard,
+.alpha-shell .hero,
+.alpha-shell .hero-copy,
+.alpha-shell .hero-art,
+.alpha-shell .play-layout,
+.alpha-shell .panel,
+.alpha-shell .menu-copy,
+.alpha-shell .party-copy,
+.alpha-shell .loot-copy,
+.alpha-shell .achievement-copy{
+  min-width:0!important;
+}
+.alpha-shell button,
+.alpha-shell [role="button"]{
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.alpha-shell button:not(.route-node):not(.alpha-lock),
+.alpha-shell input:not([type="range"]),
+.alpha-shell select{
+  min-height:44px;
+}
+.alpha-shell button:disabled{
+  cursor:not-allowed!important;
+}
+.alpha-shell .topbar{
+  gap:12px!important;
+  padding-left:max(14px,env(safe-area-inset-left))!important;
+  padding-right:max(14px,env(safe-area-inset-right))!important;
+}
+.alpha-shell .brand{
+  flex:0 0 auto;
+  white-space:nowrap;
+}
+.alpha-shell .brand span:last-child{
+  min-width:0;
+}
+.alpha-shell .rogue-chip,
+.alpha-shell .version{
+  flex:0 0 auto;
+  white-space:nowrap;
+}
+.alpha-shell .profile-link{
+  min-width:0;
+}
+.alpha-shell .profile-link span{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.alpha-shell .profile-link small{
+  display:block;
+}
+.alpha-shell .hero-copy p,
+.alpha-shell .secondary-intro,
+.alpha-shell .alpha-gift-copy small,
+.alpha-shell .achievement-copy p,
+.alpha-shell .history-row,
+.alpha-shell .loot-description,
+.alpha-shell .quest-copy,
+.alpha-shell .class-effect{
+  overflow-wrap:anywhere;
+}
+.alpha-shell .menu-grid>button,
+.alpha-shell .region-art-card,
+.alpha-shell .meta-card,
+.alpha-shell .achievement-card,
+.alpha-shell .loot-card,
+.alpha-shell .iv-starter-card{
+  min-width:0!important;
+}
+.alpha-shell .menu-grid>button{
+  min-height:66px;
+}
+.alpha-shell .menu-grid .menu-copy strong,
+.alpha-shell .menu-grid .menu-copy small{
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.alpha-shell .alpha-code-status{
+  line-height:1.4!important;
+  overflow-wrap:anywhere;
+}
+.alpha-shell .region-art-card{
+  will-change:transform;
+}
+.alpha-shell .region-art-card .region-card-copy{
+  pointer-events:none;
+}
+.alpha-shell .region-art-card .region-pick-state{
+  pointer-events:none;
+}
+.alpha-shell .mode-pills button[aria-pressed="true"],
+.alpha-shell .region-art-card[aria-pressed="true"]{
+  outline:2px solid rgba(242,211,111,.35);
+  outline-offset:2px;
+}
+.alpha-shell .actions{
+  align-items:stretch;
+}
+.alpha-shell .actions>button{
+  min-width:0;
+}
+.alpha-shell .alpha-loot-actions{
+  flex-wrap:wrap;
+}
+.alpha-shell .alpha-loot-actions button{
+  white-space:nowrap;
+}
+.alpha-shell .party-move{
+  min-width:0;
+}
+.alpha-shell .party-move>span,
+.alpha-shell .party-move>strong{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.alpha-shell .history-detail,
+.alpha-shell .dex-detail,
+.alpha-shell .debug-panel,
+.alpha-shell .delete-save-modal{
+  overscroll-behavior:contain;
+}
+.alpha-shell .history-detail-overlay,
+.alpha-shell .dex-detail-overlay,
+.alpha-shell .debug-overlay,
+.alpha-shell .delete-save-overlay,
+.alpha-shell .alpha-tutorial-backdrop{
+  padding-top:max(18px,env(safe-area-inset-top))!important;
+  padding-right:max(18px,env(safe-area-inset-right))!important;
+  padding-bottom:max(18px,env(safe-area-inset-bottom))!important;
+  padding-left:max(18px,env(safe-area-inset-left))!important;
+}
+.alpha-shell .site-footer{
+  gap:12px;
+  flex-wrap:wrap;
+  padding-bottom:max(24px,env(safe-area-inset-bottom))!important;
+}
+.alpha-shell .achievement-toast-stack{
+  top:max(96px,calc(env(safe-area-inset-top) + 12px))!important;
+  right:max(14px,env(safe-area-inset-right))!important;
+}
+.alpha-shell .achievement-toast{
+  min-width:0!important;
+}
+.alpha-shell .achievement-toast p,
+.alpha-shell .achievement-toast strong{
+  overflow-wrap:anywhere;
+}
+
+/* Better responsive density across the screens most likely to overflow during Alpha. */
+@media(max-width:1000px){
+  .alpha-shell .topbar{
+    flex-wrap:wrap!important;
+    min-height:76px!important;
+    height:auto!important;
+    padding-top:10px!important;
+    padding-bottom:10px!important;
+  }
+  .alpha-shell .profile-link{
+    margin-left:auto!important;
+  }
+  .alpha-shell .inventory-meta-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+  .alpha-shell .meta-starter-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+  .alpha-shell .pc-grid{
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  }
+  .alpha-shell .swap-team-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+  .alpha-shell .retro-achievement-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:760px){
+  .alpha-shell .content{
+    padding-top:18px!important;
+    padding-left:12px!important;
+    padding-right:12px!important;
+  }
+  .alpha-shell .hero{
+    grid-template-columns:1fr!important;
+    min-height:0!important;
+  }
+  .alpha-shell .hero-copy{
+    padding:26px 20px!important;
+  }
+  .alpha-shell .hero h1{
+    font-size:clamp(28px,10vw,40px)!important;
+    line-height:1.25!important;
+  }
+  .alpha-shell .hero-art{
+    min-height:220px!important;
+  }
+  .alpha-shell .dashboard{
+    grid-template-columns:1fr!important;
+  }
+  .alpha-shell .challenge-panel{
+    grid-template-columns:1fr!important;
+  }
+  .alpha-shell .new-run-options{
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+  }
+  .alpha-shell .loot-grid{
+    grid-template-columns:1fr!important;
+  }
+  .alpha-shell .loot-card{
+    min-height:190px!important;
+  }
+  .alpha-shell .iv-starter-grid{
+    grid-template-columns:1fr!important;
+  }
+  .alpha-shell .inventory-meta-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  .alpha-shell .relic-slots{
+    grid-template-columns:1fr!important;
+  }
+  .alpha-shell .meta-starter-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  .alpha-shell .pc-toolbar{
+    grid-template-columns:1fr!important;
+  }
+  .alpha-shell .pc-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  }
+  .alpha-shell .history-detail-stats{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  .alpha-shell .setting-row,
+  .alpha-shell .mixer-row{
+    align-items:stretch!important;
+    flex-direction:column!important;
+  }
+  .alpha-shell .segmented-control{
+    width:100%;
+  }
+  .alpha-shell .segmented-control button{
+    flex:1 1 0;
+    min-width:0!important;
+  }
+  .alpha-shell input:not([type="range"]),
+  .alpha-shell select{
+    font-size:16px!important;
+  }
+}
+@media(max-width:620px){
+  .alpha-shell .topbar{
+    gap:8px!important;
+  }
+  .alpha-shell .brand{
+    order:1;
+  }
+  .alpha-shell .profile-link{
+    order:2;
+    margin-left:auto!important;
+    max-width:46vw;
+  }
+  .alpha-shell .version-debug-wrap{
+    order:3;
+  }
+  .alpha-shell .rogue-chip{
+    order:4;
+  }
+  .alpha-shell .menu-grid{
+    grid-template-columns:1fr!important;
+  }
+  .alpha-shell .mode-pills{
+    grid-template-columns:1fr!important;
+  }
+  .alpha-shell .starters{
+    grid-template-columns:1fr!important;
+  }
+  .alpha-shell .starters button{
+    display:grid!important;
+    grid-template-columns:100px minmax(0,1fr)!important;
+    grid-template-areas:"sprite title" "sprite meta" "sprite action"!important;
+    align-items:center!important;
+    gap:4px 14px!important;
+    text-align:left!important;
+    padding:12px!important;
+  }
+  .alpha-shell .starters .sprite{
+    grid-area:sprite!important;
+    width:96px!important;
+    height:96px!important;
+    margin:0!important;
+  }
+  .alpha-shell .starters h3{
+    grid-area:title!important;
+    margin:0!important;
+  }
+  .alpha-shell .starters p{
+    grid-area:meta!important;
+    margin:0!important;
+  }
+  .alpha-shell .starters .pill{
+    grid-area:action!important;
+  }
+  .alpha-shell .starter-special-tag{
+    position:absolute!important;
+    left:10px!important;
+    bottom:8px!important;
+    margin:0!important;
+  }
+  .alpha-shell .retro-achievement-grid{
+    grid-template-columns:1fr!important;
+  }
+  .alpha-shell .pc-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+  .alpha-shell .swap-team-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  .alpha-shell .achievement-toast-stack{
+    top:max(124px,calc(env(safe-area-inset-top) + 12px))!important;
+    left:max(10px,env(safe-area-inset-left))!important;
+    right:max(10px,env(safe-area-inset-right))!important;
+    width:auto!important;
+    max-height:calc(100dvh - 104px)!important;
+  }
+  .alpha-shell .achievement-toast{
+    grid-template-columns:38px minmax(0,1fr)!important;
+    gap:8px!important;
+    padding:10px!important;
+  }
+  .alpha-shell .achievement-toast>b,
+  .alpha-shell .achievement-toast>.special-achievement-badge{
+    grid-column:2!important;
+    justify-self:start!important;
+  }
+  .alpha-shell .toast-trophy{
+    font-size:24px!important;
+  }
+}
+@media(max-width:460px){
+  .alpha-shell .profile-link{
+    max-width:52vw;
+  }
+  .alpha-shell .version-debug-wrap{
+    display:none!important;
+  }
+  .alpha-shell .rogue-chip{
+    font-size:9px!important;
+  }
+  .alpha-shell .inventory-meta-grid,
+  .alpha-shell .meta-starter-grid{
+    grid-template-columns:1fr!important;
+  }
+  .alpha-shell .pc-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  .alpha-shell .region-art-card{
+    min-height:158px!important;
+  }
+  .alpha-shell .region-art-card:before{
+    right:26px!important;
+    width:76px!important;
+    height:76px!important;
+  }
+  .alpha-shell .region-art-card:after{
+    right:51px!important;
+  }
+  .alpha-shell .alpha-gift-code{
+    padding:12px!important;
+  }
+}
+
+/* Touch devices should not get sticky hover-only motion/tooltips. */
+@media(hover:none){
+  .alpha-shell button:hover:not(:disabled),
+  .alpha-shell .region-art-card:hover{
+    transform:none!important;
+  }
+  .alpha-shell .alpha-move-tooltip-trigger:hover::after,
+  .alpha-shell .route-node:hover .route-node-tooltip{
+    opacity:0!important;
+    visibility:hidden!important;
+  }
+  .alpha-shell .alpha-move-tooltip-trigger:focus::after,
+  .alpha-shell .route-node:focus .route-node-tooltip{
+    opacity:1!important;
+    visibility:visible!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .alpha-shell *,
+  .alpha-shell *::before,
+  .alpha-shell *::after{
+    scroll-behavior:auto!important;
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+  }
+}
+
+/* Boot fallback lives before the recovered React bundle mounts, so it is not nested in .alpha-shell. */
+.alpha-boot-recovery{
+  width:min(720px,calc(100vw - 28px));
+  margin:10vh auto;
+  padding:28px;
+  color:#edf5f8;
+  background:linear-gradient(180deg,#172a36,#101f2a);
+  border:3px solid #5c7180;
+  border-radius:10px;
+  box-shadow:0 6px 0 #071019,0 24px 60px rgba(0,0,0,.45);
+  font-family:system-ui,sans-serif;
+}
+.alpha-boot-recovery h1{
+  margin:8px 0 12px;
+  font-size:clamp(24px,5vw,40px);
+  line-height:1.15;
+}
+.alpha-boot-recovery p{
+  color:#b9c7d1;
+  line-height:1.5;
+}
+.alpha-boot-recovery .alpha-boot-kicker{
+  margin:0;
+  color:#e2c45f;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.12em;
+}
+.alpha-boot-recovery button{
+  min-height:44px;
+  margin:10px 0;
+  padding:10px 16px;
+  color:#fff;
+  background:#b63245;
+  border:2px solid #e16673;
+  border-radius:6px;
+  font-weight:800;
+  cursor:pointer;
+}
+.alpha-boot-recovery small{
+  display:block;
+  color:#8fa4b0;
+}

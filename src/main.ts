@@ -32,16 +32,31 @@ script.async = false;
 script.dataset.recoveredBuild = RECOVERY_BASELINE.version;
 script.dataset.activeBuild = ACTIVE_BUILD.version;
 
-script.addEventListener("error", () => {
+const showBootFailure = (message: string) => {
   const root = document.getElementById("root");
-  if (root) {
-    root.innerHTML = `
-      <main style="font-family:system-ui;padding:2rem;max-width:760px;margin:auto">
-        <h1>1.0-Alpha konnte nicht geladen werden</h1>
-        <p>Der rekonstruierte Build fehlt oder ist beschädigt. Führe <code>npm run rebuild:alpha</code> aus.</p>
-      </main>
-    `;
-  }
+  if (!root) return;
+  root.innerHTML = `
+    <main class="alpha-boot-recovery" role="alert">
+      <p class="alpha-boot-kicker">POKÉREGIONS · 1.0 ALPHA</p>
+      <h1>Die Alpha konnte nicht vollständig geladen werden.</h1>
+      <p>${message}</p>
+      <button type="button" onclick="location.reload()">Neu laden</button>
+      <small>Dein lokaler Spielstand bleibt dabei erhalten.</small>
+    </main>
+  `;
+};
+
+script.addEventListener("error", () => {
+  showBootFailure("Eine Spieldatei konnte nicht geladen werden. Bitte lade die Seite neu.");
 });
 
 document.head.appendChild(script);
+
+// Avoid a silent blank screen if a browser extension, cache entry or network error
+// interrupts startup before React can mount.
+window.setTimeout(() => {
+  const root = document.getElementById("root");
+  if (root && root.childElementCount === 0) {
+    showBootFailure("Der Start dauert ungewöhnlich lange. Ein Neuladen behebt meist einen veralteten Cache.");
+  }
+}, 12_000);
