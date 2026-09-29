@@ -1,4 +1,4 @@
-# PokéRogue Regions recovery record
+# PokéRegions recovery record
 
 ## Recovered baseline
 
