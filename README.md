@@ -24,6 +24,10 @@ PokéRegions is back on a new repository after the previous GitHub source became
 - Completion dashboard
 - keyboard controls for menus, routes and battles
 - broad handheld/Pokémon-inspired visual polish
+- gift-code redemption with persistent event rewards
+- First Wave Alpha reward: permanent Shiny Riolu, special tag and achievement
+- stacked achievement notifications for simultaneous unlocks
+- launch-focused responsive, accessibility and cache-hardening pass
 
 A team/build-synergy layer is deliberately **not** part of the design. The project is being pushed further toward a run-based roguelike identity instead.
 
@@ -36,10 +40,10 @@ Preserved assets:
 
 Reconstructed active build:
 
-- `public/recovered/v1.0.0-alpha.1-r4.js`
+- `public/recovered/v1.0.0-alpha.1-r7.js`
 - `src/styles/alpha.css`
 
-The generated Alpha JS is committed so static hosts can serve it without Python. To reproduce it from the preserved baseline:
+The generated Alpha JS is rebuilt during verification/deployment from the preserved baseline. To reproduce the current launch candidate locally:
 
 ```bash
 npm run rebuild:alpha
@@ -61,13 +65,6 @@ npm run build
 npm run preview
 ```
 
-## Cloudflare Pages
-
-- Framework preset: Vite
-- Build command: `npm run build`
-- Output directory: `dist`
-- SPA fallback: `public/_redirects`
-
 ## Recovery documentation
 
 See [`RECOVERY.md`](./RECOVERY.md) for what was recovered and what was reconstructed.
@@ -81,4 +78,4 @@ Recommended production host:
 - Root directory: repository root
 - Node.js: 22
 
-The Vite build uses relative asset paths so the same build also remains usable from the GitHub Pages project path.
+The Vite build uses relative asset paths so the same build remains usable from the GitHub Pages project path and behind the custom domain.
