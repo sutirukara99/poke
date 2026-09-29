@@ -321,7 +321,7 @@ must('l.jsxs("div",{className:"party-identity-row",children:[',
      'party order controls')
 
 must('if(i.type==="pcSwap"&&r.phase!=="battle"&&r.phase!=="catchSwap"&&r.phase!=="starter"&&r.phase!=="summary"){',
-     'if(i.type==="reorderTeam"&&!r.battle&&r.phase!=="starter"&&r.phase!=="summary"){const w=Number(i.from),C=Number(i.to);if(Number.isInteger(w)&&Number.isInteger(C)&&w>=0&&C>=0&&w<r.team.length&&C<r.team.length&&w!==C){const[N]=r.team.splice(w,1);r.team.splice(C,0,N),r.message=C===0?\`\${K[N.species].name} führt jetzt dein Team an.\`:\`Teamreihenfolge geändert: \${K[N.species].name} auf Position \${C+1}.\`}return r.rng=u.state,d}if(i.type==="pcSwap"&&r.phase!=="battle"&&r.phase!=="catchSwap"&&r.phase!=="starter"&&r.phase!=="summary"){',
+     'if(i.type==="reorderTeam"&&!r.battle&&r.phase!=="starter"&&r.phase!=="summary"){const w=Number(i.from),C=Number(i.to);if(Number.isInteger(w)&&Number.isInteger(C)&&w>=0&&C>=0&&w<r.team.length&&C<r.team.length&&w!==C){const[N]=r.team.splice(w,1);r.team.splice(C,0,N),r.message=C===0?`${K[N.species].name} führt jetzt dein Team an.`:`Teamreihenfolge geändert: ${K[N.species].name} auf Position ${C+1}.`}return r.rng=u.state,d}if(i.type==="pcSwap"&&r.phase!=="battle"&&r.phase!=="catchSwap"&&r.phase!=="starter"&&r.phase!=="summary"){',
      'reorder team reducer')
 
 must('onCandy:O=>r({type:"useCandy",pokemonIndex:O}),active:',
