@@ -1241,3 +1241,52 @@ body:before{display:none!important}
   color:#ffe18a!important;
   letter-spacing:.07em!important;
 }
+
+
+/* STACKED ACHIEVEMENT TOASTS · 2026-09-29 */
+.alpha-shell .achievement-toast-stack{
+  position:fixed!important;
+  top:96px!important;
+  right:22px!important;
+  z-index:220!important;
+  width:min(420px,calc(100vw - 30px))!important;
+  max-height:calc(100vh - 118px)!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:12px!important;
+  overflow-y:auto!important;
+  overflow-x:visible!important;
+  padding:0 8px 10px 0!important;
+  scrollbar-width:none!important;
+  pointer-events:none!important;
+}
+.alpha-shell .achievement-toast-stack::-webkit-scrollbar{display:none!important}
+.alpha-shell .achievement-toast-stack .achievement-toast{
+  position:relative!important;
+  top:auto!important;
+  right:auto!important;
+  z-index:auto!important;
+  width:100%!important;
+  flex:0 0 auto!important;
+  pointer-events:auto!important;
+  margin:0!important;
+}
+.alpha-shell .achievement-toast-stack .achievement-toast:nth-child(2){
+  animation-delay:.08s!important;
+}
+.alpha-shell .achievement-toast-stack .achievement-toast:nth-child(3){
+  animation-delay:.16s!important;
+}
+.alpha-shell .achievement-toast-stack .achievement-toast:nth-child(n+4){
+  animation-delay:.24s!important;
+}
+@media(max-width:700px){
+  .alpha-shell .achievement-toast-stack{
+    top:118px!important;
+    right:12px!important;
+    width:calc(100vw - 24px)!important;
+    max-height:calc(100vh - 132px)!important;
+    padding-right:6px!important;
+    gap:9px!important;
+  }
+}
