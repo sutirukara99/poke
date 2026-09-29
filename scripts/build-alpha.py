@@ -334,4 +334,7 @@ must('if(i.type==="leave"&&r.phase==="node"&&((ve=r.node)==null?void 0:ve.kind)!
 
 out=ROOT/'public/recovered/v1.0.0-alpha.1-r7.js'
 out.write_text(s)
+for debug_marker in ['function ck(','function ib(','function a4(','function px(','if(i.type==="useCandy"']:
+    debug_i=s.find(debug_marker)
+    if debug_i>=0: print('DEBUG',debug_marker,s[debug_i:debug_i+1600])
 print('built',out,len(s))
