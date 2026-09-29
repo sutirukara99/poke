@@ -257,7 +257,7 @@ must('$l=(a,i,d=0,r=null)=>{const u=Math.min(Ve.maxPokemonLevel,Math.max(1,Math.
      '$l=(a,i,d=0,r=null)=>{const u=Math.max(1,Math.floor(i)),','uncap hp scaling for tower levels')
 
 must('function Ku(a,i,d,r,u=!1){i=Math.min(Ve.maxPokemonLevel,Math.max(1,Math.floor(i)));',
-     'function Ku(a,i,d,r,u=!1,h=Ve.maxPokemonLevel){i=Math.min(h,Math.max(1,Math.floor(i)));','pokemon factory optional level cap')
+     'function Ku(a,i,d,r,u=!1,QalphaMax=Ve.maxPokemonLevel){i=Math.min(QalphaMax,Math.max(1,Math.floor(i)));','pokemon factory optional level cap')
 
 must('function ck(a,i={},d=!1){if(a.dead)return{messages:[]};if(a.level>=Ve.maxPokemonLevel)return a.level=Ve.maxPokemonLevel,{messages:[`${K[a.species].name} ist bereits auf dem Max-Level ${Ve.maxPokemonLevel}.`]};const r=[],u=Va(a).map(b=>b.id),h=a.maxHp;a.level=Math.min(Ve.maxPokemonLevel,a.level+1),',
      'function ck(a,i={},d=!1,r=Ve.maxPokemonLevel){if(a.dead)return{messages:[]};if(a.level>=r)return a.level=r,{messages:[`${K[a.species].name} ist bereits auf dem Max-Level ${r}.`]};const u=[],h=Va(a).map(b=>b.id),m=a.maxHp;a.level=Math.min(r,a.level+1),','level-up optional cap')
@@ -283,7 +283,7 @@ must(',S=Ku("shedinja",C.level,Te);',
      ',S=Ku("shedinja",C.level,Te,void 0,!1,r.mode==="endless"?Infinity:Ve.maxPokemonLevel);','endless shedinja level preservation')
 
 must('if(i.type==="useCandy"&&r.phase!=="battle"&&r.rareCandies>0){const w=r.team[i.pokemonIndex];if(w&&!w.dead)if(w.level>=Ve.maxPokemonLevel)r.message=`${K[w.species].name} ist bereits auf Level ${Ve.maxPokemonLevel}.`;else{',
-     'if(i.type==="useCandy"&&r.phase!=="battle"&&r.rareCandies>0){const w=r.team[i.pokemonIndex],C=r.mode==="endless"?Infinity:Ve.maxPokemonLevel;if(w&&!w.dead)if(w.level>=C)r.message=`${K[w.species].name} ist bereits auf Level ${C}.`;else{','endless rare candy beyond 100')
+     'if(i.type==="useCandy"&&r.phase!=="battle"&&r.rareCandies>0){const w=r.team[i.pokemonIndex],QalphaCandyCap=r.mode==="endless"?Infinity:Ve.maxPokemonLevel;if(w&&!w.dead)if(w.level>=QalphaCandyCap)r.message=`${K[w.species].name} ist bereits auf Level ${QalphaCandyCap}.`;else{','endless rare candy beyond 100')
 
 must('function ib({pokemon:a}){const i=a.level>=Ve.maxPokemonLevel,d=ch(a.level),r=i?100:Math.min(100,100*a.xp/Math.max(1,d));',
      'function ib({pokemon:a,unlimited:i=!1}){const d=!i&&a.level>=Ve.maxPokemonLevel,r=ch(a.level),u=d?100:Math.min(100,100*a.xp/Math.max(1,r));','endless xp bar state')
@@ -334,13 +334,4 @@ must('if(i.type==="leave"&&r.phase==="node"&&((ve=r.node)==null?void 0:ve.kind)!
 
 out=ROOT/'public/recovered/v1.0.0-alpha.1-r7.js'
 out.write_text(s)
-for debug_marker in ['function ck(','function ib(','function a4(','function px(','if(i.type==="useCandy"']:
-    debug_i=s.find(debug_marker)
-    if debug_i>=0: print('DEBUG',debug_marker,s[debug_i:debug_i+1600])
-import subprocess
-debug_check=subprocess.run(['node','--check',str(out)],capture_output=True,text=True)
-if debug_check.returncode:
-    print('NODE_CHECK_DEBUG')
-    for debug_line in debug_check.stderr.splitlines():
-        if len(debug_line)<1000: print(debug_line)
 print('built',out,len(s))
