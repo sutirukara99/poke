@@ -21,3 +21,11 @@ This is an intentional bridge architecture. It lets the game move forward now wi
 ## Competitive fairness
 
 Daily Expeditions deliberately ignore persistent equipped relics, Meta-Starters, Bottle-Cap starter IV upgrades, Mastery moves, trainer-class upgrades and persistent shiny-rate bonuses. Daily score should reflect the shared daily seed and run decisions rather than permanent account power.
+
+## Event achievements
+
+Event- or code-exclusive achievements such as `First Wave` are displayed once earned, but they are excluded from the normal achievement denominator used for core 100% completion. A player who never had access to a limited Alpha code can still complete the standard game profile.
+
+## Launch deployment
+
+The automatic Pages workflow runs `npm run check` before the production build is uploaded. Manual Wrangler deployment uses the same validation through `npm run deploy`. This is intentional: deployment should fail closed if the reconstruction pipeline, baseline assumptions or launch smoke markers drift.

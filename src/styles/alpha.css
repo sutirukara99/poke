@@ -1375,7 +1375,6 @@ body{
 .alpha-shell .achievement-copy p,
 .alpha-shell .history-row,
 .alpha-shell .loot-description,
-.alpha-shell .quest-copy,
 .alpha-shell .class-effect{
   overflow-wrap:anywhere;
 }

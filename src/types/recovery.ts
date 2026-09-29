@@ -7,3 +7,10 @@ export interface RecoveryManifest {
   javascriptSha256: string;
   cssSha256: string;
 }
+
+export interface ActiveBuildManifest {
+  version: string;
+  source: string;
+  javascriptAsset: string;
+  designLayer: string;
+}

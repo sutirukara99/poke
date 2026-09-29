@@ -1,6 +1,6 @@
 # PokéRegions
 
-**Current build: `1.0.0-alpha.1` — Roguelike Depth & Progression**
+**Current build: `1.0.0-alpha.1` · launch candidate `r7` — Roguelike Depth & Progression**
 
 PokéRegions is back on a new repository after the previous GitHub source became unavailable. The last complete deployed build we could recover was **v0.9.4** from Opera's browser cache. That immutable production bundle is preserved as the baseline, and the current 1.0 Alpha is a reproducible reconstruction layered on top of it.
 
@@ -65,17 +65,20 @@ npm run build
 npm run preview
 ```
 
+## Validation & deployment
+
+Every pull request and push to `main` runs TypeScript checks, recovery validation, Alpha reconstruction smoke tests and a production build. The GitHub Pages deployment repeats the launch-critical checks before publishing, so a broken Alpha reconstruction is not deployed independently of CI.
+
+Automatic deployment:
+
+- production branch: `main`
+- runtime: Node.js 22
+- build command: `npm run build`
+- output directory: `dist`
+- workflow: `.github/workflows/pages-vite.yml`
+
+`npm run deploy` remains available for an intentional Wrangler/Cloudflare Assets deployment. The Vite build uses relative asset paths so the same output works from the GitHub Pages project path or behind a custom domain.
+
 ## Recovery documentation
 
 See [`RECOVERY.md`](./RECOVERY.md) for what was recovered and what was reconstructed.
-### Cloudflare Pages (production)
-
-Recommended production host:
-
-- Production branch: `main`
-- Build command: `npm run build`
-- Build output directory: `dist`
-- Root directory: repository root
-- Node.js: 22
-
-The Vite build uses relative asset paths so the same build remains usable from the GitHub Pages project path and behind the custom domain.

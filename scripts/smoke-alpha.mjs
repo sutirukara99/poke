@@ -108,3 +108,13 @@ if (!js.includes('className:"achievement-toast-stack"')) {
 if (!js.includes('onError:d=>{d.currentTarget.style.display="none"}')) {
   throw new Error("Region artwork fallback missing.");
 }
+
+if (!js.includes('const QalphaCoreAchievements=()=>cn.filter(i=>!i.special)')) {
+  throw new Error("Special achievements are affecting core completion scoring.");
+}
+if (!js.includes('"aria-pressed":h===N')) {
+  throw new Error("Region selection accessibility state missing.");
+}
+if (!js.includes('"aria-live":"polite"')) {
+  throw new Error("Gift-code live feedback missing.");
+}
