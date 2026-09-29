@@ -33,6 +33,9 @@ const required = [
   "achievement-toast-stack",
   "aria-live",
   "PokéRegions Hauptmenü",
+  "QalphaCoreAchievementStats",
+  "WILLKOMMEN ZU POKÉREGIONS",
+  "Vier Regionen. Unzählige Runs.",
 ];
 
 const missing = required.filter((needle) => !js.includes(needle));
