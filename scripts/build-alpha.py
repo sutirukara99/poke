@@ -252,6 +252,60 @@ must('a.protect&&(u+=i.hp/Math.max(1,i.maxHp)<.4?65:28)',
 must('me.category==="status"?"SETUP":me.statusEffect?"STATUS":me.nextLevel?`Lv.${me.nextLevel} ↑`:"MAX"',
      'me.id==="protect"?"60% · FOLGE 10%":me.category==="status"?"SETUP":me.statusEffect?"STATUS":me.nextLevel?`Lv.${me.nextLevel} ↑`:"MAX"','protect ui hint')
 
+# Endless Tower progression: only Story/Daily keep the classic Lv.100 ceiling.
+must('$l=(a,i,d=0,r=null)=>{const u=Math.min(Ve.maxPokemonLevel,Math.max(1,Math.floor(i))),',
+     '$l=(a,i,d=0,r=null)=>{const u=Math.max(1,Math.floor(i)),','uncap hp scaling for tower levels')
+
+must('function Ku(a,i,d,r,u=!1){i=Math.min(Ve.maxPokemonLevel,Math.max(1,Math.floor(i)));',
+     'function Ku(a,i,d,r,u=!1,h=Ve.maxPokemonLevel){i=Math.min(h,Math.max(1,Math.floor(i)));','pokemon factory optional level cap')
+
+must('function ck(a,i={},d=!1){if(a.dead)return{messages:[]};if(a.level>=Ve.maxPokemonLevel)return a.level=Ve.maxPokemonLevel,{messages:[\`\${K[a.species].name} ist bereits auf dem Max-Level \${Ve.maxPokemonLevel}.\`]};const r=[],u=Va(a).map(b=>b.id),h=a.maxHp;a.level=Math.min(Ve.maxPokemonLevel,a.level+1),',
+     'function ck(a,i={},d=!1,r=Ve.maxPokemonLevel){if(a.dead)return{messages:[]};if(a.level>=r)return a.level=r,{messages:[\`\${K[a.species].name} ist bereits auf dem Max-Level \${r}.\`]};const u=[],h=Va(a).map(b=>b.id),m=a.maxHp;a.level=Math.min(r,a.level+1),','level-up optional cap')
+must('a.friendship=Math.min(255,a.friendship+10),a.maxHp=$l(a.species,a.level,a.ivs.hp,a.traitId),a.hp>0&&(a.hp=Math.min(a.maxHp,a.hp+a.maxHp-h+3));let m,y=uy(a,i),p=0;for(d&&(m=y);!d&&y&&p++<3;){m??(m=y);const b=K[a.species].name;oh(a,y.to),r.push(\`\${b} entwickelt sich zu \${K[a.species].name}!\`),y=uy(a,i)}return Va(a).forEach((b,v)=>{u[v]!==b.id&&(a.pp[v]=b.pp,r.push(\`\${K[a.species].name} lernt \${b.name}.\`))}),{messages:r,evolved:m}}',
+     'a.friendship=Math.min(255,a.friendship+10),a.maxHp=$l(a.species,a.level,a.ivs.hp,a.traitId),a.hp>0&&(a.hp=Math.min(a.maxHp,a.hp+a.maxHp-m+3));let y,p=uy(a,i),b=0;for(d&&(y=p);!d&&p&&b++<3;){y??(y=p);const v=K[a.species].name;oh(a,p.to),u.push(\`\${v} entwickelt sich zu \${K[a.species].name}!\`),p=uy(a,i)}return Va(a).forEach((v,k)=>{h[k]!==v.id&&(a.pp[k]=v.pp,u.push(\`\${K[a.species].name} lernt \${v.name}.\`))}),{messages:u,evolved:y}}','level-up optional cap body')
+
+must('function Pu(a,i){const d=i.species,r=ck(i,zc(a),!0),u=[...r.messages];',
+     'function Pu(a,i){const d=i.species,r=ck(i,zc(a),!0,a.mode==="endless"?Infinity:Ve.maxPokemonLevel),u=[...r.messages];','endless player levels beyond 100')
+
+must('function cx(a,i){let d=0;for(let r=0;r<i&&a.level+r<Ve.maxPokemonLevel;r++)d+=ch(a.level+r);return d}',
+     'function cx(a,i,d=Ve.maxPokemonLevel){let r=0;for(let u=0;u<i&&a.level+u<d;u++)r+=ch(a.level+u);return r}','xp grant optional cap')
+must('function ox(a,i,d){if(!ct(i)||d<=0||i.level>=Ve.maxPokemonLevel)return[];i.xp+=Math.max(0,Math.floor(d));const r=[];let u=0;for(;i.level<Ve.maxPokemonLevel&&u++<10;){const h=ch(i.level);if(i.xp<h)break;i.xp-=h,r.push(...Pu(a,i))}return i.level>=Ve.maxPokemonLevel&&(i.xp=0),r}',
+     'function ox(a,i,d){const r=a.mode==="endless"?Infinity:Ve.maxPokemonLevel;if(!ct(i)||d<=0||i.level>=r)return[];i.xp+=Math.max(0,Math.floor(d));const u=[];let h=0;for(;i.level<r&&h++<10;){const m=ch(i.level);if(i.xp<m)break;i.xp-=m,u.push(...Pu(a,i))}return i.level>=r&&(i.xp=0),u}','endless xp beyond 100')
+must('const V=cx(U,y),he=q===p?V:b?Math.round(V*.5):0;',
+     'const V=cx(U,y,i.mode==="endless"?Infinity:Ve.maxPokemonLevel),he=q===p?V:b?Math.round(V*.5):0;','endless xp reward beyond 100')
+
+must('function px(a,i){if(a.mode==="endless"){const h=Math.pow(1.05,Math.floor(a.endlessStage/10)),m=5+Math.floor(a.endlessStage*.45);return Math.min(100,Math.max(5,Math.floor(m*h)+(i==="boss"?4:0)))}',
+     'function px(a,i){if(a.mode==="endless"){const h=Math.pow(1.05,Math.floor(a.endlessStage/10)),m=5+Math.floor(a.endlessStage*.45);return Math.max(5,Math.floor(m*h)+(i==="boss"?4:0))}','endless enemy level uncap')
+must('const oe=Ku(F,h+Math.floor(J/2)+(r.special==="pokemon-nest"?2:0),d,void 0,r.kind==="legendary"||!!r.eliteTrainer||r.special==="pokemon-nest");',
+     'const oe=Ku(F,h+Math.floor(J/2)+(r.special==="pokemon-nest"?2:0),d,void 0,r.kind==="legendary"||!!r.eliteTrainer||r.special==="pokemon-nest",i.mode==="endless"?Infinity:Ve.maxPokemonLevel);','endless enemy factory uncap')
+
+must('const S=Ku("shedinja",C.level,Te);',
+     'const S=Ku("shedinja",C.level,Te,void 0,!1,r.mode==="endless"?Infinity:Ve.maxPokemonLevel);','endless shedinja level preservation')
+
+must('if(i.type==="useCandy"&&r.phase!=="battle"&&r.rareCandies>0){const w=r.team[i.pokemonIndex];if(w&&!w.dead)if(w.level>=Ve.maxPokemonLevel)r.message=\`\${K[w.species].name} ist bereits auf Level \${Ve.maxPokemonLevel}.\`;else{',
+     'if(i.type==="useCandy"&&r.phase!=="battle"&&r.rareCandies>0){const w=r.team[i.pokemonIndex],C=r.mode==="endless"?Infinity:Ve.maxPokemonLevel;if(w&&!w.dead)if(w.level>=C)r.message=\`\${K[w.species].name} ist bereits auf Level \${C}.\`;else{','endless rare candy beyond 100')
+
+must('function ib({pokemon:a}){const i=a.level>=Ve.maxPokemonLevel,d=ch(a.level),r=i?100:Math.min(100,100*a.xp/Math.max(1,d));',
+     'function ib({pokemon:a,unlimited:i=!1}){const d=!i&&a.level>=Ve.maxPokemonLevel,r=ch(a.level),u=d?100:Math.min(100,100*a.xp/Math.max(1,r));','endless xp bar state')
+must('children:[l.jsxs("div",{className:"xp-caption",children:[l.jsx("b",{children:"EP"}),l.jsx("small",{children:i?"MAX":\`\${a.xp}/\${d}\`})]}),l.jsx("div",{role:"meter","aria-label":"Erfahrungspunkte","aria-valuenow":i?d:a.xp,"aria-valuemin":0,"aria-valuemax":d,className:"xp-track",children:l.jsx("span",{style:{width:\`\${r}%\`}})})]})}',
+     'children:[l.jsxs("div",{className:"xp-caption",children:[l.jsx("b",{children:"EP"}),l.jsx("small",{children:d?"MAX":\`\${a.xp}/\${r}\`})]}),l.jsx("div",{role:"meter","aria-label":"Erfahrungspunkte","aria-valuenow":d?r:a.xp,"aria-valuemin":0,"aria-valuemax":r,className:"xp-track",children:l.jsx("span",{style:{width:\`\${u}%\`}})})]})}','endless xp bar values')
+
+must('function a4({team:a,potions:i,superPotions:d=0,hyperPotions:r=0,evolutionItems:u,heldItems:h,statusItems:m,rareCandies:y,onHeal:p,onSwitch:b,onEvolve:v,onEquip:k,onStatus:A,onCandy:R,active:_,canAct:L=!0,canManage:U=!0,evolutionContext:q})',
+     'function a4({team:a,potions:i,superPotions:d=0,hyperPotions:r=0,evolutionItems:u,heldItems:h,statusItems:m,rareCandies:y,onHeal:p,onSwitch:b,onEvolve:v,onEquip:k,onStatus:A,onCandy:R,active:_,canAct:L=!0,canManage:U=!0,evolutionContext:q,unlimitedLevel:QalphaUnlimitedLevel=!1})','party unlimited level prop')
+must('l.jsx(ib,{pokemon:x})',
+     'l.jsx(ib,{pokemon:x,unlimited:QalphaUnlimitedLevel})','party endless xp bar')
+must('l.jsxs("button",{disabled:!y||x.dead||x.level>=Ve.maxPokemonLevel,title:x.level>=Ve.maxPokemonLevel?"Maximallevel erreicht":"Sonderbonbon: +1 Level","aria-label":\`Sonderbonbon für \${_e}\`,onClick:()=>R(ee),children:["🍬 ",y]})',
+     'l.jsxs("button",{disabled:!y||x.dead||!QalphaUnlimitedLevel&&x.level>=Ve.maxPokemonLevel,title:!QalphaUnlimitedLevel&&x.level>=Ve.maxPokemonLevel?"Maximallevel erreicht":QalphaUnlimitedLevel?"Sonderbonbon: +1 Level · Endless ohne Level-Cap":"Sonderbonbon: +1 Level","aria-label":\`Sonderbonbon für \${_e}\`,onClick:()=>R(ee),children:["🍬 ",y]})','party endless candy button')
+must('evolutionContext:zc(a),team:a.team,potions:a.potions',
+     'evolutionContext:zc(a),unlimitedLevel:a.mode==="endless",team:a.team,potions:a.potions','pass endless level state to party')
+
+must('a.mode==="endless"&&l.jsx("span",{children:"♾ Endless"})',
+     'a.mode==="endless"&&l.jsx("span",{children:"♾ Endless · Lv.-Cap ∞"})','endless live flag level cap')
+
+must('["DAILY FAIRNESS","Daily deaktiviert Relikte, Meta-Starter, Starter-IV-Upgrades, Mastery-Moves und Klassen-Upgrades"]',
+     '["DAILY FAIRNESS","Daily deaktiviert Relikte, Meta-Starter, Starter-IV-Upgrades, Mastery-Moves und Klassen-Upgrades"],["ENDLESS TOWER","Kein Level-Cap · Gegner und eigenes Team können über Level 100 wachsen"]','codex endless unlimited levels')
+
+
 must('const v4={wild:"WILD",trainer:"TRAINER",shop:"SHOP",mystery:"EVENT",heal:"HEILUNG",item:"FUND",city:"STADT",tutor:"TUTOR",boss:"RIVALE",gym:"ARENALEITER",league:"LIGA",legendary:"SELTEN"},_c=',
      'const v4={wild:"WILD",trainer:"TRAINER",shop:"SHOP",mystery:"EVENT",heal:"HEILUNG",item:"FUND",city:"STADT",tutor:"TUTOR",boss:"RIVALE",gym:"ARENALEITER",league:"LIGA",legendary:"SELTEN"},QalphaNodeHelp={wild:["WILDE BEGEGNUNG","Kampf gegen ein wildes Pokémon · kann gefangen werden"],trainer:["TRAINERKAMPF","Trainerduell · Geld, Fortschritt und mögliche Beute"],shop:["MARKT","Items, Heilung und Build-Werkzeuge kaufen"],mystery:["EVENT","Unvorhersehbares Ereignis mit Entscheidungen"],heal:["HEILUNG","Team regenerieren und Statusprobleme entfernen"],item:["FUND","Kostenlose Beute oder Verbrauchsgegenstand"],city:["STADT","Service-Knoten mit PC, Shop oder weiteren Optionen"],tutor:["MOVE-TUTOR","Attacken deines Teams anpassen"],boss:["RIVALENKAMPF","Gefährlicher Schlüsselkampf mit erhöhtem Druck"],gym:["ARENA","Arenaleiter besiegen und Orden verdienen"],league:["POKÉMON-LIGA","Endgame-Kampf auf Champion-Niveau"],legendary:["LEGENDÄR","Mini-Boss-Begegnung mit besonderer Fangchance"]},_c=','node help dictionary')
 
