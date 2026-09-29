@@ -306,6 +306,29 @@ must('["DAILY FAIRNESS","Daily deaktiviert Relikte, Meta-Starter, Starter-IV-Upg
      '["DAILY FAIRNESS","Daily deaktiviert Relikte, Meta-Starter, Starter-IV-Upgrades, Mastery-Moves und Klassen-Upgrades"],["ENDLESS TOWER","Kein Level-Cap · Gegner und eigenes Team können über Level 100 wachsen"]','codex endless unlimited levels')
 
 
+
+# Party order / lead selection outside battle.
+must('function a4({team:a,potions:i,superPotions:d=0,hyperPotions:r=0,evolutionItems:u,heldItems:h,statusItems:m,rareCandies:y,onHeal:p,onSwitch:b,onEvolve:v,onEquip:k,onStatus:A,onCandy:R,active:_,canAct:L=!0,canManage:U=!0,evolutionContext:q,unlimitedLevel:QalphaUnlimitedLevel=!1}){const[V,he]=X.useState(!0),[le,re]=X.useState({}),',
+     'function a4({team:a,potions:i,superPotions:d=0,hyperPotions:r=0,evolutionItems:u,heldItems:h,statusItems:m,rareCandies:y,onHeal:p,onSwitch:b,onEvolve:v,onEquip:k,onStatus:A,onCandy:R,onReorder:QalphaReorder,active:_,canAct:L=!0,canManage:U=!0,evolutionContext:q,unlimitedLevel:QalphaUnlimitedLevel=!1}){const[V,he]=X.useState(!0),[le,re]=X.useState({}),[QalphaDragFrom,QalphaSetDragFrom]=X.useState(null),',
+     'party reorder props/state')
+
+must('return l.jsxs("article",{className:"party-member "+(pe?"member-expanded ":"member-compact ")+(ee===_?"is-active ":"")+(x.dead?"dead-mon":""),children:[',
+     'return l.jsxs("article",{className:"party-member "+(pe?"member-expanded ":"member-compact ")+(ee===_?"is-active ":"")+(x.dead?"dead-mon":"")+(QalphaDragFrom===ee?" is-dragging":""),draggable:U&&!b&&!!QalphaReorder,onDragStart:N=>{if(!U||b||!QalphaReorder){N.preventDefault();return}QalphaSetDragFrom(ee),N.dataTransfer.effectAllowed="move",N.dataTransfer.setData("text/plain",String(ee))},onDragOver:N=>{U&&!b&&QalphaReorder&&(N.preventDefault(),N.dataTransfer.dropEffect="move")},onDrop:N=>{if(!U||b||!QalphaReorder)return;N.preventDefault();const Z=QalphaDragFrom??Number(N.dataTransfer.getData("text/plain"));Number.isInteger(Z)&&Z!==ee&&QalphaReorder(Z,ee),QalphaSetDragFrom(null)},onDragEnd:()=>QalphaSetDragFrom(null),children:[',
+     'party draggable cards')
+
+must('l.jsxs("div",{className:"party-identity-row",children:[',
+     'l.jsxs("div",{className:"party-order-controls",children:[l.jsxs("span",{className:"party-order-grip",title:"Ziehen, um Teamreihenfolge zu ändern","aria-hidden":"true",children:["⋮⋮ ",ee===0?"LEAD":"#"+(ee+1)]}),QalphaReorder&&U&&!b&&l.jsxs("span",{className:"party-order-buttons",children:[l.jsx("button",{type:"button",disabled:ee===0,"aria-label":_e+" einen Platz nach vorne",title:"Nach vorne",onClick:N=>{N.stopPropagation(),ee>0&&QalphaReorder(ee,ee-1)},children:"↑"}),l.jsx("button",{type:"button",disabled:ee===a.length-1,"aria-label":_e+" einen Platz nach hinten",title:"Nach hinten",onClick:N=>{N.stopPropagation(),ee<a.length-1&&QalphaReorder(ee,ee+1)},children:"↓"})]})]}),l.jsxs("div",{className:"party-identity-row",children:[',
+     'party order controls')
+
+must('if(i.type==="pcSwap"&&r.phase!=="battle"&&r.phase!=="catchSwap"&&r.phase!=="starter"&&r.phase!=="summary"){',
+     'if(i.type==="reorderTeam"&&!r.battle&&r.phase!=="starter"&&r.phase!=="summary"){const w=Number(i.from),C=Number(i.to);if(Number.isInteger(w)&&Number.isInteger(C)&&w>=0&&C>=0&&w<r.team.length&&C<r.team.length&&w!==C){const[N]=r.team.splice(w,1);r.team.splice(C,0,N),r.message=C===0?`${K[N.species].name} führt jetzt dein Team an.`:`Teamreihenfolge geändert: ${K[N.species].name} auf Position ${C+1}.`}return r.rng=u.state,d}if(i.type==="pcSwap"&&r.phase!=="battle"&&r.phase!=="catchSwap"&&r.phase!=="starter"&&r.phase!=="summary"){',
+     'reorder team reducer')
+
+must('onCandy:O=>r({type:"useCandy",pokemonIndex:O}),active:',
+     'onCandy:O=>r({type:"useCandy",pokemonIndex:O}),onReorder:(O,ae)=>r({type:"reorderTeam",from:O,to:ae}),active:',
+     'wire party reorder dispatch')
+
+
 must('const v4={wild:"WILD",trainer:"TRAINER",shop:"SHOP",mystery:"EVENT",heal:"HEILUNG",item:"FUND",city:"STADT",tutor:"TUTOR",boss:"RIVALE",gym:"ARENALEITER",league:"LIGA",legendary:"SELTEN"},_c=',
      'const v4={wild:"WILD",trainer:"TRAINER",shop:"SHOP",mystery:"EVENT",heal:"HEILUNG",item:"FUND",city:"STADT",tutor:"TUTOR",boss:"RIVALE",gym:"ARENALEITER",league:"LIGA",legendary:"SELTEN"},QalphaNodeHelp={wild:["WILDE BEGEGNUNG","Kampf gegen ein wildes Pokémon · kann gefangen werden"],trainer:["TRAINERKAMPF","Trainerduell · Geld, Fortschritt und mögliche Beute"],shop:["MARKT","Items, Heilung und Build-Werkzeuge kaufen"],mystery:["EVENT","Unvorhersehbares Ereignis mit Entscheidungen"],heal:["HEILUNG","Team regenerieren und Statusprobleme entfernen"],item:["FUND","Kostenlose Beute oder Verbrauchsgegenstand"],city:["STADT","Service-Knoten mit PC, Shop oder weiteren Optionen"],tutor:["MOVE-TUTOR","Attacken deines Teams anpassen"],boss:["RIVALENKAMPF","Gefährlicher Schlüsselkampf mit erhöhtem Druck"],gym:["ARENA","Arenaleiter besiegen und Orden verdienen"],league:["POKÉMON-LIGA","Endgame-Kampf auf Champion-Niveau"],legendary:["LEGENDÄR","Mini-Boss-Begegnung mit besonderer Fangchance"]},_c=','node help dictionary')
 

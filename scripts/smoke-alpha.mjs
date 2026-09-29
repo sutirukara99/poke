@@ -134,3 +134,16 @@ if (!js.includes('♾ Endless · Lv.-Cap ∞')) {
 if (js.includes('return Math.min(100,Math.max(5,Math.floor(m*h)+(i==="boss"?4:0)))')) {
   throw new Error("Legacy Endless enemy Level 100 cap is still present.");
 }
+
+if (!js.includes('type:"reorderTeam"')) {
+  throw new Error("Party reorder action is missing.");
+}
+if (!js.includes('onReorder:(O,ae)=>r({type:"reorderTeam",from:O,to:ae})')) {
+  throw new Error("Party reorder UI is not wired to the reducer.");
+}
+if (!js.includes('draggable:U&&!b&&!!QalphaReorder')) {
+  throw new Error("Drag-and-drop party ordering is missing.");
+}
+if (!js.includes('führt jetzt dein Team an')) {
+  throw new Error("Lead-selection feedback is missing.");
+}
