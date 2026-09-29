@@ -337,4 +337,10 @@ out.write_text(s)
 for debug_marker in ['function ck(','function ib(','function a4(','function px(','if(i.type==="useCandy"']:
     debug_i=s.find(debug_marker)
     if debug_i>=0: print('DEBUG',debug_marker,s[debug_i:debug_i+1600])
+import subprocess
+debug_check=subprocess.run(['node','--check',str(out)],capture_output=True,text=True)
+if debug_check.returncode:
+    print('NODE_CHECK_DEBUG')
+    for debug_line in debug_check.stderr.splitlines():
+        if len(debug_line)<1000: print(debug_line)
 print('built',out,len(s))
