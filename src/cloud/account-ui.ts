@@ -53,6 +53,7 @@ class AccountUi {
   private syncState: CloudSyncState = { kind: "idle", text: "Nicht synchronisiert" };
   private syncController: CloudSyncController | null = null;
   private modalOpen = false;
+  private escapeHandler: ((event: KeyboardEvent) => void) | null = null;
 
   async start() {
     this.session = await getSession();
@@ -126,6 +127,10 @@ class AccountUi {
   private close() {
     this.modalOpen = false;
     this.status = "";
+    if (this.escapeHandler) {
+      window.removeEventListener("keydown", this.escapeHandler);
+      this.escapeHandler = null;
+    }
     this.render();
   }
 
@@ -442,6 +447,11 @@ class AccountUi {
   }
 
   private render() {
+    if (this.escapeHandler) {
+      window.removeEventListener("keydown", this.escapeHandler);
+      this.escapeHandler = null;
+    }
+
     if (!cloudConfigured) {
       this.host.replaceChildren();
       return;
@@ -508,12 +518,11 @@ class AccountUi {
       if (event.target === backdrop) this.close();
     });
 
-    const escape = (event: KeyboardEvent) => {
+    this.escapeHandler = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
-      window.removeEventListener("keydown", escape);
       this.close();
     };
-    window.addEventListener("keydown", escape);
+    window.addEventListener("keydown", this.escapeHandler);
 
     this.host.append(backdrop);
     window.setTimeout(() => {
