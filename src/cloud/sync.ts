@@ -4,7 +4,6 @@ import {
   getLocalSaveSummary,
   installCloudSaveLocally,
   readLocalSaveObject,
-  readLocalSaveRaw,
   uploadSaveObject,
 } from "./supabase";
 
@@ -50,7 +49,21 @@ const hashText = async (value: string) => {
     .join("");
 };
 
-const hashObject = (value: Record<string, unknown>) => hashText(JSON.stringify(value));
+const stableValue = (value: unknown): unknown => {
+  if (Array.isArray(value)) return value.map(stableValue);
+  if (value && typeof value === "object") {
+    const object = value as Record<string, unknown>;
+    return Object.fromEntries(
+      Object.keys(object)
+        .sort()
+        .map((key) => [key, stableValue(object[key])]),
+    );
+  }
+  return value;
+};
+
+const hashObject = (value: Record<string, unknown>) =>
+  hashText(JSON.stringify(stableValue(value)));
 
 export class CloudSyncController {
   private timer: number | undefined;
@@ -107,7 +120,6 @@ export class CloudSyncController {
     this.busy = true;
 
     try {
-      const localRaw = readLocalSaveRaw();
       const local = readLocalSaveObject();
       const localSummary = getLocalSaveSummary();
       const cloud = await fetchCloudSave();
@@ -133,10 +145,10 @@ export class CloudSyncController {
         return;
       }
 
-      if (!cloud || !local || !localRaw) return;
+      if (!cloud || !local) return;
 
       const [localHash, cloudHash] = await Promise.all([
-        hashText(localRaw),
+        hashObject(local),
         hashObject(cloud.save_data),
       ]);
 
