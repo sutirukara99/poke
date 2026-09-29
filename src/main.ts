@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 import "./styles/alpha.css";
 import { ACTIVE_BUILD, RECOVERY_BASELINE } from "./recovery/version";
+import { mountCloudAccountUi } from "./cloud/account-ui";
 
 declare global {
   interface Window {
@@ -101,3 +102,6 @@ bootTimer = window.setTimeout(() => {
     showBootFailure("Der Start dauert ungewöhnlich lange. Ein Neuladen behebt meist einen veralteten Cache.");
   }
 }, 15_000);
+
+
+void mountCloudAccountUi();

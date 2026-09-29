@@ -82,3 +82,10 @@ Automatic deployment:
 ## Recovery documentation
 
 See [`RECOVERY.md`](./RECOVERY.md) for what was recovered and what was reconstructed.
+
+
+## PokéRegions Cloud
+
+Optional account/cloud-save scaffolding lives in `src/cloud/`. Guest/local play remains the default and the cloud UI stays hidden until the public Supabase environment variables are configured.
+
+Setup, Discord OAuth and database migration instructions are documented in [`CLOUD.md`](./CLOUD.md).
