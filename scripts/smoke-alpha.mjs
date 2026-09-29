@@ -118,3 +118,19 @@ if (!js.includes('"aria-pressed":h===N')) {
 if (!js.includes('"aria-live":"polite"')) {
   throw new Error("Gift-code live feedback missing.");
 }
+
+if (!js.includes('unlimitedLevel:a.mode==="endless"')) {
+  throw new Error("Endless party did not receive unlimited-level mode.");
+}
+if (!js.includes('a.mode==="endless"?Infinity:Ve.maxPokemonLevel')) {
+  throw new Error("Endless player XP is still capped at Level 100.");
+}
+if (!js.includes('i.mode==="endless"?Infinity:Ve.maxPokemonLevel')) {
+  throw new Error("Endless enemy factory is still capped at Level 100.");
+}
+if (!js.includes('♾ Endless · Lv.-Cap ∞')) {
+  throw new Error("Endless unlimited-level rule is missing from the HUD.");
+}
+if (js.includes('return Math.min(100,Math.max(5,Math.floor(m*h)+(i==="boss"?4:0)))')) {
+  throw new Error("Legacy Endless enemy Level 100 cap is still present.");
+}
