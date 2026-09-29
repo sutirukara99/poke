@@ -1,8 +1,8 @@
-# PokéRogue Regions
+# PokéRegions
 
 **Current build: `1.0.0-alpha.1` — Roguelike Depth & Progression**
 
-PokéRogue Regions is back on a new repository after the previous GitHub source became unavailable. The last complete deployed build we could recover was **v0.9.4** from Opera's browser cache. That immutable production bundle is preserved as the baseline, and the current 1.0 Alpha is a reproducible reconstruction layered on top of it.
+PokéRegions is back on a new repository after the previous GitHub source became unavailable. The last complete deployed build we could recover was **v0.9.4** from Opera's browser cache. That immutable production bundle is preserved as the baseline, and the current 1.0 Alpha is a reproducible reconstruction layered on top of it.
 
 > Important: this repository does **not** pretend to be the lost original TypeScript tree. `public/recovered/v0.9.4.js` is the recovered deployed behavior; `scripts/build-alpha.py` documents and reproduces the 1.0 reconstruction while readable source is progressively restored.
 
