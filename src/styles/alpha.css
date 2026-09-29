@@ -1,5 +1,3 @@
-/* PokéRogue Regions · 1.0 Alpha visual polish
-   Original handheld-inspired skin layered over the recovered v0.9.4 UI. */
 :root{
   --alpha-ink:#152238;--alpha-ink-soft:#304566;--alpha-paper:#fffdf0;--alpha-paper-2:#f4efd2;
   --alpha-red:#cf3345;--alpha-red-dark:#8e1f31;--alpha-blue:#2f6fb2;--alpha-blue-dark:#183f73;
@@ -24,13 +22,11 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 .alpha-shell button:focus-visible,.alpha-shell input:focus-visible,.alpha-shell select:focus-visible{outline:4px solid #ffd84f!important;outline-offset:2px}
 .alpha-shell input,.alpha-shell select{border:2px solid var(--alpha-ink)!important;border-radius:5px!important;background:#fffef7!important;color:var(--alpha-ink)!important;box-shadow:inset 0 2px 0 rgba(20,35,58,.08)}
 
-/* Main menu: cartridge/menu-card feel */
 .alpha-shell .menu-grid>button,.alpha-shell .mode-card,.alpha-shell .region-card{overflow:hidden;isolation:isolate}
 .alpha-shell .menu-grid>button:after,.alpha-shell .mode-card:after,.alpha-shell .region-card:after{content:"";position:absolute;right:-22px;bottom:-24px;width:78px;height:78px;border:11px solid rgba(28,57,92,.055);border-radius:50%;box-shadow:inset 0 0 0 10px rgba(28,57,92,.035);z-index:-1}
 .alpha-shell .hero,.alpha-shell .menu-hero{border:4px solid var(--alpha-ink)!important;border-radius:12px!important;background:linear-gradient(135deg,#f8f1d4 0 58%,#e7dfbc 58% 100%)!important;box-shadow:0 6px 0 #243853,0 14px 36px rgba(11,25,44,.2)!important}
 .alpha-shell .hero:after,.alpha-shell .menu-hero:after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 82% 40%,transparent 0 40px,rgba(207,51,69,.09) 41px 56px,transparent 57px)}
 
-/* Run setup */
 .alpha-run-setup{display:grid;gap:18px}
 .alpha-run-setup .mode-grid{gap:12px}
 .alpha-daily-card{border:3px solid #5b3e82!important;background:linear-gradient(145deg,#fff9df,#eee4ff)!important;position:relative}
@@ -38,13 +34,11 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 .alpha-ascension{padding:14px;border:2px solid var(--alpha-line);background:#fff8d7;border-radius:6px;box-shadow:inset 0 0 0 3px #f1e8b8}
 .alpha-ascension input[type="range"]{accent-color:var(--alpha-red);width:100%}
 
-/* HUD */
 .alpha-shell .game-hud,.alpha-shell .run-strip{border:3px solid #14243d!important;border-radius:8px!important;background:linear-gradient(180deg,#1f3c60,#152b49)!important;color:#fff!important;box-shadow:0 4px 0 #091525!important}
 .alpha-shell .hud-stat{border:1px solid rgba(255,255,255,.22)!important;background:rgba(255,255,255,.08)!important;border-radius:6px!important}
 .alpha-shell .hud-stat b,.alpha-shell .hud-stat small{color:#fff!important}
 .alpha-shell .modifier-strip span{border:2px solid #6d4e15;background:#fff1a9;color:#342807;border-radius:999px;padding:5px 9px;font-weight:800}
 
-/* Route map */
 .alpha-shell .route-map{border:4px solid #18324f!important;border-radius:10px!important;background:linear-gradient(#bce2c7,#8bc4a4)!important;box-shadow:inset 0 0 0 4px rgba(255,255,255,.34),0 5px 0 #10233a!important}
 .alpha-shell .route-node{border:3px solid #18324f!important;background:linear-gradient(#fffdf2,#eae2bd)!important;box-shadow:0 3px 0 #18324f!important}
 .alpha-shell .route-node.node-accessible{animation:alphaNodePulse 1.8s steps(2,end) infinite}
@@ -55,7 +49,6 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 .alpha-shell .route-node.secret-route .node-copy strong,.alpha-shell .route-node.secret-route small,.alpha-shell .route-node.secret-route .node-kicker{color:#fff!important}
 @keyframes alphaNodePulse{50%{filter:brightness(1.08);transform:translateY(-1px)}}
 
-/* Battle: handheld battle-window presentation */
 .alpha-shell .retro-battle-shell{padding:12px!important;background:#f8f3dc!important}
 .alpha-shell .retro-battle-title{border:3px solid #172a46!important;border-radius:7px!important;background:linear-gradient(#294d78,#173453)!important;color:#fff!important;box-shadow:inset 0 0 0 2px rgba(255,255,255,.15)}
 .alpha-shell .gba-battlefield{border:4px solid #152b46!important;border-radius:8px!important;box-shadow:inset 0 0 0 3px rgba(255,255,255,.35),0 4px 0 #0f2036!important;overflow:hidden}
@@ -68,7 +61,6 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 .alpha-telegraph-pill:before{content:"!";display:grid;place-items:center;width:25px;height:25px;border:2px solid #481419;border-radius:50%;background:#fff3bd}
 @keyframes alphaWarning{50%{filter:brightness(1.08)}}
 
-/* Loot */
 .alpha-loot{position:relative}
 .alpha-loot .loot-grid{gap:14px}
 .alpha-loot .loot-card{border:3px solid #1a2d49!important;background:linear-gradient(#fffdf0,#e9e2c4)!important;border-radius:7px!important;box-shadow:0 4px 0 #172a46!important}
@@ -78,7 +70,6 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 .alpha-lock{font-size:.72rem!important;padding:5px 7px!important}
 .alpha-locked{outline:4px solid #f5c94a!important;outline-offset:2px}
 
-/* Score / completion */
 .alpha-score-card{display:grid;grid-template-columns:auto 1fr;grid-template-areas:"eyebrow eyebrow" "rank total" "rank detail";gap:3px 14px;align-items:center;margin:14px 0;padding:14px 16px;border:4px double #173653;border-radius:8px;background:linear-gradient(120deg,#fff7bd,#fffdf2 60%,#d7e9f5);box-shadow:0 4px 0 #173653}
 .alpha-score-card .eyebrow{grid-area:eyebrow;margin:0}.alpha-score-rank{grid-area:rank;display:grid;place-items:center;width:62px;height:62px;border:4px solid #172a46;border-radius:50%;background:#cf3345;color:#fff;font-size:1.8rem;text-shadow:0 2px #761b28}.alpha-score-card strong{grid-area:total;font-size:1.25rem}.alpha-score-card small{grid-area:detail}
 .alpha-completion,.alpha-codex,.alpha-mastery{max-width:1180px;margin:18px auto!important}
@@ -88,12 +79,10 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 .alpha-codex-grid article:nth-child(3n+1){border-top-color:#cf3345}.alpha-codex-grid article:nth-child(3n+2){border-top-color:#3d81c5}.alpha-codex-grid article:nth-child(3n){border-top-color:#d5a62e}
 .alpha-mastery-grid article{display:flex;gap:12px;align-items:center}.alpha-mastery-grid img{width:68px;height:68px;object-fit:contain;image-rendering:pixelated}.alpha-challenges{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}.alpha-challenges span{padding:3px 6px;border:1px solid #69758a;border-radius:999px;font-size:.72rem;background:#ebe7d4}.alpha-challenges .done{background:#d8f1d4;border-color:#438b55;color:#24552f}
 
-/* Tutorial */
 .alpha-tutorial-backdrop{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:20px;background:rgba(7,18,33,.78);backdrop-filter:blur(3px)}
 .alpha-tutorial-card{max-width:560px;padding:26px;border:5px solid #142a47;border-radius:10px;background:linear-gradient(#fffdf0,#efe5bd);box-shadow:0 0 0 4px #fff,0 10px 0 #0c1c31,0 22px 60px rgba(0,0,0,.45)}
 .alpha-tutorial-card:after{content:"";display:block;width:42px;height:42px;margin:16px auto 0;border:8px solid var(--alpha-red);border-radius:50%;box-shadow:inset 0 0 0 6px #fff,0 0 0 3px #142a47;background:#142a47}
 
-/* Small polish */
 .alpha-shell .type-badge,.alpha-shell .rarity-chip,.alpha-shell .status-chip{border:2px solid rgba(17,33,52,.7)!important;box-shadow:0 2px 0 rgba(15,29,47,.4)!important}
 .alpha-shell .trainer-card,.alpha-shell .pokemon-card,.alpha-shell .pc-card{border-radius:7px!important;border-width:3px!important}
 .alpha-shell .secondary-back{margin-bottom:14px}
@@ -104,7 +93,7 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
   .alpha-shell{padding:0 6px}.alpha-shell .panel{border-width:2px!important}.alpha-shell .run-strip{overflow-x:auto;display:flex!important;flex-wrap:nowrap!important}.alpha-shell .hud-stat{min-width:104px}.completion-grid,.alpha-codex-grid,.alpha-mastery-grid{grid-template-columns:1fr}.alpha-score-card{grid-template-columns:62px 1fr}.alpha-tutorial-card{padding:18px}.alpha-shell .battle-actions{grid-template-columns:1fr 1fr!important}
 }
 @media(prefers-reduced-motion:reduce){.alpha-shell .route-node.node-accessible,.alpha-telegraph-pill{animation:none!important}}
-/* === 1.0 Alpha Hotfix · Dark handheld pass, spacious party, overlay safety === */
+
 :root{
   --alpha-ink:#eef4f8;--alpha-ink-soft:#b9c7d3;--alpha-paper:#172532;--alpha-paper-2:#1e3140;
   --alpha-shadow:#071019;--alpha-line:#4c6170;
@@ -200,7 +189,6 @@ body:before{z-index:0!important;opacity:.18}
   .alpha-account-quest-grid{grid-template-columns:1fr}
 }
 
-/* Ascension must follow the dark handheld palette too. */
 .alpha-shell .alpha-ascension{
   background:linear-gradient(180deg,#162833,#10202a)!important;
   border-color:#536d7b!important;
@@ -211,7 +199,6 @@ body:before{z-index:0!important;opacity:.18}
 .alpha-shell .alpha-ascension small,.alpha-shell .alpha-ascension label{color:#b9c8d1!important}
 .alpha-shell .alpha-ascension input[type="range"]{accent-color:#d84b5b!important}
 
-/* === 1.0 Alpha polish cleanup: remove leftover parchment/bright surfaces === */
 body:before{display:none!important}
 .alpha-shell .alpha-run-setup,
 .alpha-shell .new-run-screen,
@@ -290,11 +277,8 @@ body:before{display:none!important}
 .alpha-fatal-recovery button{margin-top:14px}
 .alpha-battle-recovery{min-height:220px;display:grid;place-content:center;text-align:center}
 
-/* All game sprites are decorative pixels; parent buttons/cards own interaction. */
 .alpha-shell img.sprite{pointer-events:none!important;user-select:none!important;-webkit-user-drag:none!important}
 
-
-/* === 1.0 Alpha r4 · unified dark UI + sprite alignment pass === */
 :root{
   --surface-0:#09131b;
   --surface-1:#101f2a;
@@ -308,7 +292,6 @@ body:before{display:none!important}
   --accent-blue:#73a9d2;
 }
 
-/* Kill the remaining parchment/cream cards across Alpha screens. */
 .alpha-shell .alpha-codex-grid article,
 .alpha-shell .completion-grid article,
 .alpha-shell .alpha-mastery-grid article,
@@ -380,7 +363,6 @@ body:before{display:none!important}
   color:#edf5f8!important;
 }
 
-/* Generic controls: no surprise cream button can leak back in. */
 .alpha-shell button:not(.primary):not(.type-badge),
 .alpha-shell .button:not(.primary){
   background:linear-gradient(180deg,#263b48,#182a35)!important;
@@ -415,7 +397,6 @@ body:before{display:none!important}
 }
 .alpha-shell .muted{color:#9dafba!important}
 
-/* Party panel: one coherent card, sprite fully inside the active outline. */
 .alpha-shell .play-layout{
   grid-template-columns:minmax(0,1fr) minmax(320px,340px)!important;
   gap:18px!important;
@@ -506,7 +487,6 @@ body:before{display:none!important}
   padding:14px 8px!important;
 }
 
-/* Battle sprites: position the image boxes over the centers of their platforms. */
 .alpha-shell .gba-battlefield .enemy-sprite{
   left:calc(79% - 84px)!important;
   right:auto!important;
@@ -534,7 +514,6 @@ body:before{display:none!important}
   transform-origin:50% 100%!important;
 }
 
-/* Center Pokémon consistently anywhere a fixed display slot is used. */
 .alpha-shell .starter-panel .sprite,
 .alpha-shell .starters .sprite,
 .alpha-shell .dex-card .sprite,
@@ -550,7 +529,6 @@ body:before{display:none!important}
   object-position:50% 50%!important;
 }
 
-/* Route/codex/loot accents stay colorful, but surfaces remain dark. */
 .alpha-shell .alpha-codex-grid article:nth-child(3n+1){border-top-color:#c44b5b!important}
 .alpha-shell .alpha-codex-grid article:nth-child(3n+2){border-top-color:#5f9fd0!important}
 .alpha-shell .alpha-codex-grid article:nth-child(3n){border-top-color:#c8a84b!important}
@@ -599,8 +577,6 @@ body:before{display:none!important}
   }
 }
 
-
-/* === r4 run-information polish === */
 .alpha-shell .alpha-run-flags{
   display:flex!important;
   flex-wrap:wrap!important;
@@ -650,8 +626,6 @@ body:before{display:none!important}
   .alpha-shell .alpha-run-flags .flag-score{margin-left:0!important}
 }
 
-
-/* === r5 node hover help === */
 .alpha-shell .route-map,
 .alpha-shell .route-row,
 .alpha-shell .node-options{
@@ -711,7 +685,6 @@ body:before{display:none!important}
   transform:translate(-50%,0)!important;
 }
 
-/* disabled revealed nodes still explain themselves on hover */
 .alpha-shell .route-node:disabled{pointer-events:auto!important;cursor:not-allowed!important}
 .alpha-shell .route-node:disabled:hover .route-node-tooltip{
   opacity:1!important;
