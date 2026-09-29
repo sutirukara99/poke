@@ -1,6 +1,6 @@
 # PokéRegions Cloud Accounts
 
-The Alpha keeps local play as the default. Cloud accounts are optional and become visible only when the Supabase environment variables are configured.
+The Alpha keeps local play as the default. Cloud accounts are optional. Production is configured with the project's public Supabase URL and publishable browser key; Vite environment variables can override those values for staging or local development.
 
 ## 1. Create a Supabase project
 
@@ -25,9 +25,9 @@ VITE_SUPABASE_URL=...
 VITE_SUPABASE_ANON_KEY=...
 ```
 
-For production, add the same public values to the deployment environment.
+For staging or another Supabase project, add the same public values to the deployment environment to override the production defaults.
 
-The publishable/anon key is designed for browser use. Never put the Supabase service-role key or Discord client secret in this repository.
+The publishable/anon key is designed for browser use and is intentionally public. Never put the Supabase service-role key or Discord client secret in this repository.
 
 ## 3. Discord login
 
