@@ -1100,3 +1100,81 @@ body:before{display:none!important}
   .alpha-shell .alpha-gift-form{grid-template-columns:1fr!important}
   .alpha-shell .alpha-gift-form button{width:100%!important}
 }
+
+
+/* FIRST WAVE GIFT STARTER · 2026-09-29 */
+.alpha-shell .pokemon-special-tag{
+  display:inline-flex!important;
+  align-items:center!important;
+  width:max-content!important;
+  min-height:21px!important;
+  margin-left:7px!important;
+  padding:3px 7px!important;
+  border:1px solid #d2b657!important;
+  border-radius:999px!important;
+  background:linear-gradient(180deg,#3a3218,#241f10)!important;
+  color:#ffe89b!important;
+  box-shadow:0 2px 0 #071019!important;
+  font-size:8px!important;
+  font-weight:900!important;
+  line-height:1!important;
+  letter-spacing:.08em!important;
+  text-transform:uppercase!important;
+  vertical-align:middle!important;
+}
+.alpha-shell .party-mon-name{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  align-items:center!important;
+  gap:2px!important;
+}
+.alpha-shell .party-mon-name .pokemon-special-tag{
+  margin-left:5px!important;
+}
+.alpha-shell .starters .gift-starter-card{
+  position:relative!important;
+  overflow:hidden!important;
+  border-color:#d5b957!important;
+  background:
+    radial-gradient(circle at 50% 30%,rgba(255,224,103,.12),transparent 43%),
+    linear-gradient(180deg,#19313c,#10212a)!important;
+  box-shadow:0 4px 0 #071019,0 0 0 2px rgba(213,185,87,.14),0 0 26px rgba(213,185,87,.12)!important;
+}
+.alpha-shell .starters .gift-starter-card:before{
+  content:"FIRST WAVE"!important;
+  position:absolute!important;
+  right:-27px!important;
+  top:16px!important;
+  z-index:3!important;
+  transform:rotate(35deg)!important;
+  width:118px!important;
+  padding:4px 0!important;
+  border-top:1px solid rgba(255,238,172,.55)!important;
+  border-bottom:1px solid rgba(255,238,172,.55)!important;
+  background:#8f762c!important;
+  color:#fff1b8!important;
+  font-size:7px!important;
+  font-weight:1000!important;
+  letter-spacing:.12em!important;
+  text-align:center!important;
+  pointer-events:none!important;
+}
+.alpha-shell .starters .gift-starter-card .sprite{
+  filter:drop-shadow(0 0 9px rgba(255,222,93,.28))!important;
+}
+.alpha-shell .starters .starter-special-tag{
+  position:relative!important;
+  z-index:3!important;
+  margin:2px auto 7px!important;
+}
+.alpha-shell .gift-meta-card{
+  position:relative!important;
+  border-color:#d5b957!important;
+  box-shadow:0 3px 0 #071019,0 0 20px rgba(213,185,87,.12)!important;
+}
+.alpha-shell .gift-meta-card .pokemon-special-tag{
+  margin:0 auto 5px!important;
+}
+.alpha-shell .champion-team-grid .pokemon-special-tag{
+  margin:3px auto 2px!important;
+}
