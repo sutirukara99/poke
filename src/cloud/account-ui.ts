@@ -41,7 +41,7 @@ const input = (
   const element = document.createElement("input");
   element.type = type;
   element.placeholder = placeholder;
-  element.autocomplete = autocomplete;
+  element.setAttribute("autocomplete", autocomplete);
   return element;
 };
 
