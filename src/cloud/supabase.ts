@@ -3,13 +3,16 @@ import { createClient, type Session, type SupabaseClient } from "@supabase/supab
 const SAVE_KEY = "pokerogue-regions-v1";
 const BACKUP_KEY = SAVE_KEY + "-backup";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
+const publicSupabaseUrl = "https://etwpxprwccctrmestthp.supabase.co";
+const publicSupabaseKey = "sb_publishable_Nd_3j42Yj_nxfWslEwzHLg_FVEljhHm";
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim() || publicSupabaseUrl;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim() || publicSupabaseKey;
 
 export const cloudConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
 export const supabase: SupabaseClient | null = cloudConfigured
-  ? createClient(supabaseUrl!, supabaseAnonKey!, {
+  ? createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
