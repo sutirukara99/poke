@@ -121,10 +121,10 @@ must('ve=Object.values(a.evolutionItems).reduce((O,ae)=>O+ae,0),ue=',
 must('return X.useEffect(()=>{_e&&Ix(V)},[_e,V]),p?',
 '''X.useEffect(()=>{QalphaSetLane(0)},[oe,a.mapIndex,a.arena?.step]);X.useEffect(()=>{if(a.phase!=="map")return;const O=J[oe]?.filter(ae=>qu(J,oe,x,Iy(ae,!!a.arena))&&(!ae.secret||a.fogRevealed||a.activeRelics.includes("cracked-compass")))??[];if(!O.length)return;const ae=pt=>{if(["INPUT","TEXTAREA","SELECT"].includes(pt.target?.tagName)||pt.metaKey||pt.ctrlKey||pt.altKey)return;const qa=pt.key.toLowerCase();if(qa==="a"||pt.key==="ArrowLeft")pt.preventDefault(),QalphaSetLane(Ut=>(Ut-1+O.length)%O.length);else if(qa==="d"||pt.key==="ArrowRight")pt.preventDefault(),QalphaSetLane(Ut=>(Ut+1)%O.length);else if(pt.key==="Enter"){pt.preventDefault();const Ut=O[Math.min(QalphaLane,O.length-1)];Ut&&r({type:"node",id:Ut.id})}};return window.addEventListener("keydown",ae),()=>window.removeEventListener("keydown",ae)},[a.phase,J,oe,x,a.arena,a.fogRevealed,a.activeRelics,QalphaLane,r]);return X.useEffect(()=>{_e&&Ix(V)},[_e,V]),p?''','route keyboard')
 
-must('endlessBossHighScore:0,ascension:{},dailyRecords:{},speciesMastery:{},tutorialSeen:[],settings:{',
-     'endlessBossHighScore:0,ascension:{},dailyRecords:{},speciesMastery:{},tutorialSeen:[],alphaQuestClaims:[],settings:{','account quest claims default')
-must('d.speciesMastery??={},d.tutorialSeen??=[];',
-     'd.speciesMastery??={},d.tutorialSeen??=[],d.alphaQuestClaims??=[];','account quest claims migration')
+must('endlessBossHighScore:0,ascension:{},dailyRecords:{},speciesMastery:{},tutorialSeen:[],redeemedCodes:[],settings:{',
+     'endlessBossHighScore:0,ascension:{},dailyRecords:{},speciesMastery:{},tutorialSeen:[],redeemedCodes:[],alphaQuestClaims:[],settings:{','account quest claims default')
+must('d.speciesMastery??={},d.tutorialSeen??=[],d.redeemedCodes??=[];',
+     'd.speciesMastery??={},d.tutorialSeen??=[],d.redeemedCodes??=[],d.alphaQuestClaims??=[];','account quest claims migration')
 
 quest_helpers=r'''const QalphaAccountQuests=[
 {id:"field-start",title:"Feldstart",text:"Fange dein erstes Pokémon.",xp:60,rogue:8,progress:a=>a.caught.length,target:1},
