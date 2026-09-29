@@ -1639,7 +1639,7 @@ body{
     grid-template-columns:repeat(2,minmax(0,1fr))!important;
   }
   .alpha-shell .achievement-toast-stack{
-    top:max(86px,calc(env(safe-area-inset-top) + 8px))!important;
+    top:max(124px,calc(env(safe-area-inset-top) + 12px))!important;
     left:max(10px,env(safe-area-inset-left))!important;
     right:max(10px,env(safe-area-inset-right))!important;
     width:auto!important;
@@ -1703,8 +1703,8 @@ body{
     opacity:0!important;
     visibility:hidden!important;
   }
-  .alpha-shell .alpha-move-tooltip-trigger:focus-visible::after,
-  .alpha-shell .route-node:focus-visible .route-node-tooltip{
+  .alpha-shell .alpha-move-tooltip-trigger:focus::after,
+  .alpha-shell .route-node:focus .route-node-tooltip{
     opacity:1!important;
     visibility:visible!important;
   }
