@@ -42,22 +42,35 @@ In the Discord Developer Portal:
 
 The browser never receives the Discord secret.
 
-## 4. What happens to existing players?
+## 4. Account behavior
 
-Nothing automatically.
+PokéRegions now supports:
 
-- Guest/local saves keep working exactly as before.
-- After login, players can upload their current local save.
-- Loading a cloud save first backs up the current local save.
-- There is intentionally no automatic conflict merge yet.
+- classic e-mail + password login
+- account registration with trainer name
+- Discord OAuth
+- password reset
+- persistent sessions
+- guest play without an account
 
-This is the safe Alpha behavior. Automatic synchronization can be added after we have real-world conflict data.
+## 5. Automatic cross-device saves
 
-## 5. Next backend phase
+After login, the browser starts a safe automatic sync loop.
+
+- If the account has a Cloud Save and the new device has no meaningful local profile, the Cloud Save is restored automatically.
+- If the account has no Cloud Save but the device already has a real local profile, the local save becomes the first Cloud Save.
+- While playing, local save changes are uploaded automatically.
+- If another device has a newer Cloud Save and the current device has not changed locally, the newer cloud version is restored automatically.
+- If both devices changed since the last successful sync, PokéRegions stops and asks which save should win instead of silently overwriting progress.
+- Before a Cloud Save replaces a local save, the previous local JSON is stored in the existing backup key.
+
+The sync metadata is tied to the authenticated user so switching accounts on the same browser cannot silently merge two different saves.
+
+## 6. Next backend phase
 
 Recommended next steps:
 
 1. server-side gift-code redemption / entitlements
-2. automatic save sync with revision/conflict handling
-3. Daily leaderboard submission through a trusted endpoint
-4. account profile / Discord role integration
+2. Daily leaderboard submission through a trusted endpoint
+3. account profile page / Discord role integration
+4. optional save revision history / recovery slots
