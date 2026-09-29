@@ -171,12 +171,17 @@ const render = async (host: HTMLElement, session: Session | null, status = "") =
   modal.append(panel);
   host.append(pill, modal);
 
+  const onKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Escape" && !modal.hidden) hide();
+  };
   const open = () => {
     modal.hidden = false;
+    window.addEventListener("keydown", onKeyDown);
     close.focus();
   };
   const hide = () => {
     modal.hidden = true;
+    window.removeEventListener("keydown", onKeyDown);
     pill.focus();
   };
 
@@ -185,9 +190,6 @@ const render = async (host: HTMLElement, session: Session | null, status = "") =
   modal.addEventListener("click", (event) => {
     if (event.target === modal) hide();
   });
-  window.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !modal.hidden) hide();
-  }, { once: true });
 };
 
 export const mountCloudAccountUi = async () => {
