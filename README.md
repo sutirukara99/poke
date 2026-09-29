@@ -1,6 +1,6 @@
 # PokéRegions
 
-**Current build: `1.0.0-alpha.1` — Roguelike Depth & Progression**
+**Current build: `1.0.0-alpha.1` · launch candidate `r7` — Roguelike Depth & Progression**
 
 PokéRegions is back on a new repository after the previous GitHub source became unavailable. The last complete deployed build we could recover was **v0.9.4** from Opera's browser cache. That immutable production bundle is preserved as the baseline, and the current 1.0 Alpha is a reproducible reconstruction layered on top of it.
 
