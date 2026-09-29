@@ -1762,3 +1762,67 @@ body{
   display:block;
   color:#8fa4b0;
 }
+
+
+/* PARTY ORDER / LEAD */
+.alpha-shell .party-member[draggable="true"]{
+  cursor:grab;
+}
+.alpha-shell .party-member[draggable="true"]:active{
+  cursor:grabbing;
+}
+.alpha-shell .party-member.is-dragging{
+  opacity:.55;
+  transform:scale(.985);
+}
+.alpha-shell .party-order-controls{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  min-height:28px;
+  margin:2px 0 6px;
+}
+.alpha-shell .party-order-grip{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:3px 7px;
+  border:1px dashed rgba(216,198,113,.48);
+  border-radius:4px;
+  color:#d8c671;
+  font-family:"Press Start 2P",monospace;
+  font-size:8px;
+  letter-spacing:.04em;
+  user-select:none;
+}
+.alpha-shell .party-member:first-of-type .party-order-grip{
+  border-style:solid;
+  box-shadow:0 0 0 1px rgba(216,198,113,.12) inset;
+}
+.alpha-shell .party-order-buttons{
+  display:inline-flex;
+  gap:4px;
+}
+.alpha-shell .party-order-buttons button{
+  min-width:30px;
+  min-height:28px;
+  padding:2px 7px!important;
+  font-size:15px!important;
+  line-height:1!important;
+}
+.alpha-shell .party-order-buttons button:disabled{
+  opacity:.28!important;
+}
+@media(max-width:760px){
+  .alpha-shell .party-member[draggable="true"]{
+    cursor:default;
+  }
+  .alpha-shell .party-order-grip{
+    font-size:7px;
+  }
+  .alpha-shell .party-order-buttons button{
+    min-width:36px;
+    min-height:34px;
+  }
+}
