@@ -13,10 +13,6 @@ declare global {
 window.__POKEREGIONS_RECOVERY__ = RECOVERY_BASELINE;
 window.__POKEREGIONS_BUILD__ = ACTIVE_BUILD;
 
-// battlefield interaction guard
-// Battle sprites and the empty battlefield are visual-only. Swallow pointer/click
-// events before React sees them, so clicking a wild Pokémon can never open or
-// leave behind an overlay. Real controls inside the battlefield stay interactive.
 const guardBattlefieldInteraction = (event: Event) => {
   const target = event.target;
   if (!(target instanceof Element)) return;
