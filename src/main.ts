@@ -32,31 +32,72 @@ script.async = false;
 script.dataset.recoveredBuild = RECOVERY_BASELINE.version;
 script.dataset.activeBuild = ACTIVE_BUILD.version;
 
+let bootTimer: number | undefined;
+let bootObserver: MutationObserver | undefined;
+
+const stopBootWatch = () => {
+  if (bootTimer !== undefined) {
+    window.clearTimeout(bootTimer);
+    bootTimer = undefined;
+  }
+  bootObserver?.disconnect();
+  bootObserver = undefined;
+};
+
 const showBootFailure = (message: string) => {
   const root = document.getElementById("root");
   if (!root) return;
-  root.innerHTML = `
-    <main class="alpha-boot-recovery" role="alert">
-      <p class="alpha-boot-kicker">POKÉREGIONS · 1.0 ALPHA</p>
-      <h1>Die Alpha konnte nicht vollständig geladen werden.</h1>
-      <p>${message}</p>
-      <button type="button" onclick="location.reload()">Neu laden</button>
-      <small>Dein lokaler Spielstand bleibt dabei erhalten.</small>
-    </main>
-  `;
+
+  stopBootWatch();
+
+  const recovery = document.createElement("main");
+  recovery.className = "alpha-boot-recovery";
+  recovery.setAttribute("role", "alert");
+
+  const kicker = document.createElement("p");
+  kicker.className = "alpha-boot-kicker";
+  kicker.textContent = "POKÉREGIONS · 1.0 ALPHA";
+
+  const heading = document.createElement("h1");
+  heading.textContent = "Die Alpha konnte nicht vollständig geladen werden.";
+
+  const copy = document.createElement("p");
+  copy.textContent = message;
+
+  const reload = document.createElement("button");
+  reload.type = "button";
+  reload.textContent = "Neu laden";
+  reload.addEventListener("click", () => window.location.reload());
+
+  const note = document.createElement("small");
+  note.textContent = "Dein lokaler Spielstand bleibt dabei erhalten.";
+
+  recovery.append(kicker, heading, copy, reload, note);
+  root.replaceChildren(recovery);
 };
 
 script.addEventListener("error", () => {
   showBootFailure("Eine Spieldatei konnte nicht geladen werden. Bitte lade die Seite neu.");
 });
 
+const root = document.getElementById("root");
+if (root) {
+  bootObserver = new MutationObserver(() => {
+    if (root.childElementCount > 0 && !root.querySelector(".alpha-boot-recovery")) {
+      stopBootWatch();
+    }
+  });
+  bootObserver.observe(root, { childList: true });
+}
+
 document.head.appendChild(script);
 
 // Avoid a silent blank screen if a browser extension, cache entry or network error
-// interrupts startup before React can mount.
-window.setTimeout(() => {
-  const root = document.getElementById("root");
-  if (root && root.childElementCount === 0) {
+// interrupts startup before React can mount. The observer cancels this as soon as
+// the application renders successfully.
+bootTimer = window.setTimeout(() => {
+  const currentRoot = document.getElementById("root");
+  if (currentRoot && currentRoot.childElementCount === 0) {
     showBootFailure("Der Start dauert ungewöhnlich lange. Ein Neuladen behebt meist einen veralteten Cache.");
   }
-}, 12_000);
+}, 15_000);
