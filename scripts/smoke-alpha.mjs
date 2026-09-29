@@ -147,3 +147,13 @@ if (!js.includes('draggable:U&&!b&&!!QalphaReorder')) {
 if (!js.includes('führt jetzt dein Team an')) {
   throw new Error("Lead-selection feedback is missing.");
 }
+
+if (!js.includes('https://discord.gg/7q4uR7tsrH')) {
+  throw new Error("Official Discord invite is missing.");
+}
+if (!js.includes('className:"discord-community-link"')) {
+  throw new Error("Official Discord button is missing.");
+}
+if (!js.includes('Offizieller Discord')) {
+  throw new Error("Official Discord CTA label is missing.");
+}
