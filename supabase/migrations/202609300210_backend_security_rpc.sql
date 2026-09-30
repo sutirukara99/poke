@@ -699,6 +699,13 @@ revoke all on function public.grant_reward_bundle_internal(uuid, uuid, text, tex
 revoke all on function public.unlock_achievement_internal(uuid, text, text, jsonb, uuid)
   from public, anon, authenticated;
 
+grant execute on function public.grant_catalog_item_internal(uuid, text, bigint, jsonb)
+  to service_role;
+grant execute on function public.grant_reward_bundle_internal(uuid, uuid, text, text, uuid, jsonb)
+  to service_role;
+grant execute on function public.unlock_achievement_internal(uuid, text, text, jsonb, uuid)
+  to service_role;
+
 -- Player RPCs ---------------------------------------------------------------
 
 create or replace function public.set_my_trainer_name(p_trainer_name text)
@@ -1278,7 +1285,7 @@ grant execute on function public.admin_set_account_state(uuid, text, text)
   to authenticated;
 
 -- Table privileges. RLS remains the actual authorization boundary.
-grant select on public.profiles to authenticated;
+grant select, update on public.profiles to authenticated;
 grant select, insert, delete on public.user_roles to authenticated;
 grant select, insert, update, delete on public.catalog_items to authenticated;
 grant select, insert, update, delete on public.account_inventory to authenticated;
