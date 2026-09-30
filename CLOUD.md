@@ -66,11 +66,18 @@ After login, the browser starts a safe automatic sync loop.
 
 The sync metadata is tied to the authenticated user so switching accounts on the same browser cannot silently merge two different saves.
 
-## 6. Next backend phase
+## 6. Backend foundation
 
-Recommended next steps:
+The next account/backend layer is prepared in [BACKEND.md](BACKEND.md).
 
-1. server-side gift-code redemption / entitlements
-2. Daily leaderboard submission through a trusted endpoint
-3. account profile page / Discord role integration
-4. optional save revision history / recovery slots
+It adds migrations and client helpers for:
+
+1. roles and admin authorization
+2. permanent account inventory and reusable reward bundles
+3. secure gift-code redemption
+4. data-driven achievements and events
+5. feature flags and announcements
+6. player notifications and moderation
+7. automatic cloud-save revision history
+
+The SQL is intentionally separate from the currently live cloud-save migration. Apply the backend migrations in the order documented in `BACKEND.md` before wiring the new UI.
