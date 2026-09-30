@@ -1,5 +1,6 @@
 import type {
   AccountInventoryRow,
+  AchievementProgressRow,
   AchievementRow,
   AnnouncementRow,
   AppRole,
@@ -77,6 +78,19 @@ export const fetchMyInventory = async (): Promise<AccountInventoryRow[]> => {
   return (data ?? []) as AccountInventoryRow[];
 };
 
+export const fetchMyAchievementProgress = async (): Promise<AchievementProgressRow[]> => {
+  const client = requireClient();
+  const userId = await requireUserId();
+  const { data, error } = await client
+    .from("achievement_progress")
+    .select("*")
+    .eq("user_id", userId)
+    .order("updated_at", { ascending: false });
+
+  assertNoError(error);
+  return (data ?? []) as AchievementProgressRow[];
+};
+
 export const fetchMyAchievements = async (): Promise<UserAchievementRow[]> => {
   const client = requireClient();
   const userId = await requireUserId();
@@ -120,17 +134,33 @@ export const fetchMyNotifications = async (
 };
 
 export const loadBackendAccountSnapshot = async (): Promise<BackendAccountSnapshot> => {
-  const [profile, roles, inventory, achievements, loadout, notifications] =
-    await Promise.all([
-      fetchMyProfile(),
-      fetchMyRoles(),
-      fetchMyInventory(),
-      fetchMyAchievements(),
-      fetchMyLoadout(),
-      fetchMyNotifications(),
-    ]);
+  const [
+    profile,
+    roles,
+    inventory,
+    achievements,
+    achievementProgress,
+    loadout,
+    notifications,
+  ] = await Promise.all([
+    fetchMyProfile(),
+    fetchMyRoles(),
+    fetchMyInventory(),
+    fetchMyAchievements(),
+    fetchMyAchievementProgress(),
+    fetchMyLoadout(),
+    fetchMyNotifications(),
+  ]);
 
-  return { profile, roles, inventory, achievements, loadout, notifications };
+  return {
+    profile,
+    roles,
+    inventory,
+    achievements,
+    achievementProgress,
+    loadout,
+    notifications,
+  };
 };
 
 export const setTrainerName = async (trainerName: string) => {
