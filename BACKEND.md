@@ -165,6 +165,10 @@ Data-driven achievement definitions including name, description, icon, category,
 
 Unlocked achievements per user.
 
+**achievement_progress**
+
+Separate progress storage for achievements that are not unlocked yet. Keeping progress separate prevents hidden achievements from being revealed simply because a progress row exists.
+
 Achievement insertion is intentionally not writable by ordinary clients. A future trusted gameplay endpoint can call the internal unlock path. Admins can already grant achievements using the provided RPC.
 
 ### Events
