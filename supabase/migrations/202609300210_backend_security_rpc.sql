@@ -113,6 +113,7 @@ alter table public.promo_codes enable row level security;
 alter table public.promo_redemptions enable row level security;
 alter table public.achievements enable row level security;
 alter table public.user_achievements enable row level security;
+alter table public.achievement_progress enable row level security;
 alter table public.events enable row level security;
 alter table public.event_claims enable row level security;
 alter table public.player_notifications enable row level security;
@@ -325,6 +326,22 @@ using (public.current_user_is_admin());
 drop policy if exists "Admins can manage user achievements" on public.user_achievements;
 create policy "Admins can manage user achievements"
 on public.user_achievements for all to authenticated
+using (public.current_user_is_admin())
+with check (public.current_user_is_admin());
+
+drop policy if exists "Users can read own achievement progress" on public.achievement_progress;
+create policy "Users can read own achievement progress"
+on public.achievement_progress for select to authenticated
+using (auth.uid() = user_id);
+
+drop policy if exists "Admins can read achievement progress" on public.achievement_progress;
+create policy "Admins can read achievement progress"
+on public.achievement_progress for select to authenticated
+using (public.current_user_is_admin());
+
+drop policy if exists "Admins can manage achievement progress" on public.achievement_progress;
+create policy "Admins can manage achievement progress"
+on public.achievement_progress for all to authenticated
 using (public.current_user_is_admin())
 with check (public.current_user_is_admin());
 
@@ -1297,6 +1314,7 @@ grant select, insert, update, delete on public.promo_codes to authenticated;
 grant select on public.promo_redemptions to authenticated;
 grant select, insert, update, delete on public.achievements to authenticated;
 grant select, insert, update, delete on public.user_achievements to authenticated;
+grant select, insert, update, delete on public.achievement_progress to authenticated;
 grant select, insert, update, delete on public.events to authenticated;
 grant select on public.event_claims to authenticated;
 grant select, insert, update, delete on public.player_notifications to authenticated;
