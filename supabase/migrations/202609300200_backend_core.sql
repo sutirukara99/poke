@@ -185,6 +185,15 @@ create table if not exists public.user_achievements (
   primary key (user_id, achievement_key)
 );
 
+create table if not exists public.achievement_progress (
+  user_id uuid not null references auth.users(id) on delete cascade,
+  achievement_key text not null references public.achievements(achievement_key) on delete cascade,
+  progress_value numeric not null default 0 check (progress_value >= 0),
+  progress_data jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now(),
+  primary key (user_id, achievement_key)
+);
+
 create table if not exists public.events (
   event_key text primary key,
   name text not null,
@@ -370,6 +379,11 @@ for each row execute function public.set_updated_at();
 drop trigger if exists achievements_set_updated_at on public.achievements;
 create trigger achievements_set_updated_at
 before update on public.achievements
+for each row execute function public.set_updated_at();
+
+drop trigger if exists achievement_progress_set_updated_at on public.achievement_progress;
+create trigger achievement_progress_set_updated_at
+before update on public.achievement_progress
 for each row execute function public.set_updated_at();
 
 drop trigger if exists events_set_updated_at on public.events;
