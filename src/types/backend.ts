@@ -139,6 +139,14 @@ export type UserAchievementRow = {
   source: string;
 };
 
+export type AchievementProgressRow = {
+  user_id: string;
+  achievement_key: string;
+  progress_value: number;
+  progress_data: JsonObject;
+  updated_at: string;
+};
+
 export type EventRow = {
   event_key: string;
   name: string;
@@ -226,6 +234,7 @@ export type BackendAccountSnapshot = {
   roles: AppRole[];
   inventory: AccountInventoryRow[];
   achievements: UserAchievementRow[];
+  achievementProgress: AchievementProgressRow[];
   loadout: ProfileLoadoutRow | null;
   notifications: PlayerNotificationRow[];
 };
