@@ -275,19 +275,19 @@ using (public.current_user_is_admin());
 drop policy if exists "Public can read visible achievements" on public.achievements;
 create policy "Public can read visible achievements"
 on public.achievements for select to anon, authenticated
+using (is_active and not is_hidden);
+
+drop policy if exists "Users can read their unlocked hidden achievements" on public.achievements;
+create policy "Users can read their unlocked hidden achievements"
+on public.achievements for select to authenticated
 using (
   is_active
-  and (
-    not is_hidden
-    or (
-      auth.uid() is not null
-      and exists (
-        select 1
-        from public.user_achievements ua
-        where ua.user_id = auth.uid()
-          and ua.achievement_key = achievements.achievement_key
-      )
-    )
+  and is_hidden
+  and exists (
+    select 1
+    from public.user_achievements ua
+    where ua.user_id = auth.uid()
+      and ua.achievement_key = achievements.achievement_key
   )
 );
 
@@ -646,6 +646,7 @@ set search_path = public
 as $$
 declare
   v_bundle_id uuid;
+  v_row_count bigint := 0;
   v_inserted boolean := false;
 begin
   select reward_bundle_id
@@ -673,7 +674,8 @@ begin
   )
   on conflict (user_id, achievement_key) do nothing;
 
-  get diagnostics v_inserted = row_count;
+  get diagnostics v_row_count = row_count;
+  v_inserted := v_row_count > 0;
 
   if v_inserted and v_bundle_id is not null then
     perform public.grant_reward_bundle_internal(
@@ -909,6 +911,7 @@ set search_path = public
 as $$
 declare
   v_event public.events%rowtype;
+  v_row_count bigint := 0;
   v_claimed boolean := false;
 begin
   if auth.uid() is null then
@@ -932,7 +935,8 @@ begin
   values (auth.uid(), v_event.event_key)
   on conflict (user_id, event_key) do nothing;
 
-  get diagnostics v_claimed = row_count;
+  get diagnostics v_row_count = row_count;
+  v_claimed := v_row_count > 0;
 
   if not v_claimed then
     return jsonb_build_object('ok', false, 'error', 'already_claimed');
@@ -960,6 +964,7 @@ security definer
 set search_path = public
 as $$
 declare
+  v_row_count bigint := 0;
   v_updated boolean := false;
 begin
   if auth.uid() is null then
@@ -971,7 +976,8 @@ begin
   where id = p_notification_id
     and user_id = auth.uid();
 
-  get diagnostics v_updated = row_count;
+  get diagnostics v_row_count = row_count;
+  v_updated := v_row_count > 0;
   return v_updated;
 end;
 $$;
