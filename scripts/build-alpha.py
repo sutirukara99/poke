@@ -370,6 +370,61 @@ must('const b=r.pick(Il[i].defaultBiomes),v=E0(r,r.int(2,3)).map((k,A)=>$u(k,`en
      'const b=r.pick(Il[i].defaultBiomes),v=E0(r,r.int(2,3),i).map((k,A)=>$u(k,`endless-${d}-${p}-${A}`,`tower-${d}`,`Battle Tower · Karte ${d+1}`,r,b));',
      'endless route region node weighting')
 
+
+# Trainer classes now alter route identity instead of being mostly catch-rate labels.
+must('function E0(a,i,d=null){const r=["wild","wild","wild","trainer","trainer","trainer","item","item","mystery","shop","heal","tutor","city"],u={kanto:["trainer","trainer","trainer","city","shop"],johto:["mystery","mystery","mystery","heal","wild"],hoenn:["wild","wild","wild","mystery","item"],sinnoh:["trainer","trainer","mystery","mystery","item"]}[d]??[],h=[...r,...u],m=[];for(;m.length<i;){const y=a.pick(h);m.includes(y)||m.push(y)}return m}',
+     'function E0(a,i,d=null,r=null){const u=["wild","wild","wild","trainer","trainer","trainer","item","item","mystery","shop","heal","tutor","city"],h={kanto:["trainer","trainer","trainer","city","shop"],johto:["mystery","mystery","mystery","heal","wild"],hoenn:["wild","wild","wild","mystery","item"],sinnoh:["trainer","trainer","mystery","mystery","item"]}[d]??[],m={trainer:["trainer","city"],bug:["wild","item"],fisher:["wild","mystery"],hiker:["item","trainer"],bird:["wild","mystery"],blackbelt:["trainer","trainer"],aroma:["heal","mystery"],ranger:["wild","mystery"],rich:["shop","city"],psychic:["mystery","mystery"],scientist:["item","tutor"],hex:["mystery","trainer"],ace:["trainer","trainer"],medic:["heal","trainer"],scavenger:["item","item"],alchemist:["shop","item"],tactician:["trainer","trainer"],breeder:["wild","heal"],dragon:["trainer","wild"],"ace-ice":["trainer","wild"]}[r]??[],y=[...u,...h,...m],p=[];for(;p.length<i;){const b=a.pick(y);p.includes(b)||p.push(b)}return p}',
+     'class route node weighting')
+must('function ph(a,i,d){','function ph(a,i,d,s=null){','story route class identity signature')
+must('const _=vy(i,d,R,r),L=E0(r,r.int(2,3),i);',
+     'const _=vy(i,d,R,r),L=E0(r,r.int(2,3),i,s);',
+     'story route class identity')
+must('function gh(a,i,d){','function gh(a,i,d,s=null){','endless route class identity signature')
+must('const b=r.pick(Il[i].defaultBiomes),v=E0(r,r.int(2,3),i).map((k,A)=>$u(k,`endless-${d}-${p}-${A}`,`tower-${d}`,`Battle Tower · Karte ${d+1}`,r,b));',
+     'const b=r.pick(Il[i].defaultBiomes),v=E0(r,r.int(2,3),i,s).map((k,A)=>$u(k,`endless-${d}-${p}-${A}`,`tower-${d}`,`Battle Tower · Karte ${d+1}`,r,b));',
+     'endless route class identity')
+must('route:r==="story"?ph(yh(a,i,0),i,0):gh(bh(a,0),i,0),',
+     'route:r==="story"?ph(yh(a,i,0),i,0,p):gh(bh(a,0),i,0,p),',
+     'initial route class identity')
+must('a.route=gh(bh(a.seed,a.endlessMap),a.region,a.endlessMap),',
+     'a.route=gh(bh(a.seed,a.endlessMap),a.region,a.endlessMap,a.trainerClass),',
+     'next endless route class identity')
+must('a.route=ph(yh(a.seed,a.region,a.mapIndex),a.region,a.mapIndex),',
+     'a.route=ph(yh(a.seed,a.region,a.mapIndex),a.region,a.mapIndex,a.trainerClass),',
+     'next story route class identity')
+
+# Trainer archetypes prefer the current biome's encounter types while retaining generic trainers.
+must('if(a==="trainer"){const y=u.pick(js);m.title=y.name,m.detail=`Trainerduell · ${y.detail}`,m.bossName=y.name,m.trainerArchetypeId=y.id,m.aiStyle=y.aiStyle}',
+     'if(a==="trainer"){const y=js.filter(p=>p.types.length&&p.types.some(b=>Ls[h]?.types.includes(b))),p=js.filter(b=>!b.types.length),b=[...js,...y,...y,...p],v=u.pick(b);m.title=v.name,m.detail=`Trainerduell · ${v.detail}`,m.bossName=v.name,m.trainerArchetypeId=v.id,m.aiStyle=v.aiStyle}',
+     'biome weighted trainer archetypes')
+
+# Surface the class route identity in the existing class descriptions.
+for old,new in [
+    ('+5 % Geld aus Trainerkämpfen','+5 % Geld · mehr Trainer- und Stadtpfade'),
+    ('+20 % Fangchance und mehr Käfer','+20 % Fangchance für Käfer · mehr Wild- und Fundpfade'),
+    ('+20 % Fangchance und mehr Wasser','+20 % Fangchance für Wasser · mehr Wild- und Mystery-Pfade'),
+    ('+20 % Fangchance für Gestein/Boden','+20 % Fangchance für Gestein/Boden · mehr Fund- und Trainerpfade'),
+    ('+20 % Fangchance für Flug','+20 % Fangchance für Flug · mehr Wild- und Mystery-Pfade'),
+    ('+20 % Fangchance für Kampf-Pokémon','+20 % Fangchance für Kampf · trainerlastigere Routen'),
+    ('+18 % Fangchance für Pflanze/Gift','+18 % Fangchance für Pflanze/Gift · mehr Heil- und Mystery-Pfade'),
+    ('+10 % Fangchance für alle Pokémon','+10 % Fangchance für alle · mehr Wild- und Mystery-Pfade'),
+    ('+25 % Geld und 15 % günstigere Shops','+25 % Geld · 15 % günstigere Shops · mehr Shop/Stadt-Pfade'),
+    ('+20 % Fangchance für Psycho','+20 % Fangchance für Psycho · mehr Mystery-Pfade'),
+    ('+18 % Fangchance für Elektro/Stahl · Shops 5 % günstiger','+18 % Elektro/Stahl · Shops 5 % günstiger · mehr Fund/Tutor-Pfade'),
+    ('+20 % Fangchance für Geist/Unlicht','+20 % Geist/Unlicht · mehr Mystery- und Trainerpfade'),
+    ('+8 % Fangchance für alle · +15 % Preisgeld','+8 % Fangchance · +15 % Preisgeld · trainerlastigere Routen'),
+    ('Heilt nach gewonnenen Trainer- und Bosskämpfen 10 % der maximalen KP','Heilt nach Trainer/Boss 10 % KP · mehr Heilfenster auf Routen'),
+    ('Fund-Knoten enthalten zusätzlich ein seltenes Item','Fund-Knoten geben Bonusbeute · deutlich mehr Fund-Pfade'),
+    ('Tränke, Supertränke und Hypertränke heilen 30 % mehr KP','Tränke heilen 30 % mehr · mehr Shop- und Fund-Pfade'),
+    ('Der erste eigene Angriff jedes Kampfes verursacht 20 % mehr Schaden','Erster Angriff +20 % Schaden · trainerlastigere Routen'),
+    ('Gefangene Pokémon erhalten +3 auf ihren niedrigsten IV','Fänge erhalten +3 auf den niedrigsten IV · mehr Wild/Heil-Pfade'),
+    ('+20 % Fangchance für Drachen','+20 % Fangchance für Drachen · mehr Trainer/Wild-Pfade'),
+    ('+22 % Fangchance für Eis · 5 % günstigere Shops','+22 % Fangchance für Eis · Shops 5 % günstiger · mehr Trainer/Wild-Pfade'),
+]:
+    if old not in s:
+        raise SystemExit(f'class description anchor missing: {old}')
+    s=s.replace(old,new)
+
 # Player-facing currency is consistently named Meta Points. Internal save keys remain metaPoints.
 s=s.replace("Rogue-Punkte","Meta Points").replace("Rogue-Punkt","Meta Point")
 out=ROOT/'public/recovered/v1.0.0-alpha.1-r7.js'
