@@ -465,7 +465,7 @@ const renderDrawer = (shell: HTMLElement) => {
     details.dataset.group = group.key;
     details.open =
       drawerOpenGroups.has(group.key) ||
-      (group.openByDefault && !drawerOpenGroups.has(`closed:${group.key}`));
+      Boolean(group.openByDefault && !drawerOpenGroups.has(`closed:${group.key}`));
 
     details.addEventListener("toggle", () => {
       if (details.open) {
@@ -535,7 +535,7 @@ const enhanceHome = (shell: HTMLElement) => {
     });
   }
 
-  let hint = hero.querySelector<HTMLElement>(".pr-home-menu-hint");
+  let hint = hero.querySelector<HTMLButtonElement>(".pr-home-menu-hint");
   if (!hint) {
     hint = make("button", "pr-home-menu-hint");
     hint.type = "button";
