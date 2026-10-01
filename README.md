@@ -89,3 +89,8 @@ See [`RECOVERY.md`](./RECOVERY.md) for what was recovered and what was reconstru
 Optional account/cloud-save scaffolding lives in `src/cloud/`. Guest/local play remains the default and the cloud UI stays hidden until the public Supabase environment variables are configured.
 
 Setup, Discord OAuth and database migration instructions are documented in [`CLOUD.md`](./CLOUD.md).
+
+
+## Runtime visual assets
+
+Battle presentation uses remote Pokémon Showdown sprite/FX resources at runtime for animated battle sprites, generation-style battle backgrounds and move-effect imagery. These resources are referenced by URL rather than vendored into this repository. Pokémon and related assets remain the property of their respective rights holders; PokéRegions is an unofficial fan project.
