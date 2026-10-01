@@ -3908,3 +3908,42 @@ body.pr-game-ui .alpha-shell[data-pr-game-screen="route"] .run-footer{
     font-size:6px!important;
   }
 }
+
+
+/* Adventure Atlas finishing pass */
+body.pr-game-ui .alpha-shell[data-pr-game-screen="route"] .run-strip.playful-strip.game-hud{
+  display:none!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-row[data-pr-route-step-state="current"] .route-node[data-pr-node-state="available"] .node-icon-shell::before{
+  content:"▼";
+  position:absolute;
+  top:-19px;
+  left:50%;
+  transform:translateX(-50%);
+  color:var(--node-accent);
+  font:700 10px/1 "Pixelify Sans",system-ui,sans-serif;
+  text-shadow:0 2px 0 #071315;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-row[data-pr-route-step-state="current"] .route-node[data-pr-node-state="available"] .node-copy::after{
+  content:"WÄHLEN";
+  order:3;
+  margin-top:2px;
+  color:#829795;
+  font:700 3.5px/1 "Press Start 2P",monospace;
+  letter-spacing:.06em;
+}
+
+@media(max-width:660px){
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node.node-goal,
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-tone="boss"],
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-tone="legendary"]{
+    width:112px!important;
+  }
+
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-row[data-pr-route-step-state="current"] .route-node[data-pr-node-state="available"] .node-icon-shell::before{
+    top:-15px;
+    font-size:8px;
+  }
+}
