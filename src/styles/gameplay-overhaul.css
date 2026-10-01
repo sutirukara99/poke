@@ -3643,6 +3643,13 @@ body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .site-footer{
   border-radius:6px;
   background:#071012;
   box-shadow:0 18px 52px rgba(0,0,0,.28);
+  animation:ow-overworld-enter 180ms steps(3,end) both;
+}
+
+@keyframes ow-overworld-enter{
+  0%{opacity:.22;filter:brightness(1.6)}
+  45%{opacity:.72;filter:brightness(1.12)}
+  100%{opacity:1;filter:none}
 }
 
 .canvas-overworld .ow-viewport{
@@ -3926,7 +3933,7 @@ body.pr-game-ui .alpha-shell:has(.canvas-overworld) .play-layout>aside{
 }
 
 @media(prefers-reduced-motion:reduce){
-  .canvas-overworld .ow-transition-flash{animation:none}
+  .canvas-overworld,.canvas-overworld .ow-transition-flash{animation:none}
 }
 
 
