@@ -210,12 +210,18 @@ const currentRouteBiome = (run: RecordLike | null) => {
   const node = asRecord(run.node);
   if (typeof node?.biome === "string") return node.biome;
 
-  const route = Array.isArray(run.arena)
-    ? null
+  const arena = asRecord(run.arena);
+  const route = Array.isArray(arena?.route)
+    ? arena.route
     : Array.isArray(run.route)
       ? run.route
       : null;
-  const step = typeof run.step === "number" ? run.step : 0;
+  const step =
+    typeof arena?.step === "number"
+      ? arena.step
+      : typeof run.step === "number"
+        ? run.step
+        : 0;
   const row = route && Array.isArray(route[step]) ? route[step] : null;
   const firstNode = row?.map(asRecord).find(Boolean);
   return typeof firstNode?.biome === "string" ? firstNode.biome : null;
@@ -343,7 +349,6 @@ const getBattleIntro = (run: RecordLike | null) => {
     String(run?.mapIndex ?? ""),
     String(node?.id ?? ""),
     kind,
-    String(battle?.turn ?? 0),
   ].join("|");
 
   return { title, subtitle, signature };
