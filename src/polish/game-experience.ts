@@ -451,7 +451,7 @@ const renderRouteBoardPanels = (
     countValue(run.balls) +
     countValue(run.ultraBalls) +
     countValue(run.masterBalls) +
-    Object.values(specialBalls ?? {}).reduce(
+    Object.values(specialBalls ?? {}).reduce<number>(
       (total, value) => total + countValue(value),
       0,
     );
