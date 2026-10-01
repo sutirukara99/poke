@@ -38,6 +38,7 @@ import {
   adminGrantRewardBundle,
   adminGrantRole,
   adminNotifyUser,
+  adminQueueGameGrant,
   adminRemoveRole,
   adminSaveAchievement,
   adminSaveAnnouncement,
@@ -52,6 +53,7 @@ import {
   adminUnlockAchievement,
   fetchMyRoles,
   type AdminAuditRow,
+  type GameGrantType,
 } from "./backend";
 import { cloudConfigured, getSession, subscribeToAuth } from "./supabase";
 
@@ -543,6 +545,67 @@ class AdminUi {
 
     const actions = el("div", "pr-admin-two-col");
 
+    const directGrant = el("form", "pr-admin-card pr-admin-direct-grant");
+    directGrant.append(el("h4", "", "Direkte Spielwerte geben"));
+    directGrant.append(
+      el(
+        "small",
+        "",
+        "Diese Rewards landen direkt im echten Spielstand des ausgewählten Spielers.",
+      ),
+    );
+    const grantType = selectInput([
+      { value: "meta_points", label: "Rogue-/Meta-Punkte" },
+      { value: "bottle_caps", label: "Kronkorken" },
+      { value: "gold_bottle_caps", label: "Goldkronkorken" },
+      { value: "ability_capsules", label: "Ability Capsules" },
+      { value: "ability_patches", label: "Ability Patches" },
+      { value: "ancient_charms", label: "Ancient Charms" },
+      { value: "starter_unlock", label: "Pokémon als Starter freischalten" },
+      { value: "achievement", label: "Legacy Achievement-Key" },
+      { value: "relic", label: "Relikt-Key" },
+    ]);
+    const directQty = numberInput("100", "1");
+    const directKey = textInput("z.B. riolu / achievement-key / relic-key");
+    const directReason = textInput("Grund (optional)");
+    const directSubmit = btn("Direkt ins Spiel geben", "primary");
+    directSubmit.type = "submit";
+    directGrant.append(
+      field("Reward", grantType),
+      field("Menge", directQty),
+      field(
+        "Key",
+        directKey,
+        "Nur für Pokémon, Achievement oder Relikt nötig. Für Punkte/Kronkorken leer lassen.",
+      ),
+      field("Grund", directReason),
+      directSubmit,
+    );
+    directGrant.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const type = grantType.value as GameGrantType;
+      const needsKey = ["starter_unlock", "achievement", "relic"].includes(type);
+      const keyValue = directKey.value.trim();
+
+      if (needsKey && !keyValue) {
+        this.setStatus("Für diesen Reward brauchst du einen Key.", "error");
+        return;
+      }
+
+      void this.runAction(
+        async () => {
+          await adminQueueGameGrant(
+            this.selectedUserId,
+            type,
+            Math.max(1, Number(directQty.value) || 1),
+            keyValue || null,
+            directReason.value.trim(),
+          );
+        },
+        "Reward für den Spielstand vorgemerkt. Online-Spieler erhalten ihn automatisch.",
+      );
+    });
+
     const grantItem = el("form", "pr-admin-card");
     grantItem.append(el("h4", "", "Item / Coins / Pokémon geben"));
     const itemSelect = selectInput(
@@ -717,7 +780,7 @@ class AdminUi {
       );
     });
 
-    actions.append(grantItem, grantBundle, grantAchievement, roles, state, notify);
+    actions.append(directGrant, grantItem, grantBundle, grantAchievement, roles, state, notify);
     manage.append(actions);
 
     const holdings = el("div", "pr-admin-two-col");
