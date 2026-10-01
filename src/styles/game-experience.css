@@ -1,0 +1,521 @@
+/* PokéRegions game identity layer
+   Clean, gameplay-first overrides loaded after the recovered alpha styles. */
+
+:root{
+  --pr-bg:#0b141b;
+  --pr-surface-1:#12212b;
+  --pr-surface-2:#192c38;
+  --pr-surface-3:#213846;
+  --pr-border:#526a78;
+  --pr-border-strong:#8aa0aa;
+  --pr-text:#eef4f7;
+  --pr-muted:#a9bac3;
+  --pr-accent:#e7c96a;
+  --pr-danger:#d96b67;
+  --pr-success:#79bd8a;
+  --pr-warning:#e1b45b;
+  --pr-legendary:#c8a7e8;
+  --pr-radius:4px;
+  --pr-space-1:4px;
+  --pr-space-2:6px;
+  --pr-space-3:8px;
+  --pr-space-4:12px;
+  --pr-space-5:16px;
+  --pr-space-6:24px;
+  --pr-space-7:32px;
+  --pr-region-accent:#7ca7ba;
+  --pr-region-soft:rgba(124,167,186,.13);
+}
+
+body[data-pr-region="kanto"]{--pr-region-accent:#d76a63;--pr-region-soft:rgba(215,106,99,.13)}
+body[data-pr-region="johto"]{--pr-region-accent:#d7b65b;--pr-region-soft:rgba(215,182,91,.13)}
+body[data-pr-region="hoenn"]{--pr-region-accent:#5ea9c7;--pr-region-soft:rgba(94,169,199,.14)}
+body[data-pr-region="sinnoh"]{--pr-region-accent:#9ca8d6;--pr-region-soft:rgba(156,168,214,.14)}
+
+html,body,#root{min-height:100%}
+body{
+  background:
+    radial-gradient(circle at 50% -20%,var(--pr-region-soft),transparent 42rem),
+    linear-gradient(180deg,#0d1820,var(--pr-bg) 48%,#081117)!important;
+}
+
+.alpha-shell{
+  width:min(100%,1540px)!important;
+  margin-inline:auto!important;
+  padding:clamp(8px,1.2vw,18px)!important;
+  color:var(--pr-text)!important;
+}
+
+.alpha-shell>.panel,
+.alpha-shell .panel{
+  border-radius:var(--pr-radius)!important;
+  border-color:var(--pr-border)!important;
+  box-shadow:none!important;
+}
+
+.alpha-shell h1,.alpha-shell h2,.alpha-shell h3{
+  text-wrap:balance;
+  letter-spacing:.015em!important;
+}
+.alpha-shell p,.alpha-shell small{line-height:1.45}
+.alpha-shell .eyebrow{
+  color:var(--pr-region-accent)!important;
+  letter-spacing:.12em!important;
+}
+
+/* Buttons: one hierarchy across all screens */
+.alpha-shell button{
+  border-radius:var(--pr-radius)!important;
+  box-shadow:none!important;
+  min-height:38px;
+  transition:
+    transform .09s ease,
+    border-color .12s ease,
+    background-color .12s ease,
+    filter .12s ease!important;
+}
+.alpha-shell button:not(:disabled):active{transform:translateY(1px)!important}
+.alpha-shell button:focus-visible{
+  outline:2px solid var(--pr-accent)!important;
+  outline-offset:2px!important;
+}
+.alpha-shell button[data-pr-action="primary"]{
+  border-color:color-mix(in srgb,var(--pr-region-accent) 76%,#fff 24%)!important;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--pr-region-accent) 44%,#263846 56%),#172833)!important;
+  color:#fff!important;
+}
+.alpha-shell button[data-pr-action="danger"]{
+  border-color:#a95f5c!important;
+  background:linear-gradient(180deg,#492d31,#2d2024)!important;
+  color:#ffd9d6!important;
+}
+.alpha-shell button[data-pr-action="utility"]{
+  min-height:32px!important;
+  padding-block:6px!important;
+  background:#14232d!important;
+  border-color:#405765!important;
+  color:#cbd8de!important;
+}
+.alpha-shell button[data-pr-priority="continue"]{
+  position:relative;
+  min-height:58px!important;
+  border-color:var(--pr-accent)!important;
+  background:
+    linear-gradient(90deg,rgba(231,201,106,.14),transparent 45%),
+    linear-gradient(180deg,#2a4655,#19303d)!important;
+  box-shadow:inset 4px 0 0 var(--pr-accent)!important;
+}
+.alpha-shell button[data-pr-priority="new-run"]{
+  border-style:dashed!important;
+  opacity:.9;
+}
+
+/* Main menu: play first, meta second, system last */
+.alpha-shell[data-pr-screen="menu"] .menu-hero,
+.alpha-shell[data-pr-screen="menu"] .hero{
+  background:
+    linear-gradient(90deg,var(--pr-region-soft),transparent 45%),
+    linear-gradient(180deg,#142833,#0f1d26)!important;
+  border-color:#607783!important;
+  padding:clamp(18px,2.5vw,30px)!important;
+}
+.alpha-shell[data-pr-screen="menu"] .menu-grid{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:8px!important;
+}
+.alpha-shell[data-pr-screen="menu"] .menu-grid>button{
+  min-height:64px!important;
+  text-align:left!important;
+  align-items:flex-start!important;
+  justify-content:center!important;
+  padding:12px 14px!important;
+  background:linear-gradient(180deg,#1a2d38,#12232d)!important;
+  border:1px solid #415966!important;
+}
+.alpha-shell[data-pr-screen="menu"] .menu-grid>button[data-pr-menu-group="play"]{
+  border-color:#667d89!important;
+}
+.alpha-shell[data-pr-screen="menu"] .menu-grid>button[data-pr-menu-group="progress"]{
+  background:linear-gradient(180deg,#172a35,#11212a)!important;
+}
+.alpha-shell[data-pr-screen="menu"] .menu-grid>button[data-pr-menu-group="system"]{
+  min-height:52px!important;
+  opacity:.86;
+}
+.alpha-shell[data-pr-screen="menu"] .trainer-card{
+  border-width:1px!important;
+  background:
+    linear-gradient(120deg,var(--pr-region-soft),transparent 45%),
+    linear-gradient(180deg,#1a2e39,#12232c)!important;
+}
+
+/* Run creation reads like an expedition, not a settings form */
+.pr-setup-flow{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:6px;
+  margin:12px 0 18px;
+}
+.pr-setup-flow>span{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+  padding:7px 9px;
+  border-top:1px solid #405965;
+  border-bottom:1px solid #263d49;
+  color:var(--pr-muted);
+}
+.pr-setup-flow b{
+  display:grid;
+  place-items:center;
+  width:22px;height:22px;
+  border:1px solid var(--pr-region-accent);
+  color:var(--pr-region-accent);
+  font-size:10px;
+}
+.pr-setup-flow small{font-size:9px;letter-spacing:.09em}
+.alpha-shell[data-pr-screen="setup"] .mode-pills,
+.alpha-shell[data-pr-screen="setup"] .challenge-panel,
+.alpha-shell[data-pr-screen="setup"] .new-run-options{
+  border-radius:var(--pr-radius)!important;
+}
+.alpha-shell[data-pr-screen="setup"] .region-art-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+}
+.alpha-shell[data-pr-screen="setup"] .region-art-card{
+  min-height:220px!important;
+  border-width:2px!important;
+  filter:saturate(.9);
+}
+.alpha-shell[data-pr-screen="setup"] .region-art-card.selected{
+  border-color:var(--pr-accent)!important;
+  filter:saturate(1.08);
+  box-shadow:inset 0 -4px 0 var(--pr-accent)!important;
+}
+.alpha-shell[data-pr-screen="setup"] .alpha-ascension,
+.alpha-shell[data-pr-screen="setup"] .alpha-gift-code{
+  border-width:1px!important;
+}
+
+/* Route = journey */
+.pr-route-context{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:14px;
+  align-items:center;
+  margin:0 0 10px;
+  padding:8px 10px;
+  border-left:3px solid var(--pr-region-accent);
+  border-bottom:1px solid #314853;
+  background:linear-gradient(90deg,var(--pr-region-soft),transparent);
+}
+.pr-route-region{
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.14em;
+  color:var(--pr-region-accent);
+}
+.pr-route-copy{display:grid;gap:1px}
+.pr-route-copy b{font-size:11px;letter-spacing:.08em}
+.pr-route-copy small{font-size:10px;color:var(--pr-muted)}
+.pr-route-identity{
+  font-size:9px;
+  letter-spacing:.09em;
+  color:#bdcbd1;
+  white-space:nowrap;
+}
+.alpha-shell[data-pr-screen="route"] .route-map,
+.alpha-shell[data-pr-screen="route"] .adventure-board{
+  position:relative!important;
+  padding:14px!important;
+  border:1px solid #38505c!important;
+  background:
+    linear-gradient(var(--pr-region-soft),transparent 55%),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 22px),
+    #0f1d25!important;
+}
+.alpha-shell .route-node{
+  min-height:76px!important;
+  border-width:1px!important;
+  box-shadow:none!important;
+}
+.alpha-shell .route-node[data-pr-risk="safe"]{border-color:#587b65!important}
+.alpha-shell .route-node[data-pr-risk="variable"]{border-color:#8b784e!important}
+.alpha-shell .route-node[data-pr-risk="dangerous"]{
+  border-color:#8a5c62!important;
+  box-shadow:inset 0 -3px 0 rgba(193,91,94,.22)!important;
+}
+.alpha-shell .route-node[data-pr-risk="balanced"]{border-color:#4a6572!important}
+.alpha-shell .route-node.node-accessible:not(:disabled){
+  outline:1px solid color-mix(in srgb,var(--pr-region-accent) 52%,transparent)!important;
+  outline-offset:2px!important;
+}
+.alpha-shell .route-node.node-unknown{
+  filter:saturate(.35) brightness(.72)!important;
+  opacity:.72!important;
+}
+.alpha-shell .route-node-tooltip{
+  border-radius:3px!important;
+  box-shadow:none!important;
+}
+
+/* Narrative events */
+.alpha-shell .mystery-event-card[data-pr-narrative="true"]{
+  max-width:920px;
+  margin-inline:auto;
+  padding:clamp(16px,2vw,24px)!important;
+  border-width:1px!important;
+  border-left:4px solid var(--pr-region-accent)!important;
+  background:
+    linear-gradient(100deg,var(--pr-region-soft),transparent 42%),
+    linear-gradient(180deg,#172a35,#101f28)!important;
+}
+.alpha-shell .mystery-event-card[data-pr-narrative="true"] button[data-pr-choice]{
+  position:relative;
+  text-align:left!important;
+  padding-left:42px!important;
+}
+.alpha-shell .mystery-event-card[data-pr-narrative="true"] button[data-pr-choice]::before{
+  content:attr(data-pr-choice);
+  position:absolute;
+  left:12px;top:50%;
+  translate:0 -50%;
+  display:grid;
+  place-items:center;
+  width:20px;height:20px;
+  border:1px solid var(--pr-region-accent);
+  color:var(--pr-region-accent);
+  font-size:9px;
+}
+
+/* PokéMart, loot, collection screens */
+.alpha-shell .shop-screen[data-pr-shop="mart"]{
+  max-width:1120px;
+  margin-inline:auto;
+  border-left:4px solid #6a94ad!important;
+}
+.alpha-shell .shop-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:7px!important;
+}
+.alpha-shell .shop-grid button{
+  min-height:58px!important;
+  padding:9px 11px!important;
+}
+.alpha-shell [data-pr-collection="true"]{gap:8px!important}
+.alpha-shell .loot-grid[data-pr-collection="true"] .loot-card{
+  border-width:1px!important;
+  border-radius:4px!important;
+}
+.alpha-shell .loot-card[class*="rarity-legend"],
+.alpha-shell .loot-card[class*="rarity-exclusive"]{
+  border-color:var(--pr-legendary)!important;
+  box-shadow:inset 0 0 0 1px rgba(200,167,232,.18)!important;
+}
+
+/* Battle presentation */
+.alpha-shell[data-pr-screen="battle"] .retro-battle-shell{
+  border-width:1px!important;
+  padding:8px!important;
+}
+.alpha-shell[data-pr-screen="battle"] .gba-battlefield{
+  border-width:2px!important;
+  border-radius:3px!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)!important;
+}
+.pr-battle-intro{
+  position:absolute;
+  inset:0;
+  z-index:90;
+  display:grid;
+  place-content:center;
+  gap:6px;
+  text-align:center;
+  pointer-events:none;
+  background:linear-gradient(90deg,rgba(9,17,23,.05),rgba(9,17,23,.86) 28% 72%,rgba(9,17,23,.05));
+  animation:prBattleIntro .2s ease-out both;
+}
+.pr-battle-intro b{
+  font-size:clamp(14px,2.2vw,24px);
+  letter-spacing:.15em;
+  color:#fff;
+  text-shadow:0 2px 0 #000;
+}
+.pr-battle-intro small{
+  max-width:520px;
+  color:#dce7ec;
+  font-size:10px;
+  letter-spacing:.04em;
+}
+.pr-battle-intro.is-leaving{animation:prBattleIntroOut .28s ease-in both}
+.pr-shiny-burst{
+  position:absolute;
+  z-index:35;
+  width:100px;height:100px;
+  pointer-events:none;
+  translate:-50% -50%;
+  background:
+    radial-gradient(circle,#fff 0 3%,transparent 4% 100%),
+    conic-gradient(from 0deg,transparent 0 8%,rgba(255,239,153,.92) 9% 11%,transparent 12% 24%,rgba(255,255,255,.9) 25% 27%,transparent 28% 100%);
+  animation:prShinyBurst .9s ease-out both;
+}
+.alpha-shell[data-pr-screen="battle"] .gba-hp-box{
+  border-width:1px!important;
+  border-radius:3px!important;
+  box-shadow:none!important;
+}
+.alpha-shell[data-pr-screen="battle"] .battle-log{
+  max-height:82px!important;
+  border-width:1px!important;
+}
+.alpha-shell[data-pr-screen="battle"] .move-button,
+.alpha-shell[data-pr-screen="battle"] .gba-battle-actions button{
+  min-height:54px!important;
+  border-width:1px!important;
+}
+
+/* Party / PC / Pokédex: details on demand, list first */
+.alpha-shell .party-row,
+.alpha-shell .party-card,
+.alpha-shell .pc-mon,
+.alpha-shell .dex-card{
+  border-width:1px!important;
+  border-radius:3px!important;
+  box-shadow:none!important;
+}
+.alpha-shell .party-row:hover,
+.alpha-shell .pc-mon:hover,
+.alpha-shell .dex-card:hover:not(:disabled){
+  border-color:var(--pr-region-accent)!important;
+}
+.alpha-shell .iv-hover-card{
+  max-width:260px!important;
+  border-radius:3px!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.28)!important;
+}
+
+/* Trainer card / Hall of Fame should be screenshot-worthy */
+.alpha-shell .trainer-card,
+.alpha-shell .champion-card,
+.alpha-shell .hall-of-fame{
+  background:
+    linear-gradient(120deg,var(--pr-region-soft),transparent 45%),
+    linear-gradient(180deg,#1b303b,#11222b)!important;
+  border:1px solid #637a85!important;
+}
+.alpha-shell .trainer-card::after,
+.alpha-shell .champion-card::after{
+  content:"POKÉREGIONS";
+  display:block;
+  margin-top:10px;
+  padding-top:8px;
+  border-top:1px solid rgba(255,255,255,.08);
+  color:#708995;
+  font-size:8px;
+  letter-spacing:.18em;
+}
+
+/* Friendly empty states */
+.alpha-shell [data-pr-empty="true"]{
+  display:block;
+  padding:28px 16px;
+  text-align:center;
+  color:var(--pr-muted)!important;
+  border:1px dashed #425a66;
+}
+
+/* Fast global screen transition */
+.pr-screen-transition{
+  position:fixed;
+  inset:0;
+  z-index:2147482000;
+  display:grid;
+  place-content:center;
+  gap:4px;
+  pointer-events:none;
+  opacity:0;
+  visibility:hidden;
+  background:#0a141a;
+}
+.pr-screen-transition b{
+  color:#fff;
+  font-size:clamp(16px,3vw,28px);
+  letter-spacing:.16em;
+  text-align:center;
+}
+.pr-screen-transition small{
+  color:var(--pr-region-accent);
+  font-size:9px;
+  letter-spacing:.18em;
+  text-align:center;
+}
+.pr-screen-transition.is-active{
+  visibility:visible;
+  animation:prScreenFlash .42s ease both;
+}
+
+@keyframes prScreenFlash{
+  0%{opacity:0}
+  18%,56%{opacity:.96}
+  100%{opacity:0}
+}
+@keyframes prBattleIntro{
+  from{opacity:0;transform:scale(.985)}
+  to{opacity:1;transform:scale(1)}
+}
+@keyframes prBattleIntroOut{
+  to{opacity:0;transform:translateY(-4px)}
+}
+@keyframes prShinyBurst{
+  0%{opacity:0;transform:scale(.35) rotate(0)}
+  30%{opacity:1}
+  100%{opacity:0;transform:scale(1.45) rotate(35deg)}
+}
+
+/* Desktop density */
+@media (min-width:1180px){
+  .alpha-shell[data-pr-screen="route"],
+  .alpha-shell[data-pr-screen="battle"]{width:min(100%,1600px)!important}
+  .alpha-shell[data-pr-screen="menu"] .menu-grid>button[data-pr-menu-group="play"]{
+    grid-column:span 2;
+  }
+}
+
+/* Mobile remains playable, not a squeezed desktop */
+@media (max-width:900px){
+  .alpha-shell[data-pr-screen="menu"] .menu-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  .alpha-shell[data-pr-screen="setup"] .region-art-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  .pr-route-context{grid-template-columns:auto 1fr}
+  .pr-route-identity{display:none}
+  .alpha-shell .shop-grid{grid-template-columns:1fr!important}
+}
+@media (max-width:620px){
+  .alpha-shell{padding:5px!important}
+  .alpha-shell[data-pr-screen="menu"] .menu-grid{grid-template-columns:1fr 1fr!important}
+  .alpha-shell[data-pr-screen="menu"] .menu-grid>button{min-height:56px!important;padding:9px!important}
+  .alpha-shell[data-pr-screen="setup"] .region-art-grid{grid-template-columns:1fr!important}
+  .alpha-shell[data-pr-screen="setup"] .region-art-card{min-height:170px!important}
+  .pr-setup-flow{grid-template-columns:repeat(2,1fr)}
+  .pr-route-context{gap:8px;padding:7px}
+  .pr-route-copy small{font-size:9px}
+  .alpha-shell[data-pr-screen="battle"] .battle-actions,
+  .alpha-shell[data-pr-screen="battle"] .gba-battle-actions{grid-template-columns:1fr 1fr!important}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .alpha-shell button,
+  .pr-battle-intro,
+  .pr-battle-intro.is-leaving,
+  .pr-shiny-burst,
+  .pr-screen-transition.is-active{
+    animation:none!important;
+    transition:none!important;
+  }
+  .pr-screen-transition{display:none!important}
+}
