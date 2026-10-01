@@ -190,7 +190,7 @@ if (js.includes('return Math.min(100,Math.max(5,Math.floor(m*h)+(i==="boss"?4:0)
 }
 
 if (!js.includes('keyboardNodeId:')) throw new Error("Route keyboard selection is not wired to the map.");
-if (!js.includes('"keyboard-focus"')) throw new Error("Route keyboard selection has no visible node class.");
+if (!js.includes('" keyboard-selected"')) throw new Error("Journey keyboard selection has no visible road state.");
 
 if (!js.includes('type:"reorderTeam"')) {
   throw new Error("Party reorder action is missing.");
