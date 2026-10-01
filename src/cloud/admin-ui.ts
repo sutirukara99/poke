@@ -606,6 +606,33 @@ class AdminUi {
       );
     });
 
+    const endlessUnlock = el("div", "pr-admin-card pr-admin-endless-unlock");
+    endlessUnlock.append(
+      el("h4", "", "♾ Endless freischalten"),
+      el(
+        "small",
+        "",
+        "Schaltet Endless direkt im echten Spielstand frei – ohne vorher einen Story-Run gewinnen zu müssen.",
+      ),
+    );
+    const endlessUnlockButton = btn("♾ Endless jetzt freischalten", "primary");
+    endlessUnlockButton.addEventListener("click", () => {
+      void this.runAction(
+        async () => {
+          await adminQueueGameGrant(
+            this.selectedUserId,
+            "achievement",
+            1,
+            "first-champion",
+            "Admin: Endless freigeschaltet",
+            { adminShortcut: "unlock_endless" },
+          );
+        },
+        "Endless wurde für diesen Account freigeschaltet.",
+      );
+    });
+    endlessUnlock.append(endlessUnlockButton);
+
     const grantItem = el("form", "pr-admin-card");
     grantItem.append(el("h4", "", "Item / Coins / Pokémon geben"));
     const itemSelect = selectInput(
@@ -780,7 +807,7 @@ class AdminUi {
       );
     });
 
-    actions.append(directGrant, grantItem, grantBundle, grantAchievement, roles, state, notify);
+    actions.append(directGrant, endlessUnlock, grantItem, grantBundle, grantAchievement, roles, state, notify);
     manage.append(actions);
 
     const holdings = el("div", "pr-admin-two-col");
