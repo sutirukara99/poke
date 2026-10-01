@@ -1,3 +1,15 @@
+const QowTouchPad=({move:a,interact:i,menu:d})=>l.jsxs("div",{className:"ow-touch-controls","aria-label":"Touch-Steuerung",children:[
+l.jsxs("div",{className:"ow-touch-dpad",children:[
+l.jsx("button",{type:"button",className:"up","aria-label":"Nach oben",onPointerDown:e=>{e.preventDefault(),a("up")},children:"▲"}),
+l.jsx("button",{type:"button",className:"left","aria-label":"Nach links",onPointerDown:e=>{e.preventDefault(),a("left")},children:"◀"}),
+l.jsx("button",{type:"button",className:"right","aria-label":"Nach rechts",onPointerDown:e=>{e.preventDefault(),a("right")},children:"▶"}),
+l.jsx("button",{type:"button",className:"down","aria-label":"Nach unten",onPointerDown:e=>{e.preventDefault(),a("down")},children:"▼"})
+]}),
+l.jsxs("div",{className:"ow-touch-actions",children:[
+l.jsx("button",{type:"button",className:"menu","aria-label":"Menü",onPointerDown:e=>{e.preventDefault(),d?.()},children:"☰"}),
+l.jsx("button",{type:"button",className:"a","aria-label":"Interagieren",onPointerDown:e=>{e.preventDefault(),i()},children:"A"})
+]})
+]});
 function x4({run:y,route:a,step:i,path:d=[],revealed:r,region:u,dispatch:h,arena:m=!1}){
 const Qm=QowBuild(y),Qstored=y?.journey?.overworld,Qp=Qstored?.mapKey===Qm.key?Qstored:{mapKey:Qm.key,x:Qm.spawn.x,y:Qm.spawn.y,prevX:Qm.spawn.x,prevY:Qm.spawn.y,facing:"up",steps:0,grassSteps:0,danger:0,picked:[],defeatedTrainers:[],pendingNode:null,encounterOnly:!1,debugSalt:Qstored?.debugSalt??0,seen:QowVisible(Qm.spawn.x,Qm.spawn.y,5,Qm.w,Qm.h),lastMessage:"Erkunde das Gebiet."},Qf=QowFront(Qp),QnearPickup=Qm.pickups.find(Q=>(Q.x===Qf.x&&Q.y===Qf.y||Q.x===Qp.x&&Q.y===Qp.y)&&!(Qp.picked??[]).includes(Q.id)),QnearNpc=Qm.npcs?.find(Q=>Q.x===Qf.x&&Q.y===Qf.y||Q.x===Qp.x&&Q.y===Qp.y),QnearDest=Qm.destinations.find(Q=>Q.x===Qf.x&&Q.y===Qf.y||Q.x===Qp.x&&Q.y===Qp.y),Qprompt=QnearPickup?"E · Item-Ball öffnen":QnearNpc?"E · Reisenden ansprechen":QnearDest?"E · "+QowKindLabel(QnearDest.kind):Qp.lastMessage??"WASD bewegen · E interagieren",U=we[u]?.maps[Math.min(y?.mapIndex??0,(we[u]?.maps?.length??1)-1)],Qteam=(y?.team??[]).slice(0,6),Qbadges=Array.isArray(y?.badges)?y.badges.length:0,Qfloor=(y?.mode==="endless"?y?.endlessStage??0:y?.mapIndex??0)+1,Qlead=Qteam[0]?st(Qteam[0].species,Qteam[0].shiny):null,[Qdebug,QsetDebug]=X.useState(!1),Qheld=X.useRef(new Set),QlastDir=X.useRef("up"),QlastMove=X.useRef(0);
 X.useEffect(()=>{const Qid=Qstored?.pendingNode;Qid&&h({type:"overworldTrigger",id:Qid})},[Qstored?.pendingNode,h]);
@@ -11,6 +23,7 @@ l.jsx("button",{type:"button",className:"ow-menu-button","aria-label":"Spielmen�
 ]}),
 l.jsx("div",{className:"ow-canvas-wrap",children:l.jsx(QowCanvas,{map:{...Qm,region:u},player:Qp,leadSrc:Qlead})}),
 Qp.pendingNode&&l.jsx("div",{className:"ow-transition-flash","aria-hidden":"true"}),
+l.jsx(QowTouchPad,{move:Qdir=>h({type:"overworldMove",dir:Qdir}),interact:()=>h({type:"overworldInteract"}),menu:()=>document.querySelector(".pr-game-menu-toggle")?.click()}),
 l.jsxs("div",{className:"ow-floor-meta",children:[l.jsx("span",{children:"WASD / ↑↓←→"}),l.jsx("b",{children:Qprompt}),l.jsx("span",{children:"E · INTERAGIEREN"})]}),
 Qdebug&&l.jsxs("aside",{className:"ow-debug",children:[
 l.jsx("b",{children:"OVERWORLD DEBUG · F2"}),
