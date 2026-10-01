@@ -687,6 +687,18 @@ export const mountDesignOverhaul = () => {
   window.addEventListener("resize", queueDesign, { passive: true });
   window.addEventListener("storage", queueDesign);
 
+  for (const id of ["pokeregions-cloud-root", "pokeregions-admin-root"]) {
+    const host = document.getElementById(id);
+    if (!host) continue;
+    const hostObserver = new MutationObserver(queueDesign);
+    hostObserver.observe(host, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["class", "disabled"],
+    });
+  }
+
   window.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && document.body.classList.contains("pr-game-drawer-open")) {
       closeDrawer();
