@@ -137,7 +137,7 @@ if (!js.includes('type:"overworldInteract"')) throw new Error("Free-roam interac
 if (!js.includes('type:"overworldTrigger"')) throw new Error("Free-roam encounter trigger is missing.");
 if (!js.includes('QjourneyDiscoveryPools')) throw new Error("Regional Journey discoveries are missing.");
 if (!js.includes('d.worldDiscoveries??=[]')) throw new Error("Persistent world discovery migration is missing.");
-if (!js.includes('...(d.worldDiscoveries??[])')) throw new Error("Journey discoveries can repeat after being found account-wide.");
+if (!js.includes('QjourneyFindDiscovery(r.region,d.worldDiscoveries??[],u)')) throw new Error("Overworld discoveries are not checked against account-wide finds.");
 if (!js.includes('free-roam-overworld')) throw new Error("Free-roam overworld presentation is missing.");
 if (!js.includes('className:"ow-map"')) throw new Error("Free-roam tile map is missing.");
 if (!js.includes('className:"ow-player"')) throw new Error("Overworld player sprite is missing.");
