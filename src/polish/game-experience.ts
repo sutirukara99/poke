@@ -1508,7 +1508,7 @@ export const mountGameExperience = () => {
           : mutation.target.parentElement;
       if (!target) return true;
       return !target.closest(
-        ".pr-route-context, .pr-route-board-side, .pr-route-scenery, .pr-city-summary, .pr-screen-transition, .pr-battle-intro, .pr-shiny-burst",
+        ".pr-route-context, .pr-route-board-side, .pr-route-scenery, .pr-route-atlas-hud, .pr-city-summary, .pr-screen-transition, .pr-battle-intro, .pr-shiny-burst",
       );
     });
     if (relevant) queueExperience();
