@@ -3,6 +3,7 @@ import "./styles/alpha.css";
 import "./styles/game-experience.css";
 import "./styles/maintenance.css";
 import "./styles/design-overhaul.css";
+import "./styles/gameplay-overhaul.css";
 import { ACTIVE_BUILD, RECOVERY_BASELINE } from "./recovery/version";
 import { waitForMaintenanceAccess } from "./cloud/maintenance";
 import { mountCloudAccountUi } from "./cloud/account-ui";
