@@ -717,7 +717,7 @@ const renderMinimalHome = (shell: HTMLElement) => {
   const brandCopy = make("div", "pr-minimal-brand-copy");
   brandCopy.append(
     make("h1", "", "POKÉREGIONS"),
-    make("p", "", "ROGUELIKE · FOUR REGIONS"),
+    make("p", "", "DEINE REISE · DEIN TEAM · VIER REGIONEN"),
     make("small", "", version.replace(/\s+/g, " ")),
   );
   brand.append(brandMark, brandCopy);
@@ -829,7 +829,7 @@ const renderMinimalHome = (shell: HTMLElement) => {
 
   if (continueEntry) {
     addMode(
-      "AKTIVE EXPEDITION",
+      "ABENTEUER",
       "Run fortsetzen",
       preview
         ? `${preview.regionLabel} · ${preview.routeLabel} · ${preview.stateLabel}`
@@ -842,7 +842,7 @@ const renderMinimalHome = (shell: HTMLElement) => {
 
   if (newEntry) {
     addMode(
-      "EXPEDITION",
+      "NEUE REISE",
       "Neuer Run",
       "Story · Daily · Endless",
       "new",
@@ -852,7 +852,7 @@ const renderMinimalHome = (shell: HTMLElement) => {
   }
 
   addMode(
-    "TRAINER",
+    "TRAINER-PASS",
     "Sammlung & Fortschritt",
     "Pokédex · Inventar · Erfolge",
     "trainer",
@@ -868,7 +868,7 @@ const renderMinimalHome = (shell: HTMLElement) => {
 
   const menu = make("button", "pr-minimal-menu");
   menu.type = "button";
-  menu.textContent = "☰ TRAINER-MENÜ";
+  menu.textContent = "☰ START-MENÜ";
   menu.addEventListener("click", openDrawer);
 
   footer.append(status, menu);
