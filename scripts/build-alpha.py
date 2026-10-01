@@ -635,9 +635,9 @@ ke0=s.index('function Ke(a,i){',rx0)
 g00=s.index('function G0(a){',ke0)
 cx0=s.index('function cx(',g00)
 if min(rx0,ke0,g00,cx0)<0: raise RuntimeError('missing journey advance functions')
-new_rx=r'''function rx(a,i){a.endlessMap++;const d=Object.keys(we);a.region=i.pick(d),a.route=gh(bh(a.seed,a.endlessMap),a.region,a.endlessMap),a.step=0,a.path=[],a.node=null,a.battle=null,a.phase="map",a.mysteryEvent=null,a.fogRevealed=!1,a.shopTransactions=[],a.journey=QjourneyState(),a.message=`Battle Tower · Reise ${a.endlessMap+1}: ${we[a.region].name}.`}'''
+new_rx=r'''function rx(a,i){a.endlessMap++;const d=Object.keys(we);a.region=i.pick(d),a.route=gh(bh(a.seed,a.endlessMap),a.region,a.endlessMap,a.trainerClass),a.step=0,a.path=[],a.node=null,a.battle=null,a.phase="map",a.mysteryEvent=null,a.fogRevealed=!1,a.shopTransactions=[],a.journey=QjourneyState(),a.message=`Battle Tower · Reise ${a.endlessMap+1}: ${we[a.region].name}.`}'''
 new_ke=r'''function Ke(a,i){a.shopTransactions=[],a.journey??=QjourneyState(),a.journey.scouted=!1,a.journey.steps=(a.journey.steps??0)+1,a.journey.energy=Math.min(a.journey.maxEnergy??6,(a.journey.energy??0)+1);if(a.arena){a.arena.step++,a.phase="map",a.node=null,a.battle=null;return}if(a.mode==="endless"){a.endlessStage++,a.step+1>=a.route.length?rx(a,i):(a.step++,a.phase="map",a.node=null,a.battle=null);return}a.step++,a.phase="map",a.node=null,a.battle=null}'''
-new_g0=r'''function G0(a){a.arena=void 0,a.mapIndex++,a.route=ph(yh(a.seed,a.region,a.mapIndex),a.region,a.mapIndex),a.step=0,a.path=[],a.node=null,a.battle=null,a.phase="map",a.mysteryEvent=null,a.fogRevealed=!1,a.shopTransactions=[],a.journey=QjourneyState(),a.team.forEach(i=>Gu(i))}'''
+new_g0=r'''function G0(a){a.arena=void 0,a.mapIndex++,a.route=ph(yh(a.seed,a.region,a.mapIndex),a.region,a.mapIndex,a.trainerClass),a.step=0,a.path=[],a.node=null,a.battle=null,a.phase="map",a.mysteryEvent=null,a.fogRevealed=!1,a.shopTransactions=[],a.journey=QjourneyState(),a.team.forEach(i=>Gu(i))}'''
 s=s[:rx0]+new_rx+new_ke+new_g0+s[cx0:]
 
 # Journey actions are real reducer actions. Travel uses the existing encounter engine
