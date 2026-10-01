@@ -256,13 +256,13 @@ Shared TypeScript models are in:
 
 `src/types/backend.ts`
 
-These files are not wired into the live UI yet, so adding the GitHub foundation alone does not make database calls to tables that have not been migrated.
+These helpers are wired into the current Cloud/Admin UI. The database migrations remain the source of truth for which RPCs and tables are available in production.
 
 ## Alpha seed
 
 `supabase/seed.sql` prepares:
 
-- Rogue Points catalog entry
+- Meta Points catalog entry
 - Gold Bottle Cap
 - permanent Alpha Shiny Riolu
 - Alpha Trainer title
