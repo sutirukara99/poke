@@ -89,6 +89,11 @@ if (!js.includes('!oe.shiny&&!i.dailyChallenge&&Sy(a)>1')) throw new Error("dail
 
 if (!js.includes('W("protect","Schutzschild","normal","status",0,1,4')) throw new Error("protect PP nerf missing");
 
+if (!js.includes('kanto:["trainer","trainer","trainer","city","shop"]')) throw new Error("Kanto route-node identity weighting missing");
+if (!js.includes('johto:["mystery","mystery","mystery","heal","wild"]')) throw new Error("Johto route-node identity weighting missing");
+if (!js.includes('hoenn:["wild","wild","wild","mystery","item"]')) throw new Error("Hoenn route-node identity weighting missing");
+if (!js.includes('sinnoh:["trainer","trainer","mystery","mystery","item"]')) throw new Error("Sinnoh route-node identity weighting missing");
+
 if (!js.includes('kanto:["rocket-scout","lost-backpack","lost-trainer","traveling-nurse"]')) throw new Error("Kanto event identity weighting missing");
 if (!js.includes('hoenn:["berry-bush","fisher-jetty","weather-station","pokemon-nest"]')) throw new Error("Hoenn event identity weighting missing");
 if (!js.includes("recentEvents=[...(i.recentEvents??[])")) throw new Error("Mystery anti-repetition history missing");
