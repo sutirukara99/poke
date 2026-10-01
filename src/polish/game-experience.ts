@@ -417,12 +417,215 @@ const classifyRouteRisk = (node: HTMLElement) => {
   }
 
   const icon = node.querySelector<HTMLElement>(".node-icon-shell");
+  node.dataset.prNodeArt = icon?.querySelector("img") ? "sprite" : "symbol";
   if (icon && !icon.querySelector(".pr-node-kind-symbol")) {
     const symbol = document.createElement("span");
     symbol.className = "pr-node-kind-symbol";
     symbol.setAttribute("aria-hidden", "true");
     symbol.textContent = identity.symbol;
     icon.append(symbol);
+  }
+};
+
+const countValue = (value: unknown) =>
+  typeof value === "number" && Number.isFinite(value) ? Math.max(0, value) : 0;
+
+const renderRouteBoardPanels = (
+  shell: HTMLElement,
+  map: HTMLElement,
+  run: RecordLike | null,
+  region: RegionKey,
+  biome: string | null,
+) => {
+  if (!run) return;
+
+  const board =
+    map.closest<HTMLElement>(".adventure-board") ?? map.parentElement;
+  if (!board) return;
+
+  board.dataset.prBoardLayout = "true";
+
+  const team = Array.isArray(run.team) ? run.team.map(asRecord).filter(Boolean) : [];
+  const specialBalls = asRecord(run.specialBalls);
+  const totalBalls =
+    countValue(run.balls) +
+    countValue(run.ultraBalls) +
+    countValue(run.masterBalls) +
+    Object.values(specialBalls ?? {}).reduce(
+      (total, value) => total + countValue(value),
+      0,
+    );
+  const healing =
+    countValue(run.potions) +
+    countValue(run.superPotions) +
+    countValue(run.hyperPotions);
+  const badges = Array.isArray(run.badges) ? run.badges.length : 0;
+  const relics = Array.isArray(run.activeRelics) ? run.activeRelics.length : 0;
+  const money = countValue(run.money);
+  const biomeInfo = biome ? BIOMES[biome] : null;
+  const partyMembers = Array.from(
+    shell.querySelectorAll<HTMLElement>(".party.playful-party .party-member"),
+  );
+
+  const signature = JSON.stringify({
+    region,
+    biome,
+    totalBalls,
+    healing,
+    badges,
+    relics,
+    money,
+    team: team.map((member, index) => [
+      member?.species,
+      member?.level,
+      member?.hp,
+      member?.maxHp,
+      partyMembers[index]?.querySelector(".party-member-toggle strong")?.textContent ?? "",
+    ]),
+  });
+
+  if (
+    board.dataset.prBoardSignature === signature &&
+    board.querySelector(".pr-route-board-side")
+  ) {
+    return;
+  }
+  board.dataset.prBoardSignature = signature;
+
+  let left = board.querySelector<HTMLElement>(".pr-route-board-left");
+  if (!left) {
+    left = document.createElement("aside");
+    left.className = "pr-route-board-side pr-route-board-left";
+    left.setAttribute("aria-label", "Run Vorräte");
+    board.prepend(left);
+  }
+
+  left.innerHTML = `
+    <header class="pr-route-side-head">
+      <small>RUN</small>
+      <strong>VORRÄTE</strong>
+    </header>
+    <div class="pr-route-pack-grid">
+      <span><i>●</i><b>${totalBalls}</b><small>BÄLLE</small></span>
+      <span><i>+</i><b>${healing}</b><small>HEILUNG</small></span>
+      <span><i>₽</i><b>${money.toLocaleString("de-DE")}</b><small>GELD</small></span>
+      <span><i>⬢</i><b>${badges}</b><small>ORDEN</small></span>
+    </div>
+    <div class="pr-route-side-section">
+      <small>AKTIVE RELIKTE</small>
+      <strong>${relics}/3</strong>
+      <p>${relics ? "Build-Boni aktiv" : "Noch keine Relikte ausgerüstet"}</p>
+    </div>
+  `;
+
+  let right = board.querySelector<HTMLElement>(".pr-route-board-right");
+  if (!right) {
+    right = document.createElement("aside");
+    right.className = "pr-route-board-side pr-route-board-right";
+    right.setAttribute("aria-label", "Team und Routenmerkmale");
+    map.insertAdjacentElement("afterend", right);
+  }
+
+  right.replaceChildren();
+
+  const teamHead = document.createElement("header");
+  teamHead.className = "pr-route-side-head";
+  teamHead.innerHTML = `<small>TEAM</small><strong>DEINE PARTY</strong>`;
+  right.append(teamHead);
+
+  const teamGrid = document.createElement("div");
+  teamGrid.className = "pr-route-team-mini";
+
+  team.slice(0, 6).forEach((member, index) => {
+    if (!member) return;
+    const source = partyMembers[index];
+    const card = document.createElement("article");
+    card.className = "pr-route-team-mon";
+    if (index === 0) card.dataset.lead = "true";
+    if (member.dead === true || countValue(member.hp) <= 0) card.dataset.fainted = "true";
+
+    const spriteWrap = document.createElement("span");
+    spriteWrap.className = "pr-route-team-sprite";
+    const sourceImage = source?.querySelector<HTMLImageElement>(".party-sprite-wrap img");
+    if (sourceImage) {
+      const image = sourceImage.cloneNode(true) as HTMLImageElement;
+      image.removeAttribute("id");
+      image.alt = "";
+      image.loading = "lazy";
+      spriteWrap.append(image);
+    } else {
+      spriteWrap.textContent = "◆";
+    }
+
+    const copy = document.createElement("span");
+    copy.className = "pr-route-team-copy";
+    const name = document.createElement("strong");
+    name.textContent =
+      source?.querySelector<HTMLElement>(".party-member-toggle strong")?.textContent?.trim() ||
+      String(member.species ?? "Pokémon");
+    const level = document.createElement("small");
+    level.textContent = `Lv. ${countValue(member.level)}`;
+
+    const hp = countValue(member.hp);
+    const maxHp = Math.max(1, countValue(member.maxHp));
+    const hpBar = document.createElement("span");
+    hpBar.className = "pr-route-team-hp";
+    const hpFill = document.createElement("i");
+    hpFill.style.width = `${Math.max(0, Math.min(100, (hp / maxHp) * 100))}%`;
+    hpBar.append(hpFill);
+
+    copy.append(name, level, hpBar);
+    card.append(spriteWrap, copy);
+    teamGrid.append(card);
+  });
+
+  if (!team.length) {
+    const empty = document.createElement("p");
+    empty.className = "pr-route-team-empty";
+    empty.textContent = "Noch kein Team.";
+    teamGrid.append(empty);
+  }
+
+  right.append(teamGrid);
+
+  const manage = document.createElement("button");
+  manage.type = "button";
+  manage.className = "pr-route-manage-team";
+  manage.textContent = "TEAM VERWALTEN";
+  manage.addEventListener("click", () => {
+    shell.dataset.prRouteTeamOpen =
+      shell.dataset.prRouteTeamOpen === "true" ? "false" : "true";
+  });
+  right.append(manage);
+
+  const trait = document.createElement("section");
+  trait.className = "pr-route-side-section pr-route-traits";
+  const traits = (biomeInfo?.effect ?? REGIONS[region].identity)
+    .split("·")
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+  trait.innerHTML = `<small>ROUTENMERKMALE</small><strong>${biomeInfo?.label ?? REGIONS[region].label}</strong>`;
+  const traitList = document.createElement("div");
+  traitList.className = "pr-route-trait-list";
+  traits.slice(0, 4).forEach((entry) => {
+    const chip = document.createElement("span");
+    chip.textContent = entry;
+    traitList.append(chip);
+  });
+  trait.append(traitList);
+  right.append(trait);
+
+  const party = shell.querySelector<HTMLElement>(".party.playful-party");
+  if (party && !party.querySelector(".pr-route-party-close")) {
+    const close = document.createElement("button");
+    close.type = "button";
+    close.className = "pr-route-party-close";
+    close.textContent = "×";
+    close.setAttribute("aria-label", "Team schließen");
+    close.addEventListener("click", () => {
+      shell.dataset.prRouteTeamOpen = "false";
+    });
+    party.prepend(close);
   }
 };
 
@@ -500,6 +703,8 @@ const enhanceRoute = (shell: HTMLElement, run: RecordLike | null) => {
   map.dataset.prRegion = region;
   if (biome) map.dataset.prBiome = biome;
   else delete map.dataset.prBiome;
+
+  renderRouteBoardPanels(shell, map, run, region, biome);
 
   context.innerHTML = `
     <span class="pr-route-region">${info.label}</span>
