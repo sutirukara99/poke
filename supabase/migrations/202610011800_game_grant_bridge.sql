@@ -274,7 +274,7 @@ returns uuid
 language plpgsql
 security definer
 set search_path = public
-as $
+as $$
 declare
   v_entry record;
   v_grant_id uuid;
@@ -390,7 +390,7 @@ begin
 
   return v_grant_id;
 end;
-$;
+$$;
 
 revoke all on function public.grant_reward_bundle_internal(
   uuid, uuid, text, text, uuid, jsonb
