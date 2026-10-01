@@ -3803,7 +3803,7 @@ body.pr-game-ui .alpha-shell .canvas-overworld .ow-menu-button{
 
 .canvas-overworld .ow-debug-actions{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
+  grid-template-columns:repeat(4,1fr);
   gap:5px;
   margin-top:2px;
 }
