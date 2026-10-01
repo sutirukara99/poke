@@ -673,7 +673,7 @@ const renderLauncherHome = (shell: HTMLElement) => {
 
   statusbar.replaceChildren(statusCopy, statusMeta, openMenu);
 
-  let news = shell.querySelector<HTMLElement>(":scope > .pr-launcher-news");
+  let news = shell.querySelector<HTMLElement>(".pr-launcher-news");
   if (!news) {
     news = make("section", "pr-launcher-news");
     news.setAttribute("aria-label", "Aktuelle Alpha Highlights");
@@ -745,7 +745,7 @@ const clearLauncherHome = (shell: HTMLElement) => {
   launcherSignature = "";
   shell.querySelector(":scope > .pr-launcher-sidebar")?.remove();
   shell.querySelector(":scope > .pr-launcher-statusbar")?.remove();
-  shell.querySelector(":scope > .pr-launcher-news")?.remove();
+  shell.querySelector(".pr-launcher-news")?.remove();
 };
 
 const enhanceHome = (shell: HTMLElement) => {
