@@ -1,11 +1,13 @@
 /// <reference types="vite/client" />
 import "./styles/alpha.css";
+import "./styles/game-experience.css";
 import { ACTIVE_BUILD, RECOVERY_BASELINE } from "./recovery/version";
 import { mountCloudAccountUi } from "./cloud/account-ui";
 import { mountAdminUi } from "./cloud/admin-ui";
 import { mountGameGrantSync } from "./cloud/game-grant-sync";
 import { mountLeaderboardUi } from "./cloud/leaderboard-ui";
 import { mountBattleVisualPolish } from "./polish/battle-visuals";
+import { mountGameExperience } from "./polish/game-experience";
 
 declare global {
   interface Window {
@@ -113,3 +115,4 @@ void mountAdminUi();
 void mountGameGrantSync();
 void mountLeaderboardUi();
 mountBattleVisualPolish();
+mountGameExperience();
