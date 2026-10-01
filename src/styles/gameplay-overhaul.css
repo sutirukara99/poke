@@ -2998,19 +2998,24 @@ body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-path-
 
 /* ========================================================================== */
 
+
 /* ========================================================================== */
-/* THE JOURNEY · REGION EXPLORATION SYSTEM                                    */
+/* POKÉMON ROUTE EXPERIENCE                                                   */
 /* ========================================================================== */
 
-/* No route board, no future-node graph. The current place owns the screen. */
+/*
+ * The run screen is now framed as a Pokémon field route, not a roguelike
+ * dashboard.  The underlying Journey systems still power route decisions,
+ * exploration and discoveries; the player-facing language is overworld-first.
+ */
+
 body.pr-game-ui .alpha-shell .adventure-board[data-pr-journey-system="true"]{
   display:block!important;
-  width:min(100%,1120px)!important;
-  max-width:1120px!important;
+  width:min(100%,1080px)!important;
+  max-width:1080px!important;
   margin:0 auto!important;
   padding:0!important;
   border:0!important;
-  border-radius:0!important;
   background:transparent!important;
   box-shadow:none!important;
 }
@@ -3024,814 +3029,783 @@ body.pr-game-ui .alpha-shell .adventure-board[data-pr-journey-system="true"]>.pr
   display:none!important;
 }
 
-body.pr-game-ui .alpha-shell:has(.journey-world) .run-strip.playful-strip.game-hud{
+body.pr-game-ui .alpha-shell:has(.pokemon-route-screen) .run-strip.playful-strip.game-hud,
+body.pr-game-ui .alpha-shell:has(.pokemon-route-screen) .modifier-strip{
   display:none!important;
 }
 
-body.pr-game-ui .alpha-shell:has(.journey-world) .modifier-strip{
-  width:min(100%,1060px)!important;
-  margin:0 auto 8px!important;
-  opacity:.76;
-}
-
-body.pr-game-ui .alpha-shell:has(.journey-world) .run-footer{
-  width:min(100%,1060px)!important;
-  margin:8px auto 0!important;
-  opacity:.52!important;
-}
-
-/* ----- World frame -------------------------------------------------------- */
-
-.journey-world{
-  --journey-accent:#77a88a;
-  --journey-sky-top:#1c3e49;
-  --journey-sky-bottom:#31544f;
-  --journey-far:#254c41;
-  --journey-mid:#173d31;
-  --journey-ground:#102b25;
-  --journey-road:#8e8264;
-  --journey-road-dark:#5e5948;
-  position:relative;
-  display:grid;
-  grid-template-rows:250px auto 3px auto;
-  width:min(100%,1060px);
-  min-height:650px;
-  margin:0 auto;
-  overflow:hidden;
-  border:1px solid #385257;
-  border-radius:18px;
-  background:#0a171b;
-  box-shadow:0 18px 44px rgba(0,0,0,.2);
-}
-
-.journey-world.region-kanto{
-  --journey-accent:#d17b70;
-  --journey-sky-top:#24495a;
-  --journey-sky-bottom:#51706c;
-  --journey-far:#3d6652;
-  --journey-mid:#284e3d;
-  --journey-ground:#173a2e;
-  --journey-road:#a38d67;
-}
-.journey-world.region-johto{
-  --journey-accent:#d0ae5d;
-  --journey-sky-top:#37394c;
-  --journey-sky-bottom:#69604e;
-  --journey-far:#56563a;
-  --journey-mid:#3f432c;
-  --journey-ground:#292f25;
-  --journey-road:#a18d65;
-}
-.journey-world.region-hoenn{
-  --journey-accent:#66b5c8;
-  --journey-sky-top:#17526a;
-  --journey-sky-bottom:#478b91;
-  --journey-far:#26705a;
-  --journey-mid:#195a49;
-  --journey-ground:#0e3e35;
-  --journey-road:#aa936b;
-}
-.journey-world.region-sinnoh{
-  --journey-accent:#a6acd8;
-  --journey-sky-top:#324657;
-  --journey-sky-bottom:#77858c;
-  --journey-far:#53666b;
-  --journey-mid:#394c50;
-  --journey-ground:#26383d;
-  --journey-road:#a0957d;
-}
-
-.journey-world.biome-cave{
-  --journey-sky-top:#171c20;
-  --journey-sky-bottom:#2a3031;
-  --journey-far:#30352f;
-  --journey-mid:#252a26;
-  --journey-ground:#171d1b;
-  --journey-road:#6e6657;
-}
-.journey-world.biome-coast,
-.journey-world.biome-sea{
-  --journey-sky-top:#174c62;
-  --journey-sky-bottom:#5c8790;
-  --journey-far:#2f625b;
-  --journey-mid:#1e5552;
-  --journey-ground:#153b3c;
-  --journey-road:#b5a574;
-}
-.journey-world.biome-snow{
-  --journey-sky-top:#455a6c;
-  --journey-sky-bottom:#93a5ac;
-  --journey-far:#77898a;
-  --journey-mid:#596b6d;
-  --journey-ground:#3b4e52;
-  --journey-road:#b8ae98;
-}
-.journey-world.biome-volcano{
-  --journey-sky-top:#482e2c;
-  --journey-sky-bottom:#7e5544;
-  --journey-far:#5b3b31;
-  --journey-mid:#422d27;
-  --journey-ground:#291e1d;
-  --journey-road:#906a51;
-}
-.journey-world.biome-forest{
-  --journey-far:#24543a;
-  --journey-mid:#173e2c;
-  --journey-ground:#0f2d22;
-}
-.journey-world.biome-night{
-  --journey-sky-top:#151b31;
-  --journey-sky-bottom:#293248;
-  --journey-far:#26333a;
-  --journey-mid:#1b292f;
-  --journey-ground:#121f24;
-}
-
-/* ----- Scenic opening ----------------------------------------------------- */
-
-.journey-vista{
-  position:relative;
-  z-index:1;
-  min-height:250px;
-  overflow:hidden;
-  background:linear-gradient(180deg,var(--journey-sky-top),var(--journey-sky-bottom));
-}
-
-.journey-sky{
-  position:absolute;
-  inset:0;
-  background:
-    radial-gradient(circle at 76% 23%,rgba(236,226,181,.27) 0 22px,transparent 23px),
-    linear-gradient(180deg,rgba(255,255,255,.045),transparent 45%);
-}
-
-.journey-horizon{
-  position:absolute;
-  left:-8%;
-  right:-8%;
-  bottom:48px;
-  display:block;
-  height:112px;
-}
-.journey-horizon.far{
-  bottom:84px;
-  height:112px;
-  opacity:.8;
-  background:var(--journey-far);
-  clip-path:polygon(0 75%,9% 44%,19% 62%,29% 30%,42% 61%,54% 36%,68% 66%,80% 31%,91% 58%,100% 40%,100% 100%,0 100%);
-}
-.journey-horizon.mid{
-  bottom:38px;
-  height:115px;
-  background:var(--journey-mid);
-  clip-path:polygon(0 65%,12% 47%,22% 59%,33% 33%,45% 58%,57% 42%,67% 62%,79% 35%,89% 54%,100% 48%,100% 100%,0 100%);
-}
-
-.journey-ground{
-  position:absolute;
-  left:-4%;
-  right:-4%;
-  bottom:-4px;
-  height:104px;
-  background:var(--journey-ground);
-  clip-path:polygon(0 25%,12% 14%,24% 28%,37% 15%,50% 22%,62% 11%,76% 28%,88% 16%,100% 26%,100% 100%,0 100%);
-}
-
-.journey-main-road{
-  position:absolute;
-  z-index:4;
-  left:50%;
-  bottom:-8px;
-  width:270px;
-  height:168px;
-  transform:translateX(-50%);
-  background:linear-gradient(90deg,var(--journey-road-dark),var(--journey-road) 48%,var(--journey-road-dark));
-  clip-path:polygon(43% 0,57% 0,100% 100%,0 100%);
-  opacity:.94;
-}
-
-.journey-main-road::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    linear-gradient(105deg,transparent 0 47%,rgba(255,255,255,.065) 48% 50%,transparent 51%),
-    linear-gradient(75deg,transparent 0 47%,rgba(0,0,0,.08) 48% 50%,transparent 51%);
-}
-
-.journey-traveler{
-  position:absolute;
-  z-index:8;
-  left:50%;
-  bottom:43px;
-  display:grid;
-  place-items:center;
-  width:28px;
-  height:34px;
-  transform:translateX(-50%);
-  color:#f2efe7;
-  font:700 15px/1 "Pixelify Sans",system-ui,sans-serif;
-  text-shadow:0 2px 0 rgba(0,0,0,.55);
-}
-
-.journey-companion{
-  position:absolute;
-  z-index:9;
-  left:calc(50% + 26px);
-  bottom:35px;
-  display:grid;
-  place-items:center;
-  width:54px;
-  height:54px;
-}
-
-.journey-companion img{
-  width:52px!important;
-  height:52px!important;
-  object-fit:contain!important;
-  image-rendering:pixelated!important;
-}
-
-/* Region / biome texture without costly animated layers. */
-.journey-world.biome-forest .journey-vista::after,
-.journey-world.biome-night .journey-vista::after{
-  content:"";
-  position:absolute;
-  z-index:5;
-  inset:0;
-  pointer-events:none;
-  background:
-    linear-gradient(90deg,rgba(4,16,11,.32) 0 6%,transparent 6% 93%,rgba(4,16,11,.32) 93%),
-    radial-gradient(ellipse at 12% 72%,rgba(5,20,13,.58) 0 17%,transparent 18%),
-    radial-gradient(ellipse at 88% 72%,rgba(5,20,13,.58) 0 17%,transparent 18%);
-}
-
-.journey-world.biome-cave .journey-vista::after{
-  content:"";
-  position:absolute;
-  z-index:5;
-  inset:0;
-  pointer-events:none;
-  box-shadow:inset 0 0 0 34px rgba(5,8,9,.28),inset 0 0 80px rgba(0,0,0,.42);
-}
-
-.journey-world.biome-coast .journey-ground,
-.journey-world.biome-sea .journey-ground{
-  background:linear-gradient(90deg,#173a35 0 48%,#1c5866 49% 100%);
-}
-
-/* ----- Location header ---------------------------------------------------- */
-
-.journey-header{
-  position:relative;
-  z-index:12;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:20px;
-  min-height:92px;
-  padding:15px 18px 13px;
-  border-top:1px solid #345053;
-  background:
-    radial-gradient(circle at 5% 0%,color-mix(in srgb,var(--journey-accent) 10%,transparent),transparent 25rem),
-    #0d1d21;
-}
-
-.journey-place{
-  min-width:0;
-}
-.journey-place>small{
-  display:block;
-  margin-bottom:5px;
-  color:var(--journey-accent)!important;
-  font:700 5px/1 "Press Start 2P",monospace!important;
-  letter-spacing:.08em;
-}
-.journey-place h2{
-  margin:0!important;
-  color:#edf2f0!important;
-  font:700 24px/1 "Pixelify Sans",system-ui,sans-serif!important;
-}
-.journey-place p{
-  max-width:650px;
-  margin:5px 0 0!important;
-  color:#7f9498!important;
-  font-size:9px!important;
-  line-height:1.4!important;
-}
-
-.journey-progress-card{
-  display:grid;
-  justify-items:end;
-  flex:0 0 auto;
-  gap:3px;
-  padding-left:17px;
-  border-left:1px solid #2c4448;
-}
-.journey-progress-card small{
-  color:#5c7377!important;
-  font:700 4px/1 "Press Start 2P",monospace!important;
-}
-.journey-progress-card strong{
-  color:#dbe5e3;
-  font:700 13px/1 "Pixelify Sans",system-ui,sans-serif;
-}
-.journey-progress-card span{
-  color:var(--journey-accent);
-  font:700 8px/1 "Pixelify Sans",system-ui,sans-serif;
-}
-
-.journey-progress{
-  position:relative;
-  z-index:12;
-  height:3px;
-  background:#192c30;
-}
-.journey-progress i{
-  display:block;
-  height:100%;
-  min-width:3px;
-  background:var(--journey-accent);
-}
-
-/* ----- Decision area ------------------------------------------------------ */
-
-.journey-body{
-  position:relative;
-  z-index:10;
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 260px;
-  gap:12px;
-  padding:14px;
-  background:#09171b;
-}
-
-.journey-decision{
-  display:grid;
-  align-content:start;
-  min-width:0;
-  padding:3px 4px;
-}
-
-.journey-eyebrow{
-  color:var(--journey-accent);
-  font:700 5px/1 "Press Start 2P",monospace;
-  letter-spacing:.08em;
-}
-.journey-decision>h3{
-  margin:7px 0 4px!important;
-  color:#e7eeec!important;
-  font:700 21px/1 "Pixelify Sans",system-ui,sans-serif!important;
-}
-.journey-decision>p{
-  max-width:700px;
-  margin:0 0 12px!important;
-  color:#71868b!important;
-  font-size:9px!important;
-  line-height:1.45!important;
-}
-
-.journey-roads{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:8px;
-}
-.journey-roads.roads-1{
-  grid-template-columns:minmax(0,420px);
-}
-.journey-roads.roads-2{
-  grid-template-columns:repeat(2,minmax(0,1fr));
-}
-
-body.pr-game-ui .alpha-shell .journey-road{
-  --road-accent:#76958b;
-  display:grid!important;
-  grid-template-rows:94px auto auto!important;
-  min-height:210px!important;
-  overflow:hidden!important;
-  padding:0!important;
-  border:1px solid #2e494d!important;
-  border-radius:12px!important;
-  background:#0e2024!important;
-  box-shadow:none!important;
-  text-align:left!important;
-  transition:border-color .1s linear,background-color .1s linear!important;
-}
-body.pr-game-ui .alpha-shell .journey-road:hover:not(:disabled),
-body.pr-game-ui .alpha-shell .journey-road:focus-visible{
-  transform:none!important;
-  translate:0!important;
-  border-color:color-mix(in srgb,var(--journey-accent) 66%,#365257)!important;
-  background:#12262b!important;
-  box-shadow:none!important;
-}
-body.pr-game-ui .alpha-shell .journey-road.keyboard-selected{
-  outline:2px solid color-mix(in srgb,var(--journey-accent) 76%,white 24%)!important;
-  outline-offset:2px;
-}
-
-.journey-road-view{
-  position:relative;
-  display:block;
-  overflow:hidden;
-  border-bottom:1px solid #294347;
-  background:linear-gradient(180deg,#254850,#24443b);
-}
-
-.journey-road-landscape{
-  position:absolute;
-  inset:0;
-  display:block;
-}
-.journey-road-landscape .land-back{
-  position:absolute;
-  left:-8%;
-  right:-8%;
-  bottom:26px;
-  height:53px;
-  background:#36594b;
-  clip-path:polygon(0 74%,17% 32%,32% 62%,48% 23%,64% 62%,81% 35%,100% 68%,100% 100%,0 100%);
-}
-.journey-road-landscape .land-mid{
-  position:absolute;
-  left:-8%;
-  right:-8%;
-  bottom:0;
-  height:59px;
-  background:#1c4034;
-  clip-path:polygon(0 53%,18% 24%,37% 52%,54% 20%,72% 55%,86% 31%,100% 50%,100% 100%,0 100%);
-}
-.journey-road-landscape .land-road{
-  position:absolute;
-  left:50%;
-  bottom:-4px;
-  width:94px;
-  height:71px;
-  transform:translateX(-50%);
-  background:#8c8061;
-  clip-path:polygon(43% 0,57% 0,100% 100%,0 100%);
-}
-
-.journey-road[data-biome="forest"] .journey-road-view{background:linear-gradient(180deg,#23433e,#294532)}
-.journey-road[data-biome="forest"] .land-back{background:#31563b}
-.journey-road[data-biome="forest"] .land-mid{background:#173725}
-.journey-road[data-biome="cave"] .journey-road-view{background:linear-gradient(180deg,#242a2d,#161b1c)}
-.journey-road[data-biome="cave"] .land-back{background:#40423c}
-.journey-road[data-biome="cave"] .land-mid{background:#292c28}
-.journey-road[data-biome="coast"] .journey-road-view,
-.journey-road[data-biome="sea"] .journey-road-view{background:linear-gradient(180deg,#245a6b,#397376)}
-.journey-road[data-biome="coast"] .land-mid,
-.journey-road[data-biome="sea"] .land-mid{background:#20575c}
-.journey-road[data-biome="snow"] .journey-road-view{background:linear-gradient(180deg,#536c7a,#87969b)}
-.journey-road[data-biome="snow"] .land-back{background:#7b8988}
-.journey-road[data-biome="snow"] .land-mid{background:#566869}
-.journey-road[data-biome="volcano"] .journey-road-view{background:linear-gradient(180deg,#5a3730,#7b4c38)}
-.journey-road[data-biome="volcano"] .land-back{background:#604035}
-.journey-road[data-biome="volcano"] .land-mid{background:#3e2b27}
-.journey-road[data-biome="night"] .journey-road-view{background:linear-gradient(180deg,#1c243c,#313949)}
-.journey-road[data-biome="night"] .land-back{background:#303842}
-.journey-road[data-biome="night"] .land-mid{background:#202b31}
-
-.journey-road-copy{
-  display:grid;
-  gap:4px;
-  padding:10px 10px 7px;
-}
-.journey-road-copy small{
-  color:var(--journey-accent)!important;
-  font:700 4px/1 "Press Start 2P",monospace!important;
-  letter-spacing:.07em;
-}
-.journey-road-copy strong{
-  color:#e0e8e6;
-  font:700 14px/1 "Pixelify Sans",system-ui,sans-serif;
-}
-.journey-road-copy span{
-  min-height:31px;
-  color:#73878a;
-  font-size:8px;
-  line-height:1.4;
-}
-.journey-road[data-scouted="true"] .journey-road-copy span{
-  color:#9cacac;
-}
-
-.journey-road-action{
-  align-self:end;
-  display:block;
-  padding:7px 10px 11px;
-  color:#617a7c;
-  font:700 5px/1 "Press Start 2P",monospace;
-  letter-spacing:.04em;
-}
-.journey-road:hover .journey-road-action,
-.journey-road:focus-visible .journey-road-action{
-  color:var(--journey-accent);
-}
-
-.journey-road-goal{
-  border-color:color-mix(in srgb,var(--journey-accent) 52%,#2e494d)!important;
-}
-.journey-road-goal .journey-road-view::after{
-  content:"ZIEL";
-  position:absolute;
-  top:8px;
-  right:8px;
-  padding:4px 6px;
-  border-radius:999px;
-  background:rgba(6,16,18,.75);
-  color:#ead792;
-  font:700 4px/1 "Press Start 2P",monospace;
-}
-
-/* ----- Exploration kit ---------------------------------------------------- */
-
-.journey-kit{
-  align-self:start;
-  display:grid;
-  gap:9px;
-  padding:12px;
-  border:1px solid #2b4549;
-  border-radius:12px;
-  background:#0d1f23;
-}
-
-.journey-energy{
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
-  gap:10px;
-  padding-bottom:9px;
-  border-bottom:1px solid #253d41;
-}
-.journey-energy>span{
-  display:grid;
-  gap:3px;
-}
-.journey-energy small{
-  color:#667e82!important;
-  font:700 4px/1 "Press Start 2P",monospace!important;
-}
-.journey-energy strong{
-  color:#dce7e5;
-  font:700 17px/1 "Pixelify Sans",system-ui,sans-serif;
-}
-
-.journey-energy-pips{
-  display:flex;
-  align-items:center;
-  gap:3px;
-}
-.journey-energy-pips i{
-  display:block;
-  width:9px;
-  height:9px;
-  transform:rotate(45deg);
-  border:1px solid #3b5559;
-  background:#13292d;
-}
-.journey-energy-pips i.filled{
-  border-color:var(--journey-accent);
-  background:var(--journey-accent);
-}
-
-.journey-kit>p{
-  margin:0!important;
-  color:#60777b!important;
-  font-size:8px!important;
-  line-height:1.4!important;
-}
-
-.journey-actions{
-  display:grid;
-  gap:6px;
-}
-body.pr-game-ui .alpha-shell .journey-actions>button{
-  display:grid!important;
-  grid-template-columns:30px minmax(0,1fr)!important;
-  align-items:center!important;
-  gap:8px!important;
-  min-height:49px!important;
-  padding:7px 8px!important;
-  border:1px solid #2d474b!important;
-  border-radius:9px!important;
-  background:#102428!important;
-  box-shadow:none!important;
-  text-align:left!important;
-}
-body.pr-game-ui .alpha-shell .journey-actions>button:hover:not(:disabled){
-  transform:none!important;
-  translate:0!important;
-  border-color:#49696b!important;
-  background:#142b30!important;
-}
-body.pr-game-ui .alpha-shell .journey-actions>button:disabled{
-  opacity:.38!important;
-}
-.journey-actions>button>span{
-  display:grid;
-  place-items:center;
-  width:28px;
-  height:28px;
-  border-radius:8px;
-  background:#162e32;
-  color:var(--journey-accent);
-  font:700 13px/1 "Pixelify Sans",system-ui,sans-serif;
-}
-.journey-actions>button>b{
-  display:grid;
-  gap:3px;
-  color:#d7e3e1;
-  font:700 10px/1 "Pixelify Sans",system-ui,sans-serif;
-}
-.journey-actions>button small{
-  color:#61797d!important;
-  font-size:7px!important;
-  font-weight:400!important;
-  line-height:1.2!important;
-}
-
-.journey-discoveries{
-  display:grid;
-  gap:6px;
-  padding-top:9px;
-  border-top:1px solid #253d41;
-}
-.journey-discoveries>small{
-  color:#657d80!important;
-  font:700 4px/1 "Press Start 2P",monospace!important;
-}
-.journey-discoveries>div{
-  display:grid;
-  gap:4px;
-}
-.journey-discoveries>div>span{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  color:#93a5a4;
-  font-size:8px;
-}
-.journey-discoveries b{
-  color:#d6bc65;
-}
-
-/* ----- Native team panel becomes a compact travel pack below the Journey. -- */
-
-body.pr-game-ui .alpha-shell:has(.journey-world) .play-layout{
+body.pr-game-ui .alpha-shell:has(.pokemon-route-screen) .play-layout{
   display:block!important;
   width:min(100%,1120px)!important;
-  margin-inline:auto!important;
+  margin:0 auto!important;
 }
 
-body.pr-game-ui .alpha-shell:has(.journey-world) .play-layout>main{
+body.pr-game-ui .alpha-shell:has(.pokemon-route-screen) .play-layout>main{
   width:100%!important;
   max-width:none!important;
 }
 
-body.pr-game-ui .alpha-shell:has(.journey-world) .party.playful-party{
+/* ----- Main game frame ---------------------------------------------------- */
+
+.pokemon-route-screen{
+  --pk-blue:#2d5a91;
+  --pk-blue-dark:#17375d;
+  --pk-ink:#26313d;
+  --pk-paper:#fbfbf2;
+  --pk-paper-2:#ecebdc;
+  --pk-accent:#df4b4b;
+  --pk-green:#4f9952;
+  position:relative;
+  display:grid;
+  grid-template-rows:auto minmax(430px,56vh) auto auto;
+  width:min(100%,1040px);
+  margin:0 auto;
+  overflow:hidden;
+  border:4px solid #1f2a34;
+  border-radius:10px;
+  background:#d8dfd2;
+  box-shadow:0 8px 0 #111821,0 18px 42px rgba(0,0,0,.26);
+}
+
+.pokemon-route-screen.region-kanto{--pk-blue:#356ea4;--pk-accent:#d7544e;--pk-green:#4c9a55}
+.pokemon-route-screen.region-johto{--pk-blue:#7b6a37;--pk-accent:#bd5f44;--pk-green:#638d45}
+.pokemon-route-screen.region-hoenn{--pk-blue:#287a9b;--pk-accent:#df5b4c;--pk-green:#3f9b66}
+.pokemon-route-screen.region-sinnoh{--pk-blue:#596a9a;--pk-accent:#a55474;--pk-green:#5f8b75}
+
+/* ----- Topbar / area-name card ------------------------------------------ */
+
+.pokemon-route-topbar{
+  position:relative;
+  z-index:20;
+  display:flex;
+  align-items:stretch;
+  justify-content:space-between;
+  gap:8px;
+  padding:8px;
+  border-bottom:3px solid #1f2a34;
+  background:
+    linear-gradient(180deg,#eef1ea,#d7ddd4);
+}
+
+.pokemon-area-card{
+  display:grid;
+  grid-template-columns:auto auto;
+  align-items:center;
+  min-width:min(62%,600px);
+  padding:7px 11px 8px 12px;
+  border:3px solid var(--pk-blue-dark);
+  border-radius:4px;
+  background:var(--pk-paper);
+  box-shadow:inset 0 0 0 2px #fff,2px 2px 0 rgba(20,30,40,.22);
+}
+
+.pokemon-area-card small{
+  grid-column:1/-1;
+  margin-bottom:4px;
+  color:#69757a!important;
+  font:700 5px/1 "Press Start 2P",monospace!important;
+  letter-spacing:.04em;
+}
+
+.pokemon-area-card strong{
+  color:var(--pk-ink);
+  font:700 19px/1 "Pixelify Sans",system-ui,sans-serif;
+  letter-spacing:.02em;
+}
+
+.pokemon-area-card>span{
+  justify-self:end;
+  padding:4px 6px;
+  border:2px solid #b6b9ae;
+  border-radius:3px;
+  background:#e8e8dc;
+  color:#5f696a;
+  font:700 5px/1 "Press Start 2P",monospace;
+}
+
+.pokemon-pokenav{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  min-width:330px;
+  overflow:hidden;
+  border:3px solid var(--pk-blue-dark);
+  border-radius:4px;
+  background:#f7f7ed;
+  box-shadow:inset 0 0 0 2px #fff;
+}
+
+.pokemon-pokenav>span{
+  display:grid;
+  align-content:center;
+  justify-items:center;
+  gap:4px;
+  min-height:52px;
+  padding:6px 9px;
+  border-left:1px solid #b8c0bc;
+}
+
+.pokemon-pokenav>span:first-child{border-left:0}
+
+.pokemon-pokenav small{
+  color:#777f7f!important;
+  font:700 4px/1 "Press Start 2P",monospace!important;
+}
+
+.pokemon-pokenav b{
+  color:var(--pk-blue-dark);
+  font:700 13px/1 "Pixelify Sans",system-ui,sans-serif;
+}
+
+/* ----- Overworld field ---------------------------------------------------- */
+
+.pokemon-route-scene{
+  position:relative;
+  isolation:isolate;
+  min-height:430px;
+  overflow:hidden;
+  background-position:center 42%!important;
+  background-size:cover!important;
+  background-repeat:no-repeat!important;
+  image-rendering:pixelated;
+}
+
+.pokemon-route-scene::before{
+  content:"";
+  position:absolute;
+  z-index:1;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.12),transparent 27%,rgba(19,41,23,.08) 65%,rgba(19,41,23,.22)),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 4px);
+}
+
+.pokemon-field-grid{
+  position:absolute;
+  z-index:2;
+  left:0;
+  right:0;
+  bottom:0;
+  height:48%;
+  opacity:.72;
+  background:
+    linear-gradient(90deg,transparent 0 31%,rgba(170,148,92,.82) 31% 43%,rgba(205,186,124,.9) 43% 57%,rgba(170,148,92,.82) 57% 69%,transparent 69%),
+    repeating-linear-gradient(90deg,rgba(40,105,49,.42) 0 18px,rgba(53,123,61,.38) 18px 36px);
+  clip-path:polygon(0 30%,31% 26%,37% 0,63% 0,69% 26%,100% 30%,100% 100%,0 100%);
+}
+
+.pokemon-route-screen.biome-cave .pokemon-field-grid{
+  background:
+    linear-gradient(90deg,transparent 0 31%,rgba(102,93,75,.88) 31% 69%,transparent 69%),
+    repeating-linear-gradient(90deg,rgba(59,58,51,.6) 0 20px,rgba(71,69,59,.56) 20px 40px);
+}
+
+.pokemon-route-screen.biome-coast .pokemon-field-grid,
+.pokemon-route-screen.biome-sea .pokemon-field-grid{
+  background:
+    linear-gradient(90deg,rgba(32,111,139,.25) 0 27%,rgba(194,180,116,.9) 27% 73%,rgba(32,111,139,.28) 73%),
+    repeating-linear-gradient(90deg,rgba(41,117,54,.25) 0 18px,rgba(55,129,68,.22) 18px 36px);
+}
+
+.pokemon-route-screen.biome-snow .pokemon-field-grid{
+  background:
+    linear-gradient(90deg,transparent 0 31%,rgba(221,220,202,.9) 31% 69%,transparent 69%),
+    repeating-linear-gradient(90deg,rgba(194,211,209,.42) 0 18px,rgba(213,222,217,.42) 18px 36px);
+}
+
+.pokemon-grass-band{
+  position:absolute;
+  z-index:4;
+  left:5%;
+  right:5%;
+  bottom:17px;
+  height:74px;
+  opacity:.78;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(90deg,
+      transparent 0 9px,
+      rgba(24,85,36,.9) 9px 12px,
+      rgba(60,139,62,.88) 12px 16px,
+      transparent 16px 24px);
+  clip-path:polygon(0 34%,4% 6%,7% 39%,10% 4%,14% 42%,18% 12%,22% 40%,26% 2%,31% 38%,35% 10%,39% 43%,44% 6%,48% 39%,52% 0,57% 40%,61% 11%,65% 43%,69% 3%,74% 40%,78% 12%,82% 42%,87% 5%,91% 39%,95% 11%,100% 35%,100% 100%,0 100%);
+}
+
+.pokemon-route-screen.biome-cave .pokemon-grass-band,
+.pokemon-route-screen.biome-city .pokemon-grass-band,
+.pokemon-route-screen.journey-arena .pokemon-grass-band{
+  display:none;
+}
+
+.pokemon-route-sign{
+  position:absolute;
+  z-index:8;
+  left:20px;
+  bottom:62px;
+  display:grid;
+  place-items:center;
+  width:96px;
+  min-height:50px;
+  padding:7px 8px;
+  border:4px solid #604b29;
+  border-radius:3px;
+  background:#d7bd78;
+  box-shadow:inset 0 0 0 2px #f0d99a,3px 4px 0 rgba(45,37,24,.28);
+  transform:rotate(-1deg);
+}
+
+.pokemon-route-sign::before,
+.pokemon-route-sign::after{
+  content:"";
+  position:absolute;
+  bottom:-31px;
+  width:10px;
+  height:31px;
+  background:#6c5230;
+}
+.pokemon-route-sign::before{left:20px}
+.pokemon-route-sign::after{right:20px}
+
+.pokemon-route-sign span{
+  color:#4b3b27;
+  font:700 7px/1.45 "Press Start 2P",monospace;
+  text-align:center;
+}
+
+.pokemon-field-trainer{
+  position:absolute;
+  z-index:10;
+  left:50%;
+  bottom:47px;
+  width:74px;
+  height:96px;
+  transform:translateX(-50%);
+}
+
+.pokemon-field-trainer>img{
+  position:absolute;
+  left:50%;
+  bottom:0;
+  width:66px!important;
+  height:82px!important;
+  object-fit:contain!important;
+  image-rendering:pixelated!important;
+  transform:translateX(-50%);
+  filter:drop-shadow(0 3px 0 rgba(0,0,0,.28));
+}
+
+.pokemon-field-partner{
+  position:absolute;
+  left:53px;
+  bottom:-3px;
+  display:grid;
+  place-items:center;
+  width:56px;
+  height:56px;
+}
+
+.pokemon-field-partner img{
+  width:54px!important;
+  height:54px!important;
+  object-fit:contain!important;
+  image-rendering:pixelated!important;
+  filter:drop-shadow(0 2px 0 rgba(0,0,0,.24));
+}
+
+/* ----- Physical route exits ---------------------------------------------- */
+
+.pokemon-route-exits{
+  position:absolute;
+  z-index:12;
+  inset:34px 38px auto;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  align-items:start;
+  gap:26px;
+  pointer-events:none;
+}
+
+.pokemon-route-exits.exits-1{
+  grid-template-columns:1fr;
+  justify-items:center;
+}
+
+.pokemon-route-exits.exits-2{
+  grid-template-columns:repeat(2,1fr);
+  gap:90px;
+}
+
+body.pr-game-ui .alpha-shell .pokemon-route-exit{
+  position:relative;
+  pointer-events:auto;
+  display:grid!important;
+  grid-template-columns:28px minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:8px!important;
+  min-width:0!important;
+  min-height:58px!important;
+  padding:8px 10px!important;
+  border:3px solid #2b3944!important;
+  border-radius:4px!important;
+  background:rgba(250,250,239,.96)!important;
+  box-shadow:inset 0 0 0 2px #fff,3px 4px 0 rgba(28,38,44,.28)!important;
+  color:var(--pk-ink)!important;
+  text-align:left!important;
+  transform:none!important;
+  transition:transform .08s linear,border-color .08s linear!important;
+}
+
+body.pr-game-ui .alpha-shell .pokemon-route-exit:hover:not(:disabled),
+body.pr-game-ui .alpha-shell .pokemon-route-exit:focus-visible{
+  transform:translateY(-2px)!important;
+  border-color:var(--pk-blue)!important;
+  outline:none!important;
+}
+
+body.pr-game-ui .alpha-shell .pokemon-route-exit.keyboard-selected{
+  border-color:var(--pk-blue)!important;
+  box-shadow:inset 0 0 0 2px #fff,0 0 0 3px rgba(255,215,83,.9),3px 4px 0 rgba(28,38,44,.28)!important;
+}
+
+.pokemon-exit-arrow{
+  display:grid;
+  place-items:center;
+  width:27px;
+  height:27px;
+  border:2px solid var(--pk-blue-dark);
+  border-radius:50%;
+  background:var(--pk-blue);
+  color:#fff;
+  font:700 11px/1 "Pixelify Sans",system-ui,sans-serif;
+  font-style:normal;
+}
+
+.pokemon-route-exit>span{
+  display:grid;
+  min-width:0;
+  gap:4px;
+}
+
+.pokemon-route-exit>span small{
+  color:#89908c!important;
+  font:700 4px/1 "Press Start 2P",monospace!important;
+}
+
+.pokemon-route-exit>span strong{
+  overflow:hidden;
+  color:#29323b;
+  font:700 13px/1 "Pixelify Sans",system-ui,sans-serif;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.pokemon-goal-mark{
+  display:grid;
+  place-items:center;
+  width:22px;
+  height:22px;
+  border:2px solid #7d2424;
+  border-radius:50%;
+  background:#e45b55;
+  color:#fff;
+  font:700 12px/1 "Pixelify Sans",system-ui,sans-serif;
+}
+
+.pokemon-exit-hint{
+  position:absolute;
+  top:calc(100% + 8px);
+  left:0;
+  z-index:50;
+  display:none;
+  width:min(300px,calc(100vw - 60px));
+  padding:9px 11px;
+  border:3px solid var(--pk-blue-dark);
+  border-radius:4px;
+  background:#fffef1;
+  box-shadow:inset 0 0 0 2px #fff,3px 4px 0 rgba(21,31,38,.25);
+  color:#384149;
+  font:normal 9px/1.45 "Pixelify Sans",system-ui,sans-serif;
+  font-style:normal;
+}
+
+.pokemon-route-exit:hover .pokemon-exit-hint,
+.pokemon-route-exit:focus-visible .pokemon-exit-hint,
+.pokemon-route-exit.keyboard-selected .pokemon-exit-hint{
+  display:block;
+}
+
+.pokemon-route-exits.exits-1 .pokemon-route-exit{
+  width:min(420px,70%)!important;
+}
+.pokemon-route-exits.exits-2 .pokemon-route-exit:first-child .pokemon-exit-hint{left:0}
+.pokemon-route-exits.exits-2 .pokemon-route-exit:last-child .pokemon-exit-hint{left:auto;right:0}
+.pokemon-route-exits.exits-3 .pokemon-route-exit:nth-child(3) .pokemon-exit-hint{left:auto;right:0}
+
+/* ----- Team strip in the field ------------------------------------------ */
+
+.pokemon-route-team{
+  position:absolute;
+  z-index:15;
+  right:15px;
+  bottom:15px;
+  display:flex;
+  gap:4px;
+  padding:5px;
+  border:3px solid #263540;
+  border-radius:999px;
+  background:rgba(250,250,239,.94);
+  box-shadow:inset 0 0 0 2px #fff,2px 3px 0 rgba(28,38,44,.24);
+}
+
+.pokemon-route-team>span{
+  position:relative;
+  display:grid;
+  place-items:center;
+  width:38px;
+  height:38px;
+  border:2px solid #b1b8b1;
+  border-radius:50%;
+  background:#e9ebdf;
+  overflow:hidden;
+}
+
+.pokemon-route-team>span[data-lead="true"]{
+  border-color:#c79a29;
+  background:#fff1b5;
+}
+
+.pokemon-route-team>span[data-fainted="true"]{
+  opacity:.42;
+  filter:grayscale(1);
+}
+
+.pokemon-route-team img{
+  width:36px!important;
+  height:36px!important;
+  object-fit:contain!important;
+  image-rendering:pixelated!important;
+}
+
+/* ----- Classic dialogue + field command menu ----------------------------- */
+
+.pokemon-route-commandbar{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 360px;
+  border-top:4px solid #1f2a34;
+  background:#d8ddd5;
+}
+
+.pokemon-dialogue-box{
+  position:relative;
+  display:grid;
+  align-content:center;
+  min-height:112px;
+  padding:16px 18px 14px 42px;
+  border:4px solid var(--pk-blue-dark);
+  border-radius:5px;
+  margin:8px 4px 8px 8px;
+  background:
+    linear-gradient(180deg,#fffef5,#f1f1e4);
+  box-shadow:inset 0 0 0 3px #fff;
+}
+
+.pokemon-dialogue-caret{
+  position:absolute;
+  left:15px;
+  top:19px;
+  color:var(--pk-accent);
+  font:700 13px/1 "Pixelify Sans",system-ui,sans-serif;
+}
+
+.pokemon-dialogue-box p{
+  margin:0!important;
+  color:#2b343b!important;
+  font:700 13px/1.45 "Pixelify Sans",system-ui,sans-serif!important;
+}
+
+.pokemon-dialogue-box small{
+  margin-top:7px;
+  color:#7a6a35!important;
+  font:700 7px/1.3 "Pixelify Sans",system-ui,sans-serif!important;
+}
+
+.pokemon-field-menu{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:5px;
+  min-height:112px;
+  padding:8px;
+}
+
+body.pr-game-ui .alpha-shell .pokemon-field-menu>button{
+  display:grid!important;
+  align-content:center!important;
+  gap:3px!important;
+  min-height:48px!important;
+  padding:7px 9px!important;
+  border:3px solid #2e3c48!important;
+  border-radius:4px!important;
+  background:#f8f8ec!important;
+  box-shadow:inset 0 0 0 2px #fff!important;
+  text-align:left!important;
+  transform:none!important;
+}
+
+body.pr-game-ui .alpha-shell .pokemon-field-menu>button:first-child{
+  grid-column:1/-1;
+}
+
+body.pr-game-ui .alpha-shell .pokemon-field-menu>button:hover:not(:disabled),
+body.pr-game-ui .alpha-shell .pokemon-field-menu>button:focus-visible{
+  border-color:var(--pk-blue)!important;
+  background:#fffef4!important;
+  transform:none!important;
+}
+
+body.pr-game-ui .alpha-shell .pokemon-field-menu>button:disabled{
+  opacity:.4!important;
+}
+
+.pokemon-field-menu b{
+  color:#25323c;
+  font:700 10px/1 "Pixelify Sans",system-ui,sans-serif;
+}
+
+.pokemon-field-menu small{
+  color:#747d79!important;
+  font:700 6px/1.2 "Pixelify Sans",system-ui,sans-serif!important;
+}
+
+.journey-arena .pokemon-field-menu{
+  opacity:.42;
+}
+
+/* ----- Route-progress dots ------------------------------------------------ */
+
+.pokemon-route-progress{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:4px;
+  min-height:22px;
+  padding:5px 8px;
+  border-top:3px solid #1f2a34;
+  background:#bfc8bf;
+}
+
+.pokemon-route-progress i{
+  display:block;
+  width:12px;
+  height:8px;
+  border:2px solid #5f6a6c;
+  border-radius:999px;
+  background:#e6e8dc;
+}
+
+.pokemon-route-progress i.done{
+  border-color:#3d7949;
+  background:#63a863;
+}
+
+.pokemon-route-progress i.current{
+  border-color:#8e2727;
+  background:#e25c54;
+}
+
+/* ----- Native party: keep management available without dominating route -- */
+
+body.pr-game-ui .alpha-shell:has(.pokemon-route-screen) .party.playful-party{
   position:relative!important;
   top:auto!important;
   right:auto!important;
   display:block!important;
-  width:min(100%,1060px)!important;
+  width:min(100%,1040px)!important;
   max-height:none!important;
-  margin:10px auto 0!important;
+  margin:12px auto 0!important;
   padding:9px!important;
-  border:1px solid #2f494d!important;
-  border-radius:12px!important;
-  background:#0b1a1e!important;
-  box-shadow:none!important;
+  border:3px solid #263540!important;
+  border-radius:6px!important;
+  background:#f1f2e8!important;
+  box-shadow:inset 0 0 0 2px #fff,3px 4px 0 rgba(24,34,41,.2)!important;
 }
 
-body.pr-game-ui .alpha-shell:has(.journey-world) .party.playful-party>.section-heading{
+body.pr-game-ui .alpha-shell:has(.pokemon-route-screen) .party.playful-party>.section-heading{
   margin-bottom:6px!important;
 }
 
-body.pr-game-ui .alpha-shell:has(.journey-world) .party.playful-party .party-list,
-body.pr-game-ui .alpha-shell:has(.journey-world) .party.playful-party .party-grid{
+body.pr-game-ui .alpha-shell:has(.pokemon-route-screen) .party.playful-party .party-list,
+body.pr-game-ui .alpha-shell:has(.pokemon-route-screen) .party.playful-party .party-grid{
   display:grid!important;
   grid-template-columns:repeat(6,minmax(0,1fr))!important;
   gap:5px!important;
 }
 
-body.pr-game-ui .alpha-shell:has(.journey-world) .party.playful-party .party-member{
+body.pr-game-ui .alpha-shell:has(.pokemon-route-screen) .party.playful-party .party-member{
   min-width:0!important;
-  border-radius:8px!important;
+  border-radius:5px!important;
 }
 
-body.pr-game-ui .alpha-shell:has(.journey-world) .pr-route-party-close{
-  display:none!important;
+body.pr-game-ui .alpha-shell:has(.pokemon-route-screen) .run-footer{
+  width:min(100%,1040px)!important;
+  margin:8px auto 0!important;
+  opacity:.7!important;
 }
 
 /* ----- Responsive --------------------------------------------------------- */
 
-@media(max-width:900px){
-  .journey-world{
-    grid-template-rows:220px auto 3px auto;
+@media(max-width:860px){
+  .pokemon-route-screen{
+    grid-template-rows:auto minmax(390px,52vh) auto auto;
   }
-  .journey-vista{
-    min-height:220px;
+
+  .pokemon-route-topbar{
+    display:grid;
   }
-  .journey-body{
+
+  .pokemon-area-card,
+  .pokemon-pokenav{
+    min-width:0;
+    width:100%;
+  }
+
+  .pokemon-route-commandbar{
     grid-template-columns:1fr;
   }
-  .journey-kit{
-    grid-template-columns:minmax(190px,.8fr) 1.2fr;
-    align-items:start;
+
+  .pokemon-dialogue-box{
+    margin:8px 8px 4px;
   }
-  .journey-actions{
-    grid-column:2;
-    grid-row:1/4;
+
+  .pokemon-field-menu{
+    grid-template-columns:repeat(3,1fr);
   }
-  .journey-discoveries{
-    grid-column:1;
+
+  body.pr-game-ui .alpha-shell .pokemon-field-menu>button:first-child{
+    grid-column:auto;
   }
-  body.pr-game-ui .alpha-shell:has(.journey-world) .party.playful-party .party-list,
-  body.pr-game-ui .alpha-shell:has(.journey-world) .party.playful-party .party-grid{
+
+  body.pr-game-ui .alpha-shell:has(.pokemon-route-screen) .party.playful-party .party-list,
+  body.pr-game-ui .alpha-shell:has(.pokemon-route-screen) .party.playful-party .party-grid{
     grid-template-columns:repeat(3,minmax(0,1fr))!important;
   }
 }
 
-@media(max-width:660px){
-  .journey-world{
-    grid-template-rows:180px auto 3px auto;
-    min-height:0;
-    border-radius:13px;
+@media(max-width:650px){
+  .pokemon-route-screen{
+    grid-template-rows:auto 430px auto auto;
+    border-width:3px;
+    border-radius:6px;
   }
-  .journey-vista{
-    min-height:180px;
+
+  .pokemon-route-topbar{
+    padding:5px;
   }
-  .journey-main-road{
-    width:190px;
-    height:132px;
+
+  .pokemon-area-card{
+    grid-template-columns:1fr auto;
+    padding:7px 8px;
   }
-  .journey-header{
-    display:grid;
-    gap:10px;
-    padding:12px;
+
+  .pokemon-area-card strong{
+    font-size:16px;
   }
-  .journey-place h2{
-    font-size:20px!important;
+
+  .pokemon-pokenav{
+    min-width:0;
   }
-  .journey-progress-card{
-    justify-items:start;
-    padding:8px 0 0;
-    border-top:1px solid #2c4448;
-    border-left:0;
+
+  .pokemon-pokenav>span{
+    min-height:44px;
+    padding:5px;
   }
-  .journey-body{
-    padding:10px 8px;
+
+  .pokemon-route-scene{
+    min-height:430px;
+    background-position:center!important;
   }
-  .journey-roads,
-  .journey-roads.roads-2,
-  .journey-roads.roads-1{
-    grid-template-columns:1fr;
-  }
-  body.pr-game-ui .alpha-shell .journey-road{
-    grid-template-columns:112px minmax(0,1fr)!important;
-    grid-template-rows:auto auto!important;
-    min-height:120px!important;
-  }
-  .journey-road-view{
-    grid-row:1/3;
-    min-height:120px;
-    border-right:1px solid #294347;
-    border-bottom:0;
-  }
-  .journey-road-copy{
-    align-content:center;
-    padding:10px 9px 4px;
-  }
-  .journey-road-copy span{
-    min-height:0;
-  }
-  .journey-road-action{
-    padding:4px 9px 10px;
-  }
-  .journey-kit{
+
+  .pokemon-route-exits,
+  .pokemon-route-exits.exits-2,
+  .pokemon-route-exits.exits-3{
+    inset:18px 14px auto;
     display:grid;
     grid-template-columns:1fr;
+    gap:6px;
   }
-  .journey-actions{
-    grid-column:auto;
-    grid-row:auto;
+
+  body.pr-game-ui .alpha-shell .pokemon-route-exit{
+    width:100%!important;
+    min-height:50px!important;
+    padding:6px 8px!important;
   }
-  .journey-discoveries{
-    grid-column:auto;
+
+  .pokemon-route-exit>span strong{
+    font-size:12px;
   }
-  .journey-energy-pips i{
-    width:8px;
-    height:8px;
+
+  .pokemon-exit-hint{
+    display:none!important;
   }
-  body.pr-game-ui .alpha-shell:has(.journey-world) .party.playful-party .party-list,
-  body.pr-game-ui .alpha-shell:has(.journey-world) .party.playful-party .party-grid{
+
+  .pokemon-route-sign{
+    left:12px;
+    bottom:68px;
+    transform:scale(.83);
+    transform-origin:left bottom;
+  }
+
+  .pokemon-field-trainer{
+    bottom:53px;
+  }
+
+  .pokemon-route-team{
+    right:8px;
+    bottom:8px;
+    gap:2px;
+    padding:3px;
+  }
+
+  .pokemon-route-team>span{
+    width:30px;
+    height:30px;
+  }
+
+  .pokemon-route-team img{
+    width:28px!important;
+    height:28px!important;
+  }
+
+  .pokemon-dialogue-box{
+    min-height:92px;
+    padding:13px 12px 12px 34px;
+  }
+
+  .pokemon-dialogue-box p{
+    font-size:11px!important;
+  }
+
+  .pokemon-dialogue-caret{
+    left:11px;
+    top:16px;
+  }
+
+  .pokemon-field-menu{
+    grid-template-columns:1fr;
+    gap:4px;
+  }
+
+  body.pr-game-ui .alpha-shell .pokemon-field-menu>button{
+    min-height:44px!important;
+  }
+
+  body.pr-game-ui .alpha-shell:has(.pokemon-route-screen) .party.playful-party .party-list,
+  body.pr-game-ui .alpha-shell:has(.pokemon-route-screen) .party.playful-party .party-grid{
     grid-template-columns:repeat(2,minmax(0,1fr))!important;
   }
 }
 
 @media(prefers-reduced-motion:reduce){
-  body.pr-game-ui .alpha-shell .journey-road{
+  body.pr-game-ui .alpha-shell .pokemon-route-exit{
     transition:none!important;
   }
 }
