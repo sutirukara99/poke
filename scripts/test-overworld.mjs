@@ -83,11 +83,15 @@ const signature = (map) =>
   JSON.stringify({
     key: map.key,
     biome: map.biome,
+    weather: map.weather,
+    timeOfDay: map.timeOfDay,
+    condition: map.condition,
     tiles: map.tiles,
     rooms: map.rooms,
     edges: map.edges,
     destinations: map.destinations.map(({ id, kind, x, y, room }) => ({ id, kind, x, y, room })),
     pickups: map.pickups,
+    secrets: map.secrets,
   });
 
 const regions = [
@@ -128,6 +132,20 @@ for (const [region, biome] of regions) {
       if (!reachable.has(pickup.x + "," + pickup.y)) {
         throw new Error("Pickup " + pickup.id + " is unreachable for " + seed);
       }
+    }
+    for (const secret of mapA.secrets ?? []) {
+      if (!reachable.has(secret.x + "," + secret.y)) {
+        throw new Error("Secret room " + secret.id + " is unreachable for " + seed);
+      }
+      if (!(mapA.pickups ?? []).some((pickup) => pickup.room === secret.room && pickup.secret)) {
+        throw new Error("Secret room has no secret pickup for " + seed);
+      }
+    }
+    if (!["clear", "rain", "snow", "mist"].includes(mapA.weather)) {
+      throw new Error("Unknown weather for " + seed + ": " + mapA.weather);
+    }
+    if (!["day", "dusk", "night"].includes(mapA.timeOfDay)) {
+      throw new Error("Unknown time-of-day for " + seed + ": " + mapA.timeOfDay);
     }
 
     const visible = ow.QowVisible(mapA.spawn.x, mapA.spawn.y, 5, mapA.w, mapA.h);
