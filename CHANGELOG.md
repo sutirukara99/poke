@@ -1,5 +1,34 @@
 # Changelog
 
+## 1.0.0-alpha.1 game identity pass — 2026-10-01
+
+### Game-first UX
+- Added a dedicated `game-experience` layer instead of extending the already large legacy Alpha stylesheet again.
+- Unified button priority, panel density, typography rhythm, spacing, focus states and screen width around a calmer GBA/DS-inspired hierarchy.
+- Reworked the main-menu hierarchy so play/continue actions read before collection/meta/system navigation.
+- Added an expedition step rail to run creation and stronger selected-region feedback.
+- Added short screen transitions that respect `prefers-reduced-motion`.
+
+### Regions, routes & replayability
+- Added region-aware route context with stage, biome flavor and distinct Kanto/Johto/Hoenn/Sinnoh identity.
+- Added subtle Safe/Balanced/Variable/Dangerous route readability without revealing exact outcomes.
+- Added run-persistent `recentEvents` history with backwards-safe migration so recently seen Mystery Events are suppressed.
+- Added region-weighted Mystery Event pools so Kanto leans trainer/Rocket, Johto mystical, Hoenn nature/weather and Sinnoh exploration/risk.
+- Expanded Mystery Events with Angler, Weather Station, Hidden Cave, Fossil Researcher, Lost Trainer, Pokémon Nest and Traveling Nurse encounters.
+- Kept the new event rewards run-scoped; no new trusted permanent account rewards are accepted directly from the client.
+
+### Battles & collection screens
+- Added short battle intros for wild, trainer, rival, gym, league and legendary encounters.
+- Added lightweight Shiny encounter feedback without turning every battle element into an animation.
+- Further reduced battle borders/panel weight and tightened HP, command and log presentation.
+- Flattened Party, PC, Pokédex, Shop, Loot and Trainer Card presentation to reduce dashboard-style nested cards.
+- Added friendlier empty-state copy and mobile-specific layout rules.
+
+### Consistency & QA
+- Player-facing Rogue Point currency copy is now consistently named **Meta Points** while the internal `metaPoints` save key remains unchanged.
+- Added smoke coverage for region event weighting, the anti-repetition state, the expanded event pool and currency terminology.
+- Existing save/backend/security behavior remains untouched apart from defensive run-field migration.
+
 ## 1.0.0-alpha.1 launch candidate r7 — 2026-09-29
 
 ### Final audit
