@@ -1,5 +1,35 @@
 # Changelog
 
+## 1.0.0-alpha.1 Roguelike Overworld Cleanup — 2026-10-02
+
+### Floor statt Webseiten-Panel
+- Die Free-Roam-Ansicht wurde zu einem fokussierten **Rogue-Floor** umgebaut. Im Run verschwinden Website-Chrome, Route-Header, Quest-Leisten und redundante HUD-Boxen.
+- Die Overworld ist jetzt der eigentliche Spielscreen. Region, Floor, Geld, Orden und Ziele liegen als kompaktes Overlay direkt über der Karte.
+- Das Spielmenü bleibt über **M / Escape** oder den kleinen Menübutton erreichbar.
+
+### Neue Floor-Generation
+- Jeder Abschnitt erzeugt nun einen deterministischen **31×21 Floor** aus Run-Seed, Region und Etappe.
+- Floors bestehen aus Räumen, Korridoren, Seitenräumen, Sackgassen, Loot und Zielräumen statt aus drei geraden Wegen.
+- Rogue-Branches werden weiterhin vom bestehenden Run-System bestimmt, liegen aber als erreichbare Räume im Floor.
+- Wild-Ziele erzeugen stärkere Grasbereiche; Boss-, Arena- und Liga-Ziele bekommen eigene Floor-Zonen.
+
+### Fog of War
+- Neue Bereiche sind zunächst verborgen.
+- Beim Laufen wird ein Radius um den Trainer aufgedeckt und dauerhaft im Run gespeichert.
+- NPCs, Items und Ziele werden erst sichtbar, wenn der Spieler sie tatsächlich erkundet.
+
+### Terrain-Fix
+- Das rohe FireRed-Decomp-`tiles.png` wird nicht mehr direkt als CSS-Spriteatlas verwendet. Das war die Ursache für die schwarz/weißen und falsch zusammengesetzten Tiles.
+- Terrain wird nun als sauberes Pixel-Tileset für Boden, Pfad, hohes Gras, Blumen, Wasser, Felsen, Wände und Boss-Flächen gerendert.
+- Offizielle FRLG-Overworld-Sprites bleiben für Trainer, NPCs, Item-Bälle und Schilder erhalten.
+
+### UX
+- Die Kamera folgt dem Spieler und hält ihn im Zentrum des Screens.
+- Team-Sprites und KP-Balken sitzen in einer kompakten Run-Leiste.
+- Interaktionshinweise erscheinen direkt im Floor statt in einer großen separaten Dialogbox.
+- Wartungsmodus bleibt weiterhin aktiv.
+
+
 ## 1.0.0-alpha.1 Free-Roam Overworld — 2026-10-02
 
 ### Komplett neues Reisesystem
