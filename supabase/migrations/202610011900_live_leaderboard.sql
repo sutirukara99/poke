@@ -305,14 +305,18 @@ begin
   ranked as (
     select
       row_number() over (
-        order by score desc, updated_at asc, lower(trainer_name), user_id
+        order by
+          s.score desc,
+          s.updated_at asc,
+          lower(s.trainer_name),
+          s.user_id
       )::bigint as rank,
-      user_id,
-      trainer_name,
-      score,
-      updated_at,
+      s.user_id,
+      s.trainer_name,
+      s.score,
+      s.updated_at,
       (count(*) over ())::bigint as player_count
-    from scores
+    from scores s
   )
   select
     r.rank,
