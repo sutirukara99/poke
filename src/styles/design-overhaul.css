@@ -2067,564 +2067,438 @@ body.pr-game-ui .alpha-shell .trainer-passport .passport-cosmetics>span{
 
 
 /* -------------------------------------------------------------------------- */
-/* GAME LAUNCHER HOME                                                          */
+/* MINIMAL POKÉREGIONS HOME                                                     */
 /* -------------------------------------------------------------------------- */
 
 body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"]{
-  width:min(100%,1540px)!important;
+  width:min(100%,1120px)!important;
+  min-height:100dvh!important;
+  padding-inline:clamp(10px,2vw,22px)!important;
+}
+
+/* On the title screen the chrome is only a small menu trigger. */
+body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] > .pr-game-chrome{
+  position:relative!important;
+  top:auto!important;
+  z-index:230;
+  grid-template-columns:auto 1fr!important;
+  min-height:44px!important;
+  margin:0 0 4px!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+}
+body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .pr-game-brand,
+body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .pr-game-context{
+  display:none!important;
+}
+body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .pr-game-chrome-actions{
+  grid-column:1!important;
+  justify-content:flex-start!important;
+  padding:0!important;
+}
+body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .pr-game-back{
+  display:none!important;
+}
+body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .pr-game-menu-toggle{
+  width:38px!important;
+  min-width:38px!important;
+  min-height:38px!important;
+  border:1px solid #354c56!important;
+  background:#101a20!important;
+  box-shadow:0 3px 0 rgba(0,0,0,.25)!important;
+}
+
+/* The old dashboard remains the data source, not part of the title screen. */
+body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .hero,
+body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .menu-hero,
+body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .dashboard[data-pr-home-dashboard="true"],
+body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .trainer-passport,
+body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .trainer-card,
+body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .bottom-note{
+  display:none!important;
+}
+
+.pr-minimal-home{
   position:relative;
-}
-
-body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] > .pr-launcher-statusbar,
-body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] > .content{
-  margin-left:232px!important;
-}
-body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] > .content{
-  min-width:0;
-}
-
-/* A persistent library rail makes the hub feel like a real game launcher. */
-.pr-launcher-sidebar{
-  position:fixed;
-  z-index:210;
-  top:80px;
-  left:max(12px,calc((100vw - 1540px)/2 + 24px));
   display:grid;
-  grid-template-rows:auto minmax(0,1fr) auto;
-  width:214px;
-  height:calc(100dvh - 98px);
-  overflow:hidden;
-  border:1px solid #294550;
+  place-items:center;
+  align-content:center;
+  gap:36px;
+  min-height:calc(100dvh - 92px);
+  padding:44px 0 58px;
+}
+.pr-minimal-home:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
   background:
-    linear-gradient(180deg,rgba(13,31,40,.985),rgba(5,15,21,.99));
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.025),
-    0 18px 45px rgba(0,0,0,.28);
-  backdrop-filter:blur(12px);
+    radial-gradient(circle at 20% 12%,rgba(217,108,101,.08),transparent 26rem),
+    radial-gradient(circle at 78% 18%,rgba(97,171,200,.09),transparent 30rem),
+    linear-gradient(180deg,#0b171e 0%,#081116 58%,#050b0f 100%);
+}
+.pr-minimal-home:after{
+  content:"";
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:-1;
+  height:34vh;
+  pointer-events:none;
+  opacity:.18;
+  background:
+    linear-gradient(145deg,transparent 0 20%,#58706b 20% 24%,transparent 24% 39%,#51645f 39% 45%,transparent 45%),
+    linear-gradient(180deg,transparent 0 50%,#1b312b 50% 68%,#13221e 68%);
+  clip-path:polygon(0 36%,8% 30%,16% 42%,28% 24%,37% 40%,48% 18%,59% 38%,70% 25%,82% 42%,91% 27%,100% 36%,100% 100%,0 100%);
 }
 
-.pr-launcher-side-head{
-  display:flex;
-  align-items:center;
-  gap:9px;
-  min-height:63px;
-  padding:10px 11px;
-  border-bottom:1px solid #253f4a;
-  background:
-    linear-gradient(90deg,var(--ui-region-soft),transparent 75%);
+.pr-minimal-brand{
+  display:grid;
+  justify-items:center;
+  gap:10px;
+  text-align:center;
 }
-
-.pr-launcher-side-mark{
+.pr-minimal-brand-mark{
   position:relative;
-  width:31px;
-  height:31px;
-  flex:0 0 31px;
-  border:2px solid #d8e2e6;
+  width:58px;
+  height:58px;
+  border:3px solid #dce5e8;
   border-radius:50%;
   background:
-    linear-gradient(var(--ui-region) 0 44%,#071117 44% 56%,#e2e8eb 56% 100%);
+    linear-gradient(var(--ui-region) 0 43%,#071117 43% 57%,#e4e9eb 57% 100%);
+  box-shadow:0 8px 0 rgba(0,0,0,.24);
 }
-.pr-launcher-side-mark:before{
+.pr-minimal-brand-mark:before{
   content:"";
   position:absolute;
-  inset:auto 0 50%;
-  height:3px;
-  translate:0 50%;
+  left:0;
+  right:0;
+  top:50%;
+  height:5px;
+  translate:0 -50%;
   background:#071117;
 }
-.pr-launcher-side-mark:after{
+.pr-minimal-brand-mark:after{
   content:"";
   position:absolute;
   left:50%;
   top:50%;
-  width:7px;
-  height:7px;
+  width:13px;
+  height:13px;
   translate:-50% -50%;
-  border:2px solid #071117;
+  border:3px solid #071117;
   border-radius:50%;
-  background:#eef4f6;
+  background:#f0f4f5;
 }
-
-.pr-launcher-side-copy{
+.pr-minimal-brand-copy{
   display:grid;
-  gap:2px;
-  min-width:0;
+  justify-items:center;
+  gap:5px;
 }
-.pr-launcher-side-copy strong{
-  color:#edf4f6;
-  font:700 13px/1 "Pixelify Sans",system-ui,sans-serif;
-  letter-spacing:.06em;
+.pr-minimal-brand-copy h1{
+  margin:0!important;
+  color:#f2f5f6!important;
+  font:700 clamp(38px,5vw,62px)/.92 "Pixelify Sans",system-ui,sans-serif!important;
+  letter-spacing:.055em!important;
 }
-.pr-launcher-side-copy small{
-  color:#617985!important;
-  font:700 5px/1.4 "Press Start 2P",monospace!important;
+.pr-minimal-brand-copy p{
+  margin:0!important;
+  color:#879aa2!important;
+  font:700 7px/1 "Press Start 2P",monospace!important;
+  letter-spacing:.12em;
+}
+.pr-minimal-brand-copy small{
+  padding-top:3px;
+  color:#4d626b!important;
+  font:700 5px/1 "Press Start 2P",monospace!important;
   letter-spacing:.08em;
 }
 
-.pr-launcher-side-body{
-  min-height:0;
-  overflow:auto;
-  padding:8px;
-}
-
-.pr-launcher-group{
+.pr-minimal-modes{
   display:grid;
-  gap:3px;
-  margin-bottom:10px;
-}
-.pr-launcher-group:last-child{margin-bottom:0}
-
-.pr-launcher-group-title{
-  padding:6px 7px 4px;
-  color:#516b76!important;
-  font:700 5px/1.4 "Press Start 2P",monospace!important;
-  letter-spacing:.1em;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+  width:min(100%,900px);
 }
 
-body.pr-game-ui .alpha-shell .pr-launcher-entry{
+body.pr-game-ui .alpha-shell .pr-minimal-mode{
+  --mode-accent:var(--ui-region);
+  position:relative;
   display:grid!important;
-  grid-template-columns:29px minmax(0,1fr) auto!important;
-  align-items:center!important;
-  gap:7px!important;
-  width:100%!important;
-  min-height:43px!important;
-  padding:5px 7px!important;
-  border:1px solid transparent!important;
-  background:transparent!important;
-  box-shadow:none!important;
+  grid-template-rows:170px auto auto!important;
+  min-height:285px!important;
+  padding:0!important;
+  overflow:hidden;
+  border:2px solid #2d414a!important;
+  border-radius:0!important;
+  background:#0c171c!important;
+  box-shadow:0 7px 0 rgba(0,0,0,.26)!important;
   text-align:left!important;
 }
-body.pr-game-ui .alpha-shell .pr-launcher-entry:hover:not(:disabled){
-  transform:none!important;
-  border-color:#294854!important;
-  background:
-    linear-gradient(90deg,var(--ui-region-soft),transparent 80%),
-    #0c212a!important;
+body.pr-game-ui .alpha-shell .pr-minimal-mode[data-mode-art="continue"]{--mode-accent:#d6b458}
+body.pr-game-ui .alpha-shell .pr-minimal-mode[data-mode-art="new"]{--mode-accent:#61abc8}
+body.pr-game-ui .alpha-shell .pr-minimal-mode[data-mode-art="trainer"]{--mode-accent:#9faad7}
+
+body.pr-game-ui .alpha-shell .pr-minimal-mode:hover:not(:disabled){
+  transform:translateY(-3px)!important;
+  border-color:var(--mode-accent)!important;
+  background:#0e1b21!important;
+  box-shadow:0 10px 0 rgba(0,0,0,.24)!important;
 }
-body.pr-game-ui .alpha-shell .pr-launcher-entry[data-launcher-primary="true"]{
-  min-height:54px!important;
-  margin-bottom:3px;
-  border-color:color-mix(in srgb,var(--ui-region) 56%,#35515d 44%)!important;
-  background:
-    linear-gradient(90deg,var(--ui-region-soft),transparent 70%),
-    #12303a!important;
-  box-shadow:inset 3px 0 0 var(--ui-region)!important;
+body.pr-game-ui .alpha-shell .pr-minimal-mode:active:not(:disabled){
+  transform:translateY(1px)!important;
+  box-shadow:0 3px 0 rgba(0,0,0,.28)!important;
+}
+body.pr-game-ui .alpha-shell .pr-minimal-mode:focus-visible{
+  outline:2px solid var(--mode-accent)!important;
+  outline-offset:3px!important;
 }
 
-.pr-launcher-entry-icon{
-  display:grid;
-  place-items:center;
-  width:27px;
-  height:27px;
-  border:1px solid #2e4b56;
-  background:#071820;
-  color:var(--ui-region);
-  font:700 12px/1 "Pixelify Sans",system-ui,sans-serif;
-}
-.pr-launcher-entry[data-launcher-primary="true"] .pr-launcher-entry-icon{
-  border-color:var(--ui-region);
-  color:#eef5f7;
-}
-
-.pr-launcher-entry-copy{
-  display:grid;
-  gap:1px;
-  min-width:0;
-}
-.pr-launcher-entry-copy strong{
+.pr-minimal-mode-scene{
+  position:relative;
+  display:block;
   overflow:hidden;
-  color:#d6e2e6;
-  font:700 11px/1.15 "Pixelify Sans",system-ui,sans-serif;
-  letter-spacing:.035em;
-  text-overflow:ellipsis;
-  white-space:nowrap;
+  border-bottom:3px solid var(--mode-accent);
+  background:
+    linear-gradient(180deg,color-mix(in srgb,var(--mode-accent) 24%,#9bb4ba 76%) 0 62%,#314842 62% 100%);
 }
-.pr-launcher-entry-copy small{
-  overflow:hidden;
-  color:#627b86!important;
-  font-size:8px!important;
-  line-height:1.2!important;
-  text-overflow:ellipsis;
-  white-space:nowrap;
+.pr-minimal-mode[data-mode-art="continue"] .pr-minimal-mode-scene{
+  background:linear-gradient(180deg,#8d9f94 0 60%,#314738 60% 100%);
 }
-.pr-launcher-entry-arrow{
-  color:#3f5965;
-  font-size:16px;
+.pr-minimal-mode[data-mode-art="new"] .pr-minimal-mode-scene{
+  background:linear-gradient(180deg,#7aaec0 0 58%,#31515b 58% 100%);
 }
-.pr-launcher-entry[data-launcher-primary="true"] .pr-launcher-entry-arrow{
-  color:var(--ui-region);
+.pr-minimal-mode[data-mode-art="trainer"] .pr-minimal-mode-scene{
+  background:linear-gradient(180deg,#8f93ad 0 58%,#353747 58% 100%);
 }
 
-.pr-launcher-side-foot{
-  display:grid;
-  gap:6px;
-  padding:8px;
-  border-top:1px solid #253f4a;
-  background:#071820;
-}
-.pr-launcher-build{
-  display:grid;
-  grid-template-columns:auto 1fr;
-  align-items:center;
-  gap:3px 7px;
-  padding:6px 7px;
-}
-.pr-launcher-build>span:not(.pr-launcher-live-dot){
-  color:#8fa3ab;
-  font:700 7px/1 "Press Start 2P",monospace;
-}
-.pr-launcher-build small{
-  grid-column:2;
-  color:#4f6873!important;
-  font-size:7px!important;
-}
-.pr-launcher-live-dot{
-  grid-row:1/3;
-  width:7px;
-  height:7px;
+.pr-minimal-scene-sun{
+  position:absolute;
+  top:20px;
+  right:28px;
+  width:35px;
+  height:35px;
   border-radius:50%;
-  background:#69b887;
-  box-shadow:0 0 0 3px rgba(105,184,135,.09);
+  background:#d6c47d;
+  opacity:.9;
 }
+.pr-minimal-scene-back,
+.pr-minimal-scene-front{
+  position:absolute;
+  bottom:36px;
+  width:150px;
+  height:100px;
+  background:#40594e;
+  clip-path:polygon(50% 0,100% 100%,0 100%);
+}
+.pr-minimal-scene-back{
+  right:-10px;
+  opacity:.55;
+  scale:1.05 .9;
+}
+.pr-minimal-scene-front{
+  left:8px;
+  bottom:25px;
+  background:#243b32;
+}
+.pr-minimal-scene-path{
+  position:absolute;
+  left:50%;
+  bottom:-20px;
+  width:68px;
+  height:110px;
+  translate:-50% 0;
+  background:#9b8f65;
+  clip-path:polygon(42% 0,58% 0,100% 100%,0 100%);
+}
+.pr-minimal-mode[data-mode-art="new"] .pr-minimal-scene-front{background:#24434e}
+.pr-minimal-mode[data-mode-art="trainer"] .pr-minimal-scene-front{background:#343748}
 
-body.pr-game-ui .alpha-shell .pr-launcher-account,
-body.pr-game-ui .alpha-shell .pr-launcher-admin{
-  width:100%!important;
-  min-height:38px!important;
-  padding:6px 7px!important;
-  border:1px solid #294651!important;
-  background:#0a1d25!important;
-  box-shadow:none!important;
-}
-body.pr-game-ui .alpha-shell .pr-launcher-account{
-  display:grid!important;
-  grid-template-columns:25px minmax(0,1fr) auto!important;
-  align-items:center!important;
-  gap:7px!important;
-  text-align:left!important;
-}
-.pr-launcher-account>span:first-child{
+.pr-minimal-mode-copy{
   display:grid;
-  place-items:center;
-  width:24px;
-  height:24px;
-  border:1px solid #34515d;
-  color:#79a9bd;
-}
-.pr-launcher-account>span:nth-child(2){
-  display:grid;
-  gap:1px;
-  min-width:0;
-}
-.pr-launcher-account b{
-  color:#d5e1e5;
-  font:700 7px/1 "Pixelify Sans",system-ui,sans-serif;
-}
-.pr-launcher-account small{
-  overflow:hidden;
-  color:#5f7782!important;
-  font-size:7px!important;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-.pr-launcher-account i{
-  color:#49646f;
-  font-style:normal;
-}
-body.pr-game-ui .alpha-shell .pr-launcher-admin{
-  color:#9b8db2!important;
-  font:700 6px/1 "Press Start 2P",monospace!important;
-}
-
-/* Launcher information strip between title bar and featured game. */
-.pr-launcher-statusbar{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) auto auto;
-  align-items:center;
-  gap:12px;
-  min-height:58px;
-  margin-bottom:8px!important;
-  padding:7px 8px 7px 13px;
-  border:1px solid #284651;
-  background:
-    linear-gradient(90deg,var(--ui-region-soft),transparent 40%),
-    #081921;
-}
-
-.pr-launcher-status-copy{
-  display:grid;
-  gap:3px;
-  min-width:0;
-}
-.pr-launcher-status-copy small{
-  color:var(--ui-region)!important;
-  font:700 5px/1 "Press Start 2P",monospace!important;
-  letter-spacing:.1em;
-}
-.pr-launcher-status-copy strong{
-  overflow:hidden;
-  color:#aebfc6;
-  font-size:10px;
-  font-weight:700;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-
-.pr-launcher-status-meta{
-  display:flex;
-  align-items:stretch;
   gap:5px;
+  min-height:82px;
+  padding:13px 14px 8px;
 }
-.pr-launcher-status-chip{
-  display:grid;
-  gap:2px;
-  min-width:82px;
-  padding:5px 8px;
-  border-left:1px solid #2a4550;
-}
-.pr-launcher-status-chip small{
-  color:#506975!important;
-  font:700 5px/1 "Press Start 2P",monospace!important;
-}
-.pr-launcher-status-chip b{
-  max-width:145px;
-  overflow:hidden;
-  color:#c7d4d9;
-  font:700 9px/1.2 "Pixelify Sans",system-ui,sans-serif;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-
-body.pr-game-ui .alpha-shell .pr-launcher-more{
-  min-height:34px!important;
-  padding:0 10px!important;
-  border-color:#35515d!important;
-  background:#0d252e!important;
-  color:#8fa4ad!important;
-  box-shadow:none!important;
-  font:700 6px/1 "Press Start 2P",monospace!important;
-}
-
-/* Featured banner gets a launcher-style spotlight treatment. */
-body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .hero,
-body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .menu-hero{
-  min-height:460px!important;
-  border-color:#385762!important;
-  background:#06161d!important;
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.025),
-    0 16px 42px rgba(0,0,0,.18)!important;
-}
-body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .hero-copy{
-  min-height:460px;
-  padding:clamp(32px,4vw,58px)!important;
-}
-body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .hero-art{
-  min-height:460px!important;
-}
-body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .hero-copy .eyebrow{
-  display:inline-flex;
-  width:max-content;
-  align-items:center;
-  gap:7px;
-  padding:5px 7px;
-  border:1px solid #2c4a55;
-  background:#081b23;
-}
-body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .hero-copy .eyebrow:before{
-  content:"FEATURED";
-  color:#d6c36c;
-}
-body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .hero .actions button[data-pr-hero-action="primary"]{
-  min-width:250px!important;
-  min-height:56px!important;
-  box-shadow:
-    inset 4px 0 0 var(--ui-region),
-    0 9px 24px rgba(0,0,0,.18)!important;
-}
-
-/* Proper launcher news/update feed. */
-.pr-launcher-news{
-  margin-top:8px;
-  border:1px solid #294651;
-  background:#081920;
-}
-.pr-launcher-news-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  min-height:48px;
-  padding:8px 11px;
-  border-bottom:1px solid #233f49;
-}
-.pr-launcher-news-head>span:first-child{
-  display:grid;
-  gap:2px;
-}
-.pr-launcher-news-head small{
-  color:var(--ui-region)!important;
+.pr-minimal-mode-copy small{
+  color:var(--mode-accent)!important;
   font:700 5px/1 "Press Start 2P",monospace!important;
   letter-spacing:.09em;
 }
-.pr-launcher-news-head strong{
-  color:#dce6e9;
-  font:700 13px/1 "Pixelify Sans",system-ui,sans-serif;
-  letter-spacing:.04em;
+.pr-minimal-mode-copy strong{
+  color:#eef3f5;
+  font:700 17px/1 "Pixelify Sans",system-ui,sans-serif;
+  letter-spacing:.03em;
 }
-.pr-launcher-news-build{
-  padding:5px 7px;
-  border:1px solid #2f4b56;
-  color:#657e89;
+.pr-minimal-mode-copy>span{
+  overflow:hidden;
+  color:#7d9098;
+  font-size:9px;
+  line-height:1.35;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.pr-minimal-mode-action{
+  align-self:end;
+  padding:8px 14px 10px;
+  color:var(--mode-accent);
   font:700 6px/1 "Press Start 2P",monospace;
+  letter-spacing:.06em;
 }
 
-.pr-launcher-news-grid{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
+.pr-minimal-footer{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  min-height:36px;
 }
-.pr-launcher-news-card{
-  position:relative;
-  display:grid;
-  grid-template-columns:38px minmax(0,1fr);
-  gap:10px;
-  min-height:126px;
-  padding:13px;
-  border-right:1px solid #213b45;
-  background:
-    linear-gradient(135deg,rgba(255,255,255,.018),transparent 48%);
+.pr-minimal-status{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:#657881;
+  font:700 6px/1 "Press Start 2P",monospace;
+  letter-spacing:.06em;
 }
-.pr-launcher-news-card:last-child{border-right:0}
-.pr-launcher-news-card:hover{
-  background:
-    linear-gradient(135deg,var(--ui-region-soft),transparent 58%),
-    #0a1e27;
+.pr-minimal-status i{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#70ad83;
+  box-shadow:0 0 0 3px rgba(112,173,131,.08);
 }
-.pr-launcher-news-icon{
-  display:grid;
-  place-items:center;
-  width:36px;
-  height:36px;
-  border:1px solid #36525d;
-  background:#07171f;
-  color:var(--ui-region);
-  font:700 15px/1 "Pixelify Sans",system-ui,sans-serif;
-}
-.pr-launcher-news-copy{
-  display:grid;
-  align-content:start;
-  gap:4px;
-}
-.pr-launcher-news-copy small{
-  color:#627b86!important;
-  font:700 5px/1 "Press Start 2P",monospace!important;
-  letter-spacing:.08em;
-}
-.pr-launcher-news-copy strong{
-  color:#d8e3e7;
-  font:700 13px/1.15 "Pixelify Sans",system-ui,sans-serif;
-}
-.pr-launcher-news-copy p{
-  margin:0!important;
-  color:#7d929b!important;
-  font-size:9px!important;
-  line-height:1.45!important;
-}
-body.pr-game-ui .alpha-shell .pr-launcher-news-action{
-  grid-column:2;
-  width:max-content!important;
-  min-height:28px!important;
-  margin-top:3px;
-  padding:0 8px!important;
-  border-color:#34515d!important;
-  background:#0d252e!important;
-  color:#9aabb2!important;
+body.pr-game-ui .alpha-shell .pr-minimal-menu{
+  min-height:30px!important;
+  padding:0 10px!important;
+  border:1px solid #2c424c!important;
+  background:#0c171c!important;
+  color:#7f929a!important;
   box-shadow:none!important;
   font:700 5px/1 "Press Start 2P",monospace!important;
 }
 
-/* The passport becomes the launcher's profile / career panel. */
-body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .dashboard[data-pr-home-dashboard="true"]{
-  margin-top:8px!important;
+/* The utility drawer is intentionally flat and narrow. */
+.pr-game-drawer{
+  width:min(285px,88vw)!important;
+  border-left:1px solid #334952!important;
+  background:#0b1115!important;
+  box-shadow:-12px 0 32px rgba(0,0,0,.34)!important;
 }
-body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .trainer-passport,
-body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .trainer-card{
-  border-color:#294a55!important;
-  background:
-    linear-gradient(90deg,var(--ui-region-soft),transparent 35%),
-    #081b23!important;
+.pr-drawer-head{
+  min-height:54px!important;
+  padding:9px 11px!important;
+  background:#10171b!important;
+}
+.pr-drawer-head strong{font-size:16px!important}
+.pr-drawer-context{
+  padding:6px 11px!important;
+  background:#0a1014!important;
+}
+.pr-drawer-body{padding:7px!important}
+.pr-drawer-group{
+  margin-bottom:5px!important;
+  border:1px solid #26383f!important;
+  background:#0c1317!important;
+}
+.pr-drawer-group summary{
+  min-height:36px!important;
+  padding:0 9px!important;
+}
+.pr-drawer-entry{
+  min-height:45px!important;
+  grid-template-columns:27px minmax(0,1fr) auto!important;
+  padding:5px 8px!important;
+  background:#0d1519!important;
+}
+.pr-drawer-entry:hover:not(:disabled){
+  background:#131f24!important;
+}
+.pr-drawer-entry-icon{
+  width:25px!important;
+  height:25px!important;
+  background:#090f12!important;
+}
+.pr-drawer-entry-copy strong{font-size:11px!important}
+.pr-drawer-entry-copy small{font-size:7px!important}
+.pr-drawer-footer{
+  padding:8px 10px 10px!important;
+  background:#090f12!important;
 }
 
-/* On medium screens the side rail becomes the existing drawer instead. */
-@media(max-width:1100px){
-  .pr-launcher-sidebar{
-    display:none!important;
-  }
-  body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] > .pr-launcher-statusbar,
-  body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] > .content{
-    margin-left:0!important;
-  }
-  .pr-launcher-statusbar{
-    grid-template-columns:minmax(0,1fr) auto;
-  }
-  .pr-launcher-status-meta{
-    display:none;
-  }
-}
-
-@media(max-width:760px){
-  .pr-launcher-statusbar{
-    grid-template-columns:minmax(0,1fr) auto;
-    min-height:50px;
-    padding-left:9px;
-  }
-  .pr-launcher-status-copy strong{
-    max-width:66vw;
-    font-size:9px;
-  }
-  body.pr-game-ui .alpha-shell .pr-launcher-more{
-    min-height:30px!important;
-    padding-inline:7px!important;
-    font-size:5px!important;
-  }
-  .pr-launcher-news-grid{
-    grid-template-columns:1fr;
-  }
-  .pr-launcher-news-card{
+@media(max-width:820px){
+  .pr-minimal-home{
+    gap:28px;
     min-height:auto;
-    border-right:0;
-    border-bottom:1px solid #213b45;
+    padding:34px 0 70px;
   }
-  .pr-launcher-news-card:last-child{border-bottom:0}
-  .pr-launcher-news-head{
-    min-height:42px;
+  .pr-minimal-modes{
+    grid-template-columns:1fr;
+    width:min(100%,520px);
+  }
+  body.pr-game-ui .alpha-shell .pr-minimal-mode{
+    grid-template-columns:160px minmax(0,1fr)!important;
+    grid-template-rows:auto auto!important;
+    min-height:150px!important;
+  }
+  .pr-minimal-mode-scene{
+    grid-row:1/3;
+    min-height:150px;
+    border-right:3px solid var(--mode-accent);
+    border-bottom:0;
+  }
+  .pr-minimal-mode-copy{
+    min-height:0;
+    align-content:center;
+    padding:16px 14px 7px;
+  }
+  .pr-minimal-mode-action{
+    padding:4px 14px 14px;
   }
 }
 
 @media(max-width:520px){
-  .pr-launcher-status-copy strong{
-    display:none;
+  .pr-minimal-brand-mark{
+    width:46px;
+    height:46px;
   }
-  .pr-launcher-statusbar{
-    min-height:42px;
+  .pr-minimal-brand-copy h1{
+    font-size:36px!important;
   }
-  .pr-launcher-news-build{
-    display:none;
+  .pr-minimal-brand-copy p{
+    font-size:5px!important;
   }
-  .pr-launcher-news-card{
-    grid-template-columns:32px minmax(0,1fr);
-    padding:10px;
+  body.pr-game-ui .alpha-shell .pr-minimal-mode{
+    grid-template-columns:112px minmax(0,1fr)!important;
+    min-height:126px!important;
   }
-  .pr-launcher-news-icon{
-    width:30px;
-    height:30px;
+  .pr-minimal-mode-scene{
+    min-height:126px;
+  }
+  .pr-minimal-mode-copy{
+    padding:12px 10px 5px;
+  }
+  .pr-minimal-mode-copy strong{
+    font-size:14px;
+  }
+  .pr-minimal-mode-copy>span{
+    white-space:normal;
+  }
+  .pr-minimal-mode-action{
+    padding:3px 10px 10px;
+  }
+  .pr-minimal-footer{
+    flex-direction:column;
+    gap:9px;
   }
 }
 
 @media(prefers-reduced-motion:reduce){
-  .pr-launcher-news-card,
-  .pr-launcher-entry,
-  .pr-launcher-statusbar{
+  body.pr-game-ui .alpha-shell .pr-minimal-mode{
     transition:none!important;
   }
 }
