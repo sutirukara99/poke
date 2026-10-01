@@ -4157,3 +4157,9 @@ body.pr-game-ui .alpha-shell .adventure-board:has(.canvas-overworld) > .map-bann
 body.pr-game-ui .alpha-shell .adventure-board:has(.canvas-overworld) > .map-progress{
   display:none!important;
 }
+
+
+body.pr-game-ui .alpha-shell main:has(.canvas-overworld) > .run-world-bar,
+body.pr-game-ui .alpha-shell main:has(.canvas-overworld) > .run-quests{
+  display:none!important;
+}
