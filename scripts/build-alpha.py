@@ -386,10 +386,10 @@ must('const b=r.pick(Il[i].defaultBiomes),v=E0(r,r.int(2,3),i).map((k,A)=>$u(k,`
 must('route:r==="story"?ph(yh(a,i,0),i,0):gh(bh(a,0),i,0),',
      'route:r==="story"?ph(yh(a,i,0),i,0,p):gh(bh(a,0),i,0,p),',
      'initial route class identity')
-must('a.route=gh(bh(a.seed,a.endlessMap),a.region,a.endlessMap),',
+must('a.route=gh(bh(a.seed,a.endlessMap),a.region,a.endlessMap,a.trainerClass),',
      'a.route=gh(bh(a.seed,a.endlessMap),a.region,a.endlessMap,a.trainerClass),',
      'next endless route class identity')
-must('a.route=ph(yh(a.seed,a.region,a.mapIndex),a.region,a.mapIndex),',
+must('a.route=ph(yh(a.seed,a.region,a.mapIndex),a.region,a.mapIndex,a.trainerClass),',
      'a.route=ph(yh(a.seed,a.region,a.mapIndex),a.region,a.mapIndex,a.trainerClass),',
      'next story route class identity')
 
