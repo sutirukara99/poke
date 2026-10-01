@@ -90,6 +90,9 @@ const spriteSlug = (species: string) =>
 const homePokemonSprite = (species: string, shiny: boolean) =>
   `https://play.pokemonshowdown.com/sprites/${shiny ? "gen5-shiny" : "gen5"}/${spriteSlug(species)}.png`;
 
+const homeTrainerSprite = (trainer: string) =>
+  `https://play.pokemonshowdown.com/sprites/trainers/${trainer}.png`;
+
 const displaySpecies = (species: string) =>
   species
     .split("-")
@@ -719,124 +722,84 @@ const renderMinimalHome = (shell: HTMLElement) => {
   );
   brand.append(brandMark, brandCopy);
 
-  const modes = make("div", "pr-minimal-modes");
+  const modes = make("div", "pr-minimal-modes pr-image-mode-grid");
 
-  if (continueEntry) {
-    const adventure = make("article", "pr-adventure-entry");
-    adventure.dataset.region = preview?.region ?? "kanto";
-
-    const art = make("div", "pr-adventure-art");
-    art.setAttribute("aria-hidden", "true");
-    art.append(
-      make("span", "pr-adventure-sky"),
-      make("span", "pr-adventure-ridge"),
-      make("span", "pr-adventure-ground"),
-      make("span", "pr-adventure-path"),
-    );
-
-    const artBadge = make(
-      "span",
-      "pr-adventure-art-badge",
-      preview ? `${preview.regionLabel} · ${preview.modeLabel}` : "AKTIVER SAVE",
-    );
-    art.append(artBadge);
-
-    const partyArt = make("div", "pr-adventure-party-art");
-    if (preview?.party.length) {
-      preview.party.forEach((member, index) => {
-        const image = document.createElement("img");
-        image.src = homePokemonSprite(member.species, member.shiny);
-        image.alt = "";
-        image.loading = index === 0 ? "eager" : "lazy";
-        image.draggable = false;
-        image.referrerPolicy = "no-referrer";
-        image.dataset.partyIndex = String(index);
-        image.addEventListener("error", () => image.remove(), { once: true });
-        partyArt.append(image);
-      });
-    } else {
-      partyArt.append(make("span", "pr-adventure-party-placeholder", "◉"));
-    }
-    art.append(partyArt);
-
-    const content = make("div", "pr-adventure-copy");
-    const kicker = make("small", "pr-adventure-kicker", "AKTIVE EXPEDITION");
-    const title = make("h2", "", "Dein Abenteuer wartet");
-    const route = make(
-      "p",
-      "pr-adventure-route",
-      preview
-        ? `${preview.regionLabel} · ${preview.routeLabel} · ${preview.stateLabel}`
-        : continueEntry.meta || "Setze deine aktuelle Reise fort.",
-    );
-
-    const progress = make("div", "pr-adventure-progress");
-    const progressHead = make("span", "pr-adventure-progress-head");
-    progressHead.append(
-      make("small", "", preview?.progressLabel ?? "AKTIVER RUN"),
-      make("b", "", preview ? `${Math.round(preview.progress)}%` : "READY"),
-    );
-    const progressTrack = make("span", "pr-adventure-progress-track");
-    const progressFill = make("i");
-    progressFill.style.width = `${Math.max(8, preview?.progress ?? 18)}%`;
-    progressTrack.append(progressFill);
-    progress.append(progressHead, progressTrack);
-
-    const party = make("div", "pr-adventure-party");
-    if (preview?.party.length) {
-      preview.party.forEach((member) => {
-        const chip = make("span", "pr-adventure-party-chip");
-        const image = document.createElement("img");
-        image.src = homePokemonSprite(member.species, member.shiny);
-        image.alt = "";
-        image.loading = "lazy";
-        image.draggable = false;
-        image.referrerPolicy = "no-referrer";
-        image.addEventListener("error", () => image.remove(), { once: true });
-        const copy = make("span");
-        copy.append(
-          make("b", "", member.shiny ? `✦ ${member.label}` : member.label),
-          make("small", "", `Lv. ${member.level}`),
-        );
-        chip.append(image, copy);
-        party.append(chip);
-      });
-    } else {
-      party.append(make("span", "pr-adventure-party-empty", "Team wird beim Fortsetzen geladen"));
-    }
-
-    const cta = make("button", "pr-adventure-continue", "Run fortsetzen →");
-    cta.type = "button";
-    cta.disabled = Boolean(continueEntry.disabled);
-    cta.addEventListener("click", continueEntry.activate);
-
-    content.append(kicker, title, route, progress, party, cta);
-    adventure.append(art, content);
-    modes.append(adventure);
-  }
-
-  const secondary = make("div", "pr-secondary-modes");
+  const addImage = (
+    host: HTMLElement,
+    src: string,
+    className: string,
+    index?: number,
+  ) => {
+    const image = document.createElement("img");
+    image.src = src;
+    image.alt = "";
+    image.loading = index === 0 ? "eager" : "lazy";
+    image.draggable = false;
+    image.referrerPolicy = "no-referrer";
+    image.className = className;
+    if (typeof index === "number") image.dataset.artIndex = String(index);
+    image.addEventListener("error", () => image.remove(), { once: true });
+    host.append(image);
+  };
 
   const addMode = (
     kicker: string,
     title: string,
     detail: string,
-    art: "new" | "trainer",
+    art: "continue" | "new" | "trainer",
     activate: () => void,
     disabled = false,
   ) => {
-    const button = make("button", "pr-minimal-mode pr-secondary-mode");
+    const button = make("button", "pr-minimal-mode pr-image-mode");
     button.type = "button";
     button.disabled = disabled;
     button.dataset.modeArt = art;
     button.setAttribute("aria-label", title);
 
-    const icon = make(
-      "span",
-      "pr-secondary-mode-icon",
-      art === "new" ? "＋" : "♙",
+    const scene = make("span", "pr-minimal-mode-scene pr-image-mode-scene");
+    scene.setAttribute("aria-hidden", "true");
+    scene.append(
+      make("span", "pr-image-mode-glow"),
+      make("span", "pr-image-mode-horizon"),
     );
-    icon.setAttribute("aria-hidden", "true");
+
+    const figures = make("span", "pr-image-mode-figures");
+    if (art === "continue") {
+      if (preview?.party.length) {
+        preview.party.slice(0, 3).forEach((member, index) => {
+          addImage(
+            figures,
+            homePokemonSprite(member.species, member.shiny),
+            "pr-mode-pokemon",
+            index,
+          );
+        });
+      } else {
+        addImage(figures, homePokemonSprite("pikachu", false), "pr-mode-pokemon", 0);
+      }
+    } else if (art === "new") {
+      ["bulbasaur", "charmander", "squirtle"].forEach((species, index) => {
+        addImage(
+          figures,
+          homePokemonSprite(species, false),
+          "pr-mode-pokemon",
+          index,
+        );
+      });
+    } else {
+      addImage(figures, homeTrainerSprite("red"), "pr-mode-trainer", 0);
+      addImage(figures, homePokemonSprite("pikachu", false), "pr-mode-sidekick", 1);
+    }
+    scene.append(figures);
+
+    if (art === "continue" && preview) {
+      const badge = make(
+        "span",
+        "pr-image-mode-badge",
+        `${preview.regionLabel} · ${preview.modeLabel}`,
+      );
+      scene.append(badge);
+    }
 
     const copy = make("span", "pr-minimal-mode-copy");
     copy.append(
@@ -845,15 +808,37 @@ const renderMinimalHome = (shell: HTMLElement) => {
       make("span", "", detail),
     );
 
+    if (art === "continue" && preview) {
+      const state = make(
+        "span",
+        "pr-image-mode-state",
+        `${preview.routeLabel} · ${preview.stateLabel} · ${preview.progressLabel}`,
+      );
+      copy.append(state);
+    }
+
     const action = make(
       "b",
       "pr-minimal-mode-action",
-      disabled ? "GESPERRT" : "ÖFFNEN →",
+      disabled ? "GESPERRT" : art === "continue" ? "FORTSETZEN →" : "ÖFFNEN →",
     );
-    button.append(icon, copy, action);
+    button.append(scene, copy, action);
     button.addEventListener("click", activate);
-    secondary.append(button);
+    modes.append(button);
   };
+
+  if (continueEntry) {
+    addMode(
+      "AKTIVE EXPEDITION",
+      "Run fortsetzen",
+      preview
+        ? `${preview.regionLabel} · ${preview.routeLabel} · ${preview.stateLabel}`
+        : continueEntry.meta || "Setze deine aktuelle Reise fort.",
+      "continue",
+      continueEntry.activate,
+      Boolean(continueEntry.disabled),
+    );
+  }
 
   if (newEntry) {
     addMode(
@@ -873,8 +858,6 @@ const renderMinimalHome = (shell: HTMLElement) => {
     "trainer",
     openDrawer,
   );
-
-  modes.append(secondary);
 
   const footer = make("footer", "pr-minimal-footer");
   const status = make("span", "pr-minimal-status");
