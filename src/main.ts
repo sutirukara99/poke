@@ -8,6 +8,7 @@ import { mountGameGrantSync } from "./cloud/game-grant-sync";
 import { mountLeaderboardUi } from "./cloud/leaderboard-ui";
 import { mountBattleVisualPolish } from "./polish/battle-visuals";
 import { mountGameExperience } from "./polish/game-experience";
+import { mountGameSoundHooks } from "./polish/game-audio";
 
 declare global {
   interface Window {
@@ -116,3 +117,4 @@ void mountGameGrantSync();
 void mountLeaderboardUi();
 mountBattleVisualPolish();
 mountGameExperience();
+mountGameSoundHooks();
