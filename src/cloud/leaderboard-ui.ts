@@ -82,7 +82,7 @@ const fetchLeaderboard = async (
   });
 
   if (error) throw new Error(error.message);
-  return (data ?? []).map((row) => ({
+  return (data ?? []).map((row: Record<string, unknown>) => ({
     rank: Number(row.rank ?? 0),
     trainer_name: String(row.trainer_name ?? "Trainer"),
     score: Number(row.score ?? 0),
