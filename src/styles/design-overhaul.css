@@ -3357,3 +3357,298 @@ body.pr-game-ui .alpha-shell .pr-image-mode:active:not(:disabled){
     font-size:15px!important;
   }
 }
+
+
+/* ========================================================================== */
+/* POKÉMON GAME LANGUAGE · HOME / MENUS                                       */
+/* ========================================================================== */
+
+body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"]{
+  --menu-blue:#2f5f98;
+  --menu-blue-dark:#17385f;
+  --menu-paper:#fbfbf2;
+  --menu-ink:#26323b;
+}
+
+.pr-minimal-home{
+  gap:26px!important;
+  padding:26px 0 48px!important;
+}
+
+.pr-minimal-home:before{
+  background:
+    linear-gradient(180deg,rgba(118,184,220,.98) 0 42%,rgba(193,224,224,.96) 42% 54%,rgba(86,153,83,.96) 54% 100%)!important;
+}
+
+.pr-minimal-home:after{
+  height:42vh!important;
+  opacity:.7!important;
+  background:
+    repeating-linear-gradient(90deg,rgba(45,117,52,.55) 0 24px,rgba(59,139,62,.55) 24px 48px),
+    linear-gradient(180deg,transparent 0 20%,rgba(75,143,72,.85) 20% 100%)!important;
+  clip-path:polygon(0 38%,8% 25%,16% 37%,24% 20%,33% 35%,42% 18%,51% 37%,61% 23%,70% 39%,80% 21%,90% 36%,100% 24%,100% 100%,0 100%)!important;
+}
+
+.pr-minimal-brand{
+  gap:7px!important;
+}
+
+.pr-minimal-brand-mark{
+  width:56px!important;
+  height:56px!important;
+  border:4px solid #1f2c38!important;
+  background:
+    linear-gradient(#e65952 0 43%,#1f2c38 43% 57%,#f7f6ec 57% 100%)!important;
+  box-shadow:0 5px 0 rgba(31,44,56,.28)!important;
+}
+
+.pr-minimal-brand-mark:before{
+  background:#1f2c38!important;
+}
+
+.pr-minimal-brand-mark:after{
+  border-color:#1f2c38!important;
+  background:#fffdf0!important;
+}
+
+.pr-minimal-brand-copy h1{
+  color:#fff!important;
+  text-shadow:
+    0 3px 0 #244e7b,
+    3px 0 0 #244e7b,
+    -3px 0 0 #244e7b,
+    0 -3px 0 #244e7b,
+    4px 5px 0 rgba(27,43,60,.24)!important;
+}
+
+.pr-minimal-brand-copy p{
+  color:#263c52!important;
+  padding:5px 8px!important;
+  border:2px solid rgba(255,255,255,.55)!important;
+  border-radius:3px!important;
+  background:rgba(255,255,255,.66)!important;
+}
+
+.pr-minimal-brand-copy small{
+  color:#3f5868!important;
+}
+
+.pr-minimal-modes.pr-image-mode-grid{
+  gap:10px!important;
+}
+
+body.pr-game-ui .alpha-shell .pr-image-mode{
+  --mode-accent:#2f5f98;
+  min-height:330px!important;
+  border:4px solid #22323f!important;
+  border-radius:6px!important;
+  background:#f7f7ec!important;
+  box-shadow:
+    inset 0 0 0 2px #fff,
+    4px 5px 0 rgba(27,39,48,.22)!important;
+}
+
+body.pr-game-ui .alpha-shell .pr-image-mode[data-mode-art="continue"]{--mode-accent:#ce9341}
+body.pr-game-ui .alpha-shell .pr-image-mode[data-mode-art="new"]{--mode-accent:#4384b5}
+body.pr-game-ui .alpha-shell .pr-image-mode[data-mode-art="trainer"]{--mode-accent:#7a65a8}
+
+body.pr-game-ui .alpha-shell .pr-image-mode:hover:not(:disabled){
+  transform:translateY(-3px)!important;
+  border-color:var(--mode-accent)!important;
+  background:#fffef4!important;
+  box-shadow:
+    inset 0 0 0 2px #fff,
+    5px 7px 0 rgba(27,39,48,.22)!important;
+}
+
+.pr-image-mode-scene{
+  border-bottom:4px solid #22323f!important;
+  background:
+    linear-gradient(180deg,#88bed2 0 52%,#77a86e 52% 100%)!important;
+}
+
+.pr-image-mode[data-mode-art="continue"] .pr-image-mode-scene{
+  background:linear-gradient(180deg,#89b9cf 0 51%,#75a66a 51% 100%)!important;
+}
+
+.pr-image-mode[data-mode-art="new"] .pr-image-mode-scene{
+  background:linear-gradient(180deg,#7fc2d8 0 49%,#5d9e66 49% 100%)!important;
+}
+
+.pr-image-mode[data-mode-art="trainer"] .pr-image-mode-scene{
+  background:linear-gradient(180deg,#a5b5d4 0 50%,#77906b 50% 100%)!important;
+}
+
+.pr-image-mode-horizon{
+  opacity:.95!important;
+  background:
+    repeating-linear-gradient(90deg,#315f3f 0 28px,#3c7048 28px 56px)!important;
+  clip-path:polygon(0 36%,9% 20%,16% 36%,25% 15%,34% 34%,45% 12%,54% 37%,64% 18%,75% 38%,85% 14%,94% 33%,100% 22%,100% 100%,0 100%)!important;
+}
+
+.pr-image-mode-glow{
+  background:
+    radial-gradient(circle at 78% 20%,rgba(255,241,170,.78) 0 18px,transparent 20px),
+    linear-gradient(180deg,rgba(255,255,255,.12),transparent 45%)!important;
+}
+
+.pr-mode-pokemon,
+.pr-mode-trainer,
+.pr-mode-sidekick{
+  filter:drop-shadow(0 3px 0 rgba(31,42,49,.32))!important;
+}
+
+.pr-image-mode-badge{
+  border:2px solid #243747!important;
+  border-radius:4px!important;
+  background:#fffced!important;
+  color:#283640!important;
+}
+
+.pr-image-mode .pr-minimal-mode-copy{
+  background:#f7f7ec!important;
+}
+
+.pr-image-mode .pr-minimal-mode-copy small{
+  color:var(--mode-accent)!important;
+}
+
+.pr-image-mode .pr-minimal-mode-copy strong{
+  color:#26323b!important;
+}
+
+.pr-image-mode .pr-minimal-mode-copy>span{
+  color:#626d70!important;
+}
+
+.pr-image-mode-state{
+  color:#7d704e!important;
+}
+
+.pr-image-mode .pr-minimal-mode-action{
+  border-top:1px solid #c9cec5!important;
+  background:#ecece0!important;
+  color:var(--mode-accent)!important;
+}
+
+.pr-minimal-footer{
+  width:min(100%,900px)!important;
+}
+
+.pr-minimal-status{
+  padding:6px 8px!important;
+  border:2px solid rgba(35,50,63,.45)!important;
+  border-radius:4px!important;
+  background:rgba(248,248,236,.86)!important;
+  color:#344651!important;
+}
+
+body.pr-game-ui .alpha-shell .pr-minimal-menu{
+  min-height:34px!important;
+  padding:0 12px!important;
+  border:3px solid #22323f!important;
+  border-radius:4px!important;
+  background:#f7f7ec!important;
+  color:#293842!important;
+  box-shadow:inset 0 0 0 2px #fff!important;
+}
+
+/* In-game pause/drawer language: white cartridge-era menu, not dashboard. */
+.pr-game-drawer{
+  border-left:4px solid #20333f!important;
+  background:#e5e9e1!important;
+  box-shadow:-9px 0 0 rgba(25,36,43,.24)!important;
+}
+
+.pr-drawer-head{
+  border-bottom:3px solid #20333f!important;
+  background:#f7f7ec!important;
+}
+
+.pr-drawer-head strong,
+.pr-drawer-head small{
+  color:#27343d!important;
+}
+
+.pr-drawer-context{
+  border-bottom:2px solid #9fa9a4!important;
+  background:#d7ded8!important;
+  color:#47575d!important;
+}
+
+.pr-drawer-body{
+  background:#e5e9e1!important;
+}
+
+.pr-drawer-group{
+  border:3px solid #2b3c46!important;
+  border-radius:4px!important;
+  background:#f7f7ec!important;
+  box-shadow:inset 0 0 0 2px #fff!important;
+}
+
+.pr-drawer-group summary{
+  color:#29343c!important;
+}
+
+.pr-drawer-entry{
+  border-top:1px solid #c6ccc4!important;
+  background:#f7f7ec!important;
+}
+
+.pr-drawer-entry:hover:not(:disabled){
+  background:#fffef2!important;
+}
+
+.pr-drawer-entry-icon{
+  background:#dce3dc!important;
+  color:#315d8e!important;
+}
+
+.pr-drawer-entry-copy strong{
+  color:#28353e!important;
+}
+
+.pr-drawer-entry-copy small{
+  color:#6c797b!important;
+}
+
+.pr-drawer-entry-arrow{
+  color:#b34444!important;
+}
+
+.pr-drawer-footer{
+  border-top:3px solid #2a3b46!important;
+  background:#d9dfd8!important;
+  color:#4b5a60!important;
+}
+
+/* Common in-run surfaces move toward one Pokémon UI language. */
+body.pr-game-ui .alpha-shell .city-hub,
+body.pr-game-ui .alpha-shell .shop-screen,
+body.pr-game-ui .alpha-shell .inventory-shell,
+body.pr-game-ui .alpha-shell .pc-shell,
+body.pr-game-ui .alpha-shell .trainer-card{
+  border-color:#293b47!important;
+  border-radius:6px!important;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.72),3px 4px 0 rgba(26,37,45,.18)!important;
+}
+
+body.pr-game-ui .alpha-shell .city-hub button,
+body.pr-game-ui .alpha-shell .shop-screen button,
+body.pr-game-ui .alpha-shell .inventory-shell button,
+body.pr-game-ui .alpha-shell .pc-shell button{
+  border-radius:4px!important;
+}
+
+@media(max-width:820px){
+  .pr-minimal-home{
+    padding-top:18px!important;
+  }
+}
+
+@media(max-width:520px){
+  .pr-minimal-brand-copy h1{
+    font-size:34px!important;
+  }
+}

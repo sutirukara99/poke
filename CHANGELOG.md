@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.0.0-alpha.1 Pokémon game-language pass — 2026-10-02
+
+### Route presentation
+- Reframed **The Journey** from a dark expedition dashboard into a Pokémon-style overworld route screen.
+- Current paths now appear as physical field exits over the route scene instead of rectangular roguelike cards.
+- Added a region route sign, overworld trainer sprite, lead Pokémon companion and an in-field six-Pokémon team strip.
+- Route information now lives in classic game-like UI: area name card, compact PokéNav stats, dialogue box and route-progress markers.
+- Existing regional/biome route logic, encounters and Journey choices remain intact.
+
+### Field commands
+- **Umgebung lesen**, **Abseits suchen** and **Kurzes Lager** are now presented as field-menu commands: **Umschauen**, **Suchen** and **Rasten**.
+- Hover/focus on a route exit exposes the contextual clue as an in-world hint rather than permanent dashboard copy.
+- Arena routes keep exploration commands disabled and focus only on the next battle path.
+
+### Visual language
+- Uses the existing Pokémon-style battleback art as route scenery for Kanto, Hoenn and Sinnoh, with compatible fallback scenery for Johto.
+- Reworked the launcher from dark app/launcher cards toward bright cartridge-era game panels while keeping the three image tiles.
+- Trainer menu/drawer and several common in-run surfaces now share the same light panel, dark outline and pixel-menu language.
+- Maintenance mode remains enabled for review.
+
+
 ## 1.0.0-alpha.1 The Journey — 2026-10-01
 
 ### Neues Reiseprinzip
