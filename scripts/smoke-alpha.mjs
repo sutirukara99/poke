@@ -14,6 +14,15 @@ const required = [
   "debt-collector",
   "rocket-cache",
   "shrine-guardian",
+  "fisher-jetty",
+  "weather-station",
+  "hidden-cave",
+  "fossil-researcher",
+  "lost-trainer",
+  "pokemon-nest",
+  "traveling-nurse",
+  "recentEvents",
+  "Meta Points",
   "rogue-die",
   "black-feather",
   "secret-route",
@@ -79,6 +88,11 @@ if (!js.includes("★ ELITE · ")) throw new Error("Elite archetype battle label
 if (!js.includes('!oe.shiny&&!i.dailyChallenge&&Sy(a)>1')) throw new Error("daily persistent shiny bonus guard missing");
 
 if (!js.includes('W("protect","Schutzschild","normal","status",0,1,4')) throw new Error("protect PP nerf missing");
+
+if (!js.includes('kanto:["rocket-scout","lost-backpack","lost-trainer","traveling-nurse"]')) throw new Error("Kanto event identity weighting missing");
+if (!js.includes('hoenn:["berry-bush","fisher-jetty","weather-station","pokemon-nest"]')) throw new Error("Hoenn event identity weighting missing");
+if (!js.includes("recentEvents=[...(i.recentEvents??[])")) throw new Error("Mystery anti-repetition history missing");
+if (js.includes("Rogue-Punkte")) throw new Error("Legacy player-facing Rogue-Punkte copy remains; use Meta Points.");
 
 if (!js.includes("QalphaRow.length===3")) throw new Error("safe secret generation missing");
 if (!js.includes("QalphaRepairRoute(a)")) throw new Error("route advance repair hook missing");
