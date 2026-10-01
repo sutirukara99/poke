@@ -2994,3 +2994,956 @@ body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-path-
     transition:none!important;
   }
 }
+
+
+/* ========================================================================== */
+/* ADVENTURE ATLAS · COMPLETE ROUTE / NODE REDESIGN                           */
+/* ========================================================================== */
+
+/*
+ * The route is no longer a board of UI cards. It reads as a world-map layer:
+ * one scenic atlas, floating waypoints, path lines and a single compact HUD.
+ */
+body.pr-game-ui .alpha-shell .adventure-board[data-pr-route-atlas="true"]{
+  --atlas-surface:#0d1d20;
+  --atlas-deep:#071316;
+  --atlas-land:#19352f;
+  --atlas-land-2:#24453a;
+  --atlas-water:#102b34;
+  --atlas-line:#607a73;
+  display:block!important;
+  width:min(100%,1120px)!important;
+  max-width:1120px!important;
+  margin:0 auto!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+body.pr-game-ui .alpha-shell .adventure-board[data-pr-route-atlas="true"]>.map-banner,
+body.pr-game-ui .alpha-shell .adventure-board[data-pr-route-atlas="true"]>.map-progress,
+body.pr-game-ui .alpha-shell .adventure-board[data-pr-route-atlas="true"]>.pr-route-context,
+body.pr-game-ui .alpha-shell .adventure-board[data-pr-route-atlas="true"]>.pr-route-risk-legend,
+body.pr-game-ui .alpha-shell .adventure-board[data-pr-route-atlas="true"]>.pr-route-board-side{
+  display:none!important;
+}
+
+/* ----- One compact expedition HUD ---------------------------------------- */
+
+.pr-route-atlas-hud{
+  position:relative;
+  z-index:20;
+  display:grid;
+  gap:0;
+  width:min(100%,1040px);
+  margin:0 auto 12px;
+  overflow:hidden;
+  border:1px solid #38565a;
+  border-radius:16px;
+  background:
+    radial-gradient(circle at 8% 0%,rgba(116,185,165,.1),transparent 21rem),
+    linear-gradient(135deg,#102529,#0a191d 70%);
+  box-shadow:0 12px 30px rgba(0,0,0,.18);
+}
+
+.pr-route-atlas-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:22px;
+  padding:15px 17px 13px;
+}
+
+.pr-route-atlas-copy{
+  min-width:0;
+}
+
+.pr-route-atlas-kicker{
+  display:block;
+  margin-bottom:5px;
+  color:var(--ui-region);
+  font:700 5px/1 "Press Start 2P",monospace;
+  letter-spacing:.08em;
+}
+
+.pr-route-atlas-copy h2{
+  margin:0!important;
+  color:#edf4f2!important;
+  font:700 23px/1 "Pixelify Sans",system-ui,sans-serif!important;
+  letter-spacing:.025em;
+}
+
+.pr-route-atlas-copy p{
+  margin:5px 0 0!important;
+  color:#80999b!important;
+  font-size:9px!important;
+  line-height:1.35!important;
+}
+
+.pr-route-atlas-destination{
+  display:grid;
+  justify-items:end;
+  flex:0 0 auto;
+  gap:3px;
+  padding-left:18px;
+  border-left:1px solid #294448;
+}
+
+.pr-route-atlas-destination small{
+  color:#627d80!important;
+  font:700 4px/1 "Press Start 2P",monospace!important;
+  letter-spacing:.07em;
+}
+
+.pr-route-atlas-destination strong{
+  color:#e3eeee;
+  font:700 15px/1 "Pixelify Sans",system-ui,sans-serif;
+}
+
+.pr-route-atlas-destination span{
+  color:var(--ui-region);
+  font:700 8px/1 "Pixelify Sans",system-ui,sans-serif;
+}
+
+.pr-route-atlas-progress{
+  height:3px;
+  background:#172b2e;
+}
+
+.pr-route-atlas-progress i{
+  display:block;
+  height:100%;
+  min-width:3px;
+  background:linear-gradient(90deg,var(--ui-region),#c9d890);
+}
+
+.pr-route-atlas-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:8px 10px;
+  border-top:1px solid #213a3e;
+  background:rgba(5,16,19,.36);
+}
+
+.pr-route-atlas-resources{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:4px;
+}
+
+.pr-route-atlas-stat{
+  display:grid;
+  grid-template-columns:22px auto;
+  grid-template-rows:auto auto;
+  align-items:center;
+  min-width:74px;
+  min-height:35px;
+  padding:4px 7px;
+  border-radius:8px;
+  background:rgba(23,49,52,.54);
+}
+
+.pr-route-atlas-stat i{
+  grid-row:1/3;
+  display:grid;
+  place-items:center;
+  width:18px;
+  height:18px;
+  color:var(--ui-region);
+  font:700 9px/1 "Pixelify Sans",system-ui,sans-serif;
+  font-style:normal;
+}
+
+.pr-route-atlas-stat b{
+  color:#dce7e6;
+  font:700 10px/1 "Pixelify Sans",system-ui,sans-serif;
+}
+
+.pr-route-atlas-stat small{
+  color:#637b7e!important;
+  font:700 4px/1 "Press Start 2P",monospace!important;
+}
+
+.pr-route-atlas-party{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  flex:0 0 auto;
+}
+
+.pr-route-atlas-mon{
+  position:relative;
+  display:grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  margin-left:-5px;
+  overflow:hidden;
+  border:1px solid #304d51;
+  border-radius:50%;
+  background:#09171a;
+}
+
+.pr-route-atlas-mon:first-child{
+  margin-left:0;
+}
+
+.pr-route-atlas-mon[data-lead="true"]{
+  z-index:3;
+  border-color:#a49052;
+}
+
+.pr-route-atlas-mon[data-fainted="true"]{
+  opacity:.3;
+  filter:grayscale(1);
+}
+
+.pr-route-atlas-mon img{
+  width:31px!important;
+  height:31px!important;
+  object-fit:contain!important;
+  image-rendering:pixelated!important;
+}
+
+body.pr-game-ui .alpha-shell .pr-route-atlas-team{
+  display:grid!important;
+  justify-items:start!important;
+  gap:1px!important;
+  min-width:86px!important;
+  min-height:36px!important;
+  margin-left:7px!important;
+  padding:5px 9px!important;
+  border:1px solid #39575b!important;
+  border-radius:8px!important;
+  background:#10262a!important;
+  box-shadow:none!important;
+}
+
+body.pr-game-ui .alpha-shell .pr-route-atlas-team b{
+  color:#d8e7e5;
+  font:700 9px/1 "Pixelify Sans",system-ui,sans-serif;
+}
+
+body.pr-game-ui .alpha-shell .pr-route-atlas-team small{
+  color:#688285!important;
+  font:700 4px/1 "Press Start 2P",monospace!important;
+}
+
+body.pr-game-ui .alpha-shell .pr-route-atlas-team:hover{
+  transform:none!important;
+  border-color:#55797b!important;
+  background:#153035!important;
+}
+
+/* ----- Atlas surface ------------------------------------------------------ */
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"]{
+  position:relative!important;
+  isolation:isolate;
+  display:grid!important;
+  gap:0!important;
+  width:min(100%,1040px)!important;
+  min-height:720px!important;
+  margin:0 auto!important;
+  padding:34px 34px 38px!important;
+  overflow:hidden!important;
+  border:1px solid #3a5654!important;
+  border-radius:22px!important;
+  background:
+    radial-gradient(ellipse at 17% 18%,rgba(92,146,118,.19) 0 12%,transparent 12.5%),
+    radial-gradient(ellipse at 72% 32%,rgba(76,126,105,.17) 0 14%,transparent 14.5%),
+    radial-gradient(ellipse at 38% 69%,rgba(108,154,119,.14) 0 16%,transparent 16.5%),
+    radial-gradient(ellipse at 86% 78%,rgba(74,126,107,.15) 0 14%,transparent 14.5%),
+    linear-gradient(145deg,var(--atlas-water),var(--atlas-deep) 62%)!important;
+  box-shadow:
+    inset 0 0 0 7px rgba(5,15,17,.2),
+    0 18px 42px rgba(0,0,0,.18)!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"]::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:-5% -4%;
+  pointer-events:none;
+  background:
+    radial-gradient(ellipse at 15% 14%,var(--atlas-land-2) 0 8%,transparent 8.4%),
+    radial-gradient(ellipse at 27% 27%,var(--atlas-land) 0 13%,transparent 13.4%),
+    radial-gradient(ellipse at 76% 20%,var(--atlas-land-2) 0 12%,transparent 12.4%),
+    radial-gradient(ellipse at 64% 49%,var(--atlas-land) 0 17%,transparent 17.4%),
+    radial-gradient(ellipse at 24% 72%,var(--atlas-land-2) 0 14%,transparent 14.4%),
+    radial-gradient(ellipse at 79% 82%,var(--atlas-land) 0 18%,transparent 18.4%);
+  opacity:.82;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"]::after{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(115deg,transparent 0 48%,rgba(255,255,255,.018) 48% 49%,transparent 49% 100%),
+    radial-gradient(circle at 50% 50%,transparent 40%,rgba(3,10,12,.18) 100%);
+  background-size:70px 70px,100% 100%;
+}
+
+/* Region personality stays in the world, not in more UI chrome. */
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"][data-pr-region="kanto"]{
+  --atlas-land:#1c4033;
+  --atlas-land-2:#31523c;
+  --atlas-water:#102b35;
+  --atlas-line:#7e957a;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"][data-pr-region="johto"]{
+  --atlas-land:#383d28;
+  --atlas-land-2:#4e4b2e;
+  --atlas-water:#202833;
+  --atlas-line:#a09262;
+  background:
+    radial-gradient(ellipse at 21% 14%,rgba(152,124,69,.13) 0 13%,transparent 13.5%),
+    radial-gradient(ellipse at 79% 48%,rgba(114,89,58,.14) 0 15%,transparent 15.5%),
+    linear-gradient(145deg,#1a2630,#10171d 64%)!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"][data-pr-region="hoenn"]{
+  --atlas-land:#1a473d;
+  --atlas-land-2:#2c5b45;
+  --atlas-water:#0d3443;
+  --atlas-line:#6b9aa4;
+  background:
+    radial-gradient(ellipse at 19% 18%,rgba(68,137,126,.16) 0 12%,transparent 12.5%),
+    radial-gradient(ellipse at 69% 69%,rgba(62,123,115,.14) 0 17%,transparent 17.5%),
+    linear-gradient(145deg,#0f3d4e,#071b24 65%)!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"][data-pr-region="sinnoh"]{
+  --atlas-land:#29383d;
+  --atlas-land-2:#435056;
+  --atlas-water:#172a34;
+  --atlas-line:#91a4aa;
+  background:
+    radial-gradient(ellipse at 19% 18%,rgba(160,182,185,.09) 0 13%,transparent 13.5%),
+    radial-gradient(ellipse at 73% 58%,rgba(155,171,184,.08) 0 17%,transparent 17.5%),
+    linear-gradient(145deg,#1d333d,#0d171e 66%)!important;
+}
+
+/* Biomes tint only the landscape. */
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"][data-pr-biome="forest"]{
+  --atlas-land:#163e2b;
+  --atlas-land-2:#285238;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"][data-pr-biome="cave"]{
+  --atlas-land:#32352f;
+  --atlas-land-2:#46483e;
+  --atlas-water:#171f22;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"][data-pr-biome="coast"],
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"][data-pr-biome="sea"]{
+  --atlas-water:#0d3a4a;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"][data-pr-biome="snow"]{
+  --atlas-land:#45565a;
+  --atlas-land-2:#607074;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"][data-pr-biome="volcano"]{
+  --atlas-land:#493127;
+  --atlas-land-2:#643a2a;
+  --atlas-water:#25191a;
+}
+
+/* ----- Rows become map stages -------------------------------------------- */
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-row{
+  position:relative!important;
+  z-index:3!important;
+  display:block!important;
+  min-height:116px!important;
+  padding:0 22px!important;
+  border:0!important;
+  background:transparent!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-row::before{
+  content:attr(data-pr-route-step)!important;
+  position:absolute!important;
+  z-index:6!important;
+  left:-7px!important;
+  top:50%!important;
+  display:grid!important;
+  place-items:center!important;
+  width:28px!important;
+  height:28px!important;
+  transform:translateY(-50%)!important;
+  border:1px solid #3c5a58!important;
+  border-radius:50%!important;
+  background:#0b1c1e!important;
+  color:#58716f!important;
+  font:700 5px/1 "Press Start 2P",monospace!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-row[data-pr-route-step-state="current"]::before{
+  border-color:var(--ui-region)!important;
+  background:color-mix(in srgb,var(--ui-region) 15%,#0b1c1e)!important;
+  color:#eef3e9!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-row[data-pr-route-step-state="past"]::before{
+  content:"✓"!important;
+  border-color:#526d5e!important;
+  color:#7da080!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-row::after{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:8px 2px;
+  pointer-events:none;
+  border-radius:20px;
+  background:transparent;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-row[data-pr-route-step-state="current"]::after{
+  background:
+    radial-gradient(ellipse at 50% 50%,color-mix(in srgb,var(--ui-region) 8%,transparent),transparent 68%);
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .node-options{
+  position:relative!important;
+  z-index:3!important;
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  align-items:center!important;
+  justify-items:center!important;
+  min-height:116px!important;
+  gap:12px!important;
+}
+
+/* ----- The path belongs to the map --------------------------------------- */
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-path-lines{
+  position:absolute!important;
+  z-index:0!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  overflow:visible!important;
+  pointer-events:none!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-path-lines path{
+  fill:none!important;
+  stroke:color-mix(in srgb,var(--atlas-line) 72%,#243a39)!important;
+  stroke-width:2.1!important;
+  stroke-linecap:round!important;
+  stroke-dasharray:2 5!important;
+  opacity:.42!important;
+  filter:none!important;
+  animation:none!important;
+  transition:none!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-path-lines path.available{
+  stroke:color-mix(in srgb,var(--ui-region) 78%,#d9dfc9 22%)!important;
+  stroke-width:2.7!important;
+  stroke-dasharray:4 5!important;
+  opacity:.82!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-path-lines path.chosen{
+  stroke:color-mix(in srgb,var(--ui-region) 76%,#dce8cd 24%)!important;
+  stroke-width:3.4!important;
+  stroke-dasharray:none!important;
+  opacity:.94!important;
+}
+
+/* ----- Waypoints, not cards ---------------------------------------------- */
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node{
+  --node-accent:#6b8793;
+  --node-soft:rgba(107,135,147,.12);
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  grid-template-rows:72px auto!important;
+  justify-items:center!important;
+  align-content:center!important;
+  gap:6px!important;
+  width:156px!important;
+  min-height:102px!important;
+  padding:0!important;
+  overflow:visible!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  text-align:center!important;
+  transition:none!important;
+  contain:layout style!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node::before,
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node::after{
+  display:none!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node .node-icon-shell{
+  position:relative!important;
+  display:grid!important;
+  place-items:center!important;
+  width:66px!important;
+  height:66px!important;
+  border:2px solid color-mix(in srgb,var(--node-accent) 72%,#415654)!important;
+  border-radius:50%!important;
+  background:
+    radial-gradient(circle at 50% 38%,color-mix(in srgb,var(--node-accent) 18%,transparent),transparent 59%),
+    #0b1b1d!important;
+  box-shadow:
+    0 0 0 5px rgba(4,14,16,.48),
+    0 6px 0 rgba(0,0,0,.17)!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node .node-icon-shell img{
+  width:57px!important;
+  height:57px!important;
+  max-width:57px!important;
+  max-height:57px!important;
+  object-fit:contain!important;
+  image-rendering:pixelated!important;
+  filter:none!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .pr-node-kind-symbol{
+  right:-5px!important;
+  bottom:-3px!important;
+  display:grid!important;
+  place-items:center!important;
+  min-width:21px!important;
+  height:21px!important;
+  padding:0 3px!important;
+  border:2px solid #0a1719!important;
+  border-radius:50%!important;
+  background:var(--node-accent)!important;
+  color:#081112!important;
+  font:700 7px/1 "Pixelify Sans",system-ui,sans-serif!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node .goal-crown{
+  position:absolute!important;
+  top:-10px!important;
+  left:50%!important;
+  transform:translateX(-50%)!important;
+  color:#e8c66a!important;
+  font-size:11px!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node .node-copy{
+  display:grid!important;
+  justify-items:center!important;
+  gap:2px!important;
+  width:100%!important;
+  min-width:0!important;
+  padding:0!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node .node-kicker{
+  order:2;
+  display:block!important;
+  color:color-mix(in srgb,var(--node-accent) 75%,#dce7e1 25%)!important;
+  font:700 4px/1 "Press Start 2P",monospace!important;
+  letter-spacing:.06em!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node .node-copy strong{
+  order:1;
+  display:block!important;
+  max-width:145px!important;
+  overflow:hidden!important;
+  padding:5px 8px 4px!important;
+  border:1px solid #2e4848!important;
+  border-radius:999px!important;
+  background:rgba(6,18,20,.9)!important;
+  color:#dfe9e6!important;
+  font:700 11px/1 "Pixelify Sans",system-ui,sans-serif!important;
+  text-align:center!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node .node-copy small{
+  display:none!important;
+}
+
+/* Available choices feel like destinations. */
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-state="available"]{
+  width:176px!important;
+  min-height:112px!important;
+  opacity:1!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-state="available"] .node-icon-shell{
+  width:78px!important;
+  height:78px!important;
+  border-width:3px!important;
+  background:
+    radial-gradient(circle at 50% 38%,color-mix(in srgb,var(--node-accent) 27%,transparent),transparent 60%),
+    #0d2021!important;
+  box-shadow:
+    0 0 0 6px rgba(5,16,18,.55),
+    0 0 0 8px color-mix(in srgb,var(--node-accent) 17%,transparent),
+    0 7px 0 rgba(0,0,0,.18)!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-state="available"] .node-icon-shell img{
+  width:67px!important;
+  height:67px!important;
+  max-width:67px!important;
+  max-height:67px!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-state="available"] .node-copy strong{
+  border-color:color-mix(in srgb,var(--node-accent) 54%,#2e4848)!important;
+  background:#0a1b1d!important;
+  color:#f0f4ef!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-state="available"]:hover:not(:disabled),
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-state="available"]:focus-visible{
+  transform:none!important;
+  translate:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-state="available"]:hover .node-icon-shell,
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-state="available"]:focus-visible .node-icon-shell{
+  border-color:#e6eadf!important;
+  background:
+    radial-gradient(circle at 50% 38%,color-mix(in srgb,var(--node-accent) 34%,transparent),transparent 60%),
+    #102426!important;
+}
+
+/* Chosen route turns into a quiet trail marker. */
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-state="chosen"]{
+  opacity:.62!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-state="chosen"] .node-icon-shell{
+  width:54px!important;
+  height:54px!important;
+  border-color:#60786b!important;
+  background:#0b1b19!important;
+  box-shadow:0 0 0 4px rgba(5,15,16,.4)!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-state="chosen"] .node-icon-shell img{
+  width:46px!important;
+  height:46px!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-state="chosen"] .node-copy strong{
+  border-color:#314841!important;
+  color:#7f978b!important;
+  background:rgba(7,19,18,.78)!important;
+}
+
+/* Future known destinations stay visible but distant. */
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-state="future"]{
+  opacity:.42!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-state="future"] .node-icon-shell{
+  width:58px!important;
+  height:58px!important;
+  border-color:#405353!important;
+  background:#0b181a!important;
+  box-shadow:0 0 0 4px rgba(5,15,16,.34)!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-state="future"] .node-icon-shell img{
+  width:49px!important;
+  height:49px!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-state="future"] .node-copy strong{
+  color:#718080!important;
+}
+
+/* Fog nodes are map pins, not empty cards. */
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-state="unknown"]{
+  width:110px!important;
+  min-height:84px!important;
+  grid-template-rows:58px!important;
+  opacity:.3!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-state="unknown"] .unknown-route-node{
+  display:grid!important;
+  place-items:center!important;
+  width:52px!important;
+  height:52px!important;
+  border:1px dashed #637071!important;
+  border-radius:50%!important;
+  background:rgba(8,19,21,.76)!important;
+  color:#829091!important;
+  font:700 15px/1 "Pixelify Sans",system-ui,sans-serif!important;
+}
+
+/* Boss / gym / league endpoints look like landmarks. */
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node.node-goal,
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-tone="boss"],
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-tone="legendary"]{
+  width:190px!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node.node-goal .node-icon-shell,
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-tone="boss"] .node-icon-shell,
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-tone="legendary"] .node-icon-shell{
+  border-radius:18px 18px 22px 22px!important;
+  transform:rotate(45deg)!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node.node-goal .node-icon-shell>*,
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-tone="boss"] .node-icon-shell>*,
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-tone="legendary"] .node-icon-shell>*{
+  transform:rotate(-45deg)!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node.node-goal .goal-crown{
+  transform:translateX(-50%) rotate(-45deg)!important;
+}
+
+/* Keep native details available to keyboard/mouse users without making the map busy. */
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node-tooltip{
+  z-index:80!important;
+  width:210px!important;
+  padding:9px 10px!important;
+  border:1px solid #47605f!important;
+  border-radius:10px!important;
+  background:#071719!important;
+  box-shadow:0 8px 22px rgba(0,0,0,.26)!important;
+}
+
+/* ----- Route party drawer ------------------------------------------------- */
+
+@media(min-width:1101px){
+  body.pr-game-ui .alpha-shell[data-pr-game-screen="route"] .party.playful-party{
+    display:none!important;
+  }
+
+  body.pr-game-ui .alpha-shell[data-pr-game-screen="route"][data-pr-route-team-open="true"] .party.playful-party{
+    position:fixed!important;
+    z-index:760!important;
+    top:76px!important;
+    right:max(18px,calc((100vw - 1180px)/2 + 10px))!important;
+    display:block!important;
+    width:min(390px,calc(100vw - 36px))!important;
+    max-height:calc(100dvh - 98px)!important;
+    overflow:auto!important;
+    margin:0!important;
+    padding:13px!important;
+    border:1px solid #466064!important;
+    border-radius:14px!important;
+    background:#09191d!important;
+    box-shadow:0 24px 70px rgba(0,0,0,.46)!important;
+  }
+}
+
+/* ----- Less duplicate chrome around the map ------------------------------ */
+
+body.pr-game-ui .alpha-shell[data-pr-game-screen="route"] .run-strip.playful-strip.game-hud{
+  width:min(100%,1040px)!important;
+  margin:0 auto 9px!important;
+  opacity:.76;
+}
+
+body.pr-game-ui .alpha-shell[data-pr-game-screen="route"] .modifier-strip{
+  width:min(100%,1040px)!important;
+  margin-inline:auto!important;
+}
+
+body.pr-game-ui .alpha-shell[data-pr-game-screen="route"] .run-footer{
+  width:min(100%,1040px)!important;
+  margin:7px auto 0!important;
+  opacity:.5!important;
+}
+
+/* ----- Responsive atlas --------------------------------------------------- */
+
+@media(max-width:900px){
+  .pr-route-atlas-head{
+    align-items:flex-start;
+  }
+
+  .pr-route-atlas-footer{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .pr-route-atlas-party{
+    width:100%;
+    justify-content:flex-start;
+  }
+
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"]{
+    padding:28px 14px 32px!important;
+  }
+
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-row{
+    padding:0 8px 0 22px!important;
+  }
+}
+
+@media(max-width:660px){
+  .pr-route-atlas-hud{
+    border-radius:12px;
+  }
+
+  .pr-route-atlas-head{
+    display:grid;
+    gap:12px;
+    padding:13px;
+  }
+
+  .pr-route-atlas-destination{
+    justify-items:start;
+    padding:10px 0 0;
+    border-top:1px solid #294448;
+    border-left:0;
+  }
+
+  .pr-route-atlas-footer{
+    padding:7px;
+  }
+
+  .pr-route-atlas-stat{
+    min-width:64px;
+  }
+
+  .pr-route-atlas-mon{
+    width:31px;
+    height:31px;
+  }
+
+  .pr-route-atlas-mon img{
+    width:28px!important;
+    height:28px!important;
+  }
+
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"]{
+    min-height:620px!important;
+    padding:22px 3px 26px!important;
+    border-radius:14px!important;
+  }
+
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-row{
+    min-height:102px!important;
+    padding:0 2px 0 18px!important;
+  }
+
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .node-options{
+    min-height:102px!important;
+    gap:0!important;
+  }
+
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-row::before{
+    left:-2px!important;
+    width:22px!important;
+    height:22px!important;
+    font-size:4px!important;
+  }
+
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node{
+    width:104px!important;
+    min-height:84px!important;
+    grid-template-rows:54px auto!important;
+    gap:4px!important;
+  }
+
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node .node-icon-shell{
+    width:52px!important;
+    height:52px!important;
+  }
+
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node .node-icon-shell img{
+    width:44px!important;
+    height:44px!important;
+  }
+
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-state="available"]{
+    width:112px!important;
+    min-height:92px!important;
+  }
+
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-state="available"] .node-icon-shell{
+    width:60px!important;
+    height:60px!important;
+  }
+
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-state="available"] .node-icon-shell img{
+    width:52px!important;
+    height:52px!important;
+  }
+
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node .node-copy strong{
+    max-width:102px!important;
+    padding:4px 6px 3px!important;
+    font-size:8px!important;
+  }
+
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node .node-kicker{
+    font-size:3.5px!important;
+  }
+
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .pr-node-kind-symbol{
+    min-width:18px!important;
+    height:18px!important;
+    font-size:6px!important;
+  }
+}
+
+
+/* Adventure Atlas finishing pass */
+body.pr-game-ui .alpha-shell[data-pr-game-screen="route"] .run-strip.playful-strip.game-hud{
+  display:none!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-row[data-pr-route-step-state="current"] .route-node[data-pr-node-state="available"] .node-icon-shell::before{
+  content:"▼";
+  position:absolute;
+  top:-19px;
+  left:50%;
+  transform:translateX(-50%);
+  color:var(--node-accent);
+  font:700 10px/1 "Pixelify Sans",system-ui,sans-serif;
+  text-shadow:0 2px 0 #071315;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-row[data-pr-route-step-state="current"] .route-node[data-pr-node-state="available"] .node-copy::after{
+  content:"WÄHLEN";
+  order:3;
+  margin-top:2px;
+  color:#829795;
+  font:700 3.5px/1 "Press Start 2P",monospace;
+  letter-spacing:.06em;
+}
+
+@media(max-width:660px){
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node.node-goal,
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-tone="boss"],
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-node[data-pr-node-tone="legendary"]{
+    width:112px!important;
+  }
+
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-atlas="true"] .route-row[data-pr-route-step-state="current"] .route-node[data-pr-node-state="available"] .node-icon-shell::before{
+    top:-15px;
+    font-size:8px;
+  }
+}

@@ -436,12 +436,15 @@ const classifyRouteRisk = (node: HTMLElement) => {
 const countValue = (value: unknown) =>
   typeof value === "number" && Number.isFinite(value) ? Math.max(0, value) : 0;
 
-const renderRouteBoardPanels = (
+const renderRouteAtlasHud = (
   shell: HTMLElement,
   map: HTMLElement,
   run: RecordLike | null,
   region: RegionKey,
   biome: string | null,
+  currentRouteStep: number,
+  routeRows: number,
+  flavor: string,
 ) => {
   if (!run) return;
 
@@ -449,9 +452,18 @@ const renderRouteBoardPanels = (
     map.closest<HTMLElement>(".adventure-board") ?? map.parentElement;
   if (!board) return;
 
-  board.dataset.prBoardLayout = "true";
+  board.dataset.prRouteAtlas = "true";
+  delete board.dataset.prBoardLayout;
+  board
+    .querySelectorAll<HTMLElement>(
+      ".pr-route-board-side, .pr-route-risk-legend, .pr-route-context",
+    )
+    .forEach((node) => node.remove());
 
   const team = Array.isArray(run.team) ? run.team.map(asRecord).filter(Boolean) : [];
+  const partyMembers = Array.from(
+    shell.querySelectorAll<HTMLElement>(".party.playful-party .party-member"),
+  );
   const specialBalls = asRecord(run.specialBalls);
   const totalBalls =
     countValue(run.balls) +
@@ -469,160 +481,136 @@ const renderRouteBoardPanels = (
   const relics = Array.isArray(run.activeRelics) ? run.activeRelics.length : 0;
   const money = countValue(run.money);
   const biomeInfo = biome ? BIOMES[biome] : null;
-  const partyMembers = Array.from(
-    shell.querySelectorAll<HTMLElement>(".party.playful-party .party-member"),
+  const routeMode = asRecord(run.arena)
+    ? "ARENA-PFAD"
+    : run.mode === "endless"
+      ? "BATTLE TOWER"
+      : "EXPEDITION";
+  const progress = Math.max(
+    0,
+    Math.min(100, ((currentRouteStep - 1) / Math.max(1, routeRows - 1)) * 100),
   );
 
   const signature = JSON.stringify({
     region,
     biome,
+    currentRouteStep,
+    routeRows,
     totalBalls,
     healing,
     badges,
     relics,
     money,
-    team: team.map((member, index) => [
+    flavor,
+    team: team.slice(0, 6).map((member, index) => [
       member?.species,
       member?.level,
       member?.hp,
       member?.maxHp,
+      member?.dead,
       partyMembers[index]?.querySelector(".party-member-toggle strong")?.textContent ?? "",
     ]),
   });
 
-  if (
-    board.dataset.prBoardSignature === signature &&
-    board.querySelector(".pr-route-board-side")
-  ) {
-    return;
-  }
-  board.dataset.prBoardSignature = signature;
+  let hud = board.querySelector<HTMLElement>(".pr-route-atlas-hud");
+  if (hud?.dataset.signature === signature) return;
 
-  let left = board.querySelector<HTMLElement>(".pr-route-board-left");
-  if (!left) {
-    left = document.createElement("aside");
-    left.className = "pr-route-board-side pr-route-board-left";
-    left.setAttribute("aria-label", "Run Vorräte");
-    board.prepend(left);
+  if (!hud) {
+    hud = document.createElement("section");
+    hud.className = "pr-route-atlas-hud";
+    hud.setAttribute("aria-label", "Reiseübersicht");
+    map.insertAdjacentElement("beforebegin", hud);
   }
+  hud.dataset.signature = signature;
 
-  left.innerHTML = `
-    <header class="pr-route-side-head">
-      <small>RUN</small>
-      <strong>VORRÄTE</strong>
-    </header>
-    <div class="pr-route-pack-grid">
-      <span><i>●</i><b>${totalBalls}</b><small>BÄLLE</small></span>
-      <span><i>+</i><b>${healing}</b><small>HEILUNG</small></span>
-      <span><i>₽</i><b>${money.toLocaleString("de-DE")}</b><small>GELD</small></span>
-      <span><i>⬢</i><b>${badges}</b><small>ORDEN</small></span>
-    </div>
-    <div class="pr-route-side-section">
-      <small>AKTIVE RELIKTE</small>
-      <strong>${relics}/3</strong>
-      <p>${relics ? "Build-Boni aktiv" : "Noch keine Relikte ausgerüstet"}</p>
-    </div>
+  const head = document.createElement("div");
+  head.className = "pr-route-atlas-head";
+
+  const headCopy = document.createElement("div");
+  headCopy.className = "pr-route-atlas-copy";
+  headCopy.innerHTML = `
+    <span class="pr-route-atlas-kicker">${REGIONS[region].label} · ${routeMode} · ${String(currentRouteStep).padStart(2, "0")}</span>
+    <h2>${biomeInfo?.label ?? "REGIONALE ROUTE"}</h2>
+    <p>${flavor}</p>
   `;
 
-  let right = board.querySelector<HTMLElement>(".pr-route-board-right");
-  if (!right) {
-    right = document.createElement("aside");
-    right.className = "pr-route-board-side pr-route-board-right";
-    right.setAttribute("aria-label", "Team und Routenmerkmale");
-    map.insertAdjacentElement("afterend", right);
-  }
+  const destination = document.createElement("div");
+  destination.className = "pr-route-atlas-destination";
+  destination.innerHTML = `
+    <small>NÄCHSTER SCHRITT</small>
+    <strong>${currentRouteStep >= routeRows ? "ZIEL ERREICHT" : asRecord(run.arena) ? "VORTRAINER WÄHLEN" : "WEG WÄHLEN"}</strong>
+    <span>${String(currentRouteStep).padStart(2, "0")} / ${String(Math.max(routeRows, currentRouteStep)).padStart(2, "0")}</span>
+  `;
 
-  right.replaceChildren();
+  head.append(headCopy, destination);
 
-  const teamHead = document.createElement("header");
-  teamHead.className = "pr-route-side-head";
-  teamHead.innerHTML = `<small>TEAM</small><strong>DEINE PARTY</strong>`;
-  right.append(teamHead);
+  const progressTrack = document.createElement("div");
+  progressTrack.className = "pr-route-atlas-progress";
+  progressTrack.setAttribute("role", "progressbar");
+  progressTrack.setAttribute("aria-valuemin", "0");
+  progressTrack.setAttribute("aria-valuemax", "100");
+  progressTrack.setAttribute("aria-valuenow", String(Math.round(progress)));
+  const progressFill = document.createElement("i");
+  progressFill.style.width = `${Math.max(3, progress)}%`;
+  progressTrack.append(progressFill);
 
-  const teamGrid = document.createElement("div");
-  teamGrid.className = "pr-route-team-mini";
+  const footer = document.createElement("div");
+  footer.className = "pr-route-atlas-footer";
 
+  const resources = document.createElement("div");
+  resources.className = "pr-route-atlas-resources";
+  [
+    ["₽", money.toLocaleString("de-DE"), "GELD"],
+    ["●", String(totalBalls), "BÄLLE"],
+    ["+", String(healing), "HEILUNG"],
+    [run.mode === "story" ? "⬢" : "♾", run.mode === "story" ? String(badges) : String(countValue(run.endlessStage)), run.mode === "story" ? "ORDEN" : "ETAPPE"],
+    ["◆", `${relics}/3`, "RELIKTE"],
+  ].forEach(([icon, value, label]) => {
+    const stat = document.createElement("span");
+    stat.className = "pr-route-atlas-stat";
+    stat.innerHTML = `<i>${icon}</i><b>${value}</b><small>${label}</small>`;
+    resources.append(stat);
+  });
+
+  const party = document.createElement("div");
+  party.className = "pr-route-atlas-party";
   team.slice(0, 6).forEach((member, index) => {
     if (!member) return;
     const source = partyMembers[index];
-    const card = document.createElement("article");
-    card.className = "pr-route-team-mon";
-    if (index === 0) card.dataset.lead = "true";
-    if (member.dead === true || countValue(member.hp) <= 0) card.dataset.fainted = "true";
+    const slot = document.createElement("span");
+    slot.className = "pr-route-atlas-mon";
+    if (index === 0) slot.dataset.lead = "true";
+    if (member.dead === true || countValue(member.hp) <= 0) slot.dataset.fainted = "true";
 
-    const spriteWrap = document.createElement("span");
-    spriteWrap.className = "pr-route-team-sprite";
     const sourceImage = source?.querySelector<HTMLImageElement>(".party-sprite-wrap img");
     if (sourceImage) {
       const image = sourceImage.cloneNode(true) as HTMLImageElement;
       image.removeAttribute("id");
       image.alt = "";
       image.loading = "lazy";
-      spriteWrap.append(image);
+      slot.append(image);
     } else {
-      spriteWrap.textContent = "◆";
+      slot.textContent = "◆";
     }
-
-    const copy = document.createElement("span");
-    copy.className = "pr-route-team-copy";
-    const name = document.createElement("strong");
-    name.textContent =
-      source?.querySelector<HTMLElement>(".party-member-toggle strong")?.textContent?.trim() ||
-      String(member.species ?? "Pokémon");
-    const level = document.createElement("small");
-    level.textContent = `Lv. ${countValue(member.level)}`;
-
-    const hp = countValue(member.hp);
-    const maxHp = Math.max(1, countValue(member.maxHp));
-    const hpBar = document.createElement("span");
-    hpBar.className = "pr-route-team-hp";
-    const hpFill = document.createElement("i");
-    hpFill.style.width = `${Math.max(0, Math.min(100, (hp / maxHp) * 100))}%`;
-    hpBar.append(hpFill);
-
-    copy.append(name, level, hpBar);
-    card.append(spriteWrap, copy);
-    teamGrid.append(card);
+    party.append(slot);
   });
-
-  if (!team.length) {
-    const empty = document.createElement("p");
-    empty.className = "pr-route-team-empty";
-    empty.textContent = "Noch kein Team.";
-    teamGrid.append(empty);
-  }
-
-  right.append(teamGrid);
 
   const manage = document.createElement("button");
   manage.type = "button";
-  manage.className = "pr-route-manage-team";
-  manage.textContent = "TEAM VERWALTEN";
+  manage.className = "pr-route-atlas-team";
+  manage.innerHTML = "<b>TEAM</b><small>VERWALTEN</small>";
   manage.addEventListener("click", () => {
     shell.dataset.prRouteTeamOpen =
       shell.dataset.prRouteTeamOpen === "true" ? "false" : "true";
   });
-  right.append(manage);
 
-  const trait = document.createElement("section");
-  trait.className = "pr-route-side-section pr-route-traits";
-  const traits = (biomeInfo?.effect ?? REGIONS[region].identity)
-    .split("·")
-    .map((entry) => entry.trim())
-    .filter(Boolean);
-  trait.innerHTML = `<small>ROUTENMERKMALE</small><strong>${biomeInfo?.label ?? REGIONS[region].label}</strong>`;
-  const traitList = document.createElement("div");
-  traitList.className = "pr-route-trait-list";
-  traits.slice(0, 4).forEach((entry) => {
-    const chip = document.createElement("span");
-    chip.textContent = entry;
-    traitList.append(chip);
-  });
-  trait.append(traitList);
-  right.append(trait);
+  party.append(manage);
+  footer.append(resources, party);
 
-  const party = shell.querySelector<HTMLElement>(".party.playful-party");
-  if (party && !party.querySelector(".pr-route-party-close")) {
+  hud.replaceChildren(head, progressTrack, footer);
+
+  const nativeParty = shell.querySelector<HTMLElement>(".party.playful-party");
+  if (nativeParty && !nativeParty.querySelector(".pr-route-party-close")) {
     const close = document.createElement("button");
     close.type = "button";
     close.className = "pr-route-party-close";
@@ -631,52 +619,39 @@ const renderRouteBoardPanels = (
     close.addEventListener("click", () => {
       shell.dataset.prRouteTeamOpen = "false";
     });
-    party.prepend(close);
+    nativeParty.prepend(close);
   }
 };
 
 const enhanceRoute = (shell: HTMLElement, run: RecordLike | null) => {
-  const map =
-    shell.querySelector<HTMLElement>(".route-map") ??
-    shell.querySelector<HTMLElement>(".adventure-board");
+  const map = shell.querySelector<HTMLElement>(".route-map");
   if (!map) return;
 
-  map.querySelectorAll<HTMLElement>(".route-node").forEach(classifyRouteRisk);
-  map.dataset.prRouteBoard = "true";
+  map.dataset.prRouteAtlas = "true";
+  delete map.dataset.prRouteBoard;
 
-  map.querySelectorAll<HTMLElement>(".route-row").forEach((row, index, rows) => {
+  const rows = Array.from(map.querySelectorAll<HTMLElement>(".route-row"));
+  rows.forEach((row, index) => {
     row.dataset.prRouteStep = String(index + 1).padStart(2, "0");
     row.dataset.prRouteStepState = row.classList.contains("current")
       ? "current"
       : row.classList.contains("past")
         ? "past"
         : "future";
-    row.style.setProperty("--pr-route-progress", String(index / Math.max(1, rows.length - 1)));
+    row.dataset.prAtlasRow = String(index);
+    row.style.removeProperty("--pr-route-progress");
+
+    row.querySelectorAll<HTMLElement>(".route-node").forEach((node, nodeIndex) => {
+      classifyRouteRisk(node);
+      node.dataset.prAtlasNode = String(nodeIndex);
+      node.dataset.prAtlasLane = node.dataset.lane ?? String(nodeIndex);
+    });
   });
 
-  if (!map.querySelector(":scope > .pr-route-scenery")) {
-    const scenery = document.createElement("span");
-    scenery.className = "pr-route-scenery";
-    scenery.setAttribute("aria-hidden", "true");
-    scenery.innerHTML = `
-      <i class="pr-route-scenery-back"></i>
-      <i class="pr-route-scenery-mid"></i>
-      <i class="pr-route-scenery-front"></i>
-      <i class="pr-route-scenery-fog"></i>
-    `;
-    map.prepend(scenery);
-  }
+  map.querySelectorAll(":scope > .pr-route-scenery").forEach((node) => node.remove());
 
   const region = getRegionFromValue(run?.region) ?? getContextRegion();
   if (!region) return;
-
-  let context = map.parentElement?.querySelector<HTMLElement>(".pr-route-context");
-  if (!context) {
-    context = document.createElement("div");
-    context.className = "pr-route-context";
-    context.setAttribute("aria-live", "polite");
-    map.insertAdjacentElement("beforebegin", context);
-  }
 
   const info = REGIONS[region];
   const biome = currentRouteBiome(run);
@@ -700,7 +675,7 @@ const enhanceRoute = (shell: HTMLElement, run: RecordLike | null) => {
     delete document.body.dataset.prBiome;
   }
 
-  const routeRows = map.querySelectorAll(".route-row").length;
+  const routeRows = rows.length;
   const currentRouteStep =
     typeof asRecord(run?.arena)?.step === "number"
       ? Number(asRecord(run?.arena)?.step) + 1
@@ -712,45 +687,22 @@ const enhanceRoute = (shell: HTMLElement, run: RecordLike | null) => {
   if (biome) map.dataset.prBiome = biome;
   else delete map.dataset.prBiome;
 
-  renderRouteBoardPanels(shell, map, run, region, biome);
+  const board =
+    map.closest<HTMLElement>(".adventure-board") ?? map.parentElement;
+  board?.querySelectorAll<HTMLElement>(
+    ".pr-route-board-side, .pr-route-risk-legend, .pr-route-context",
+  ).forEach((node) => node.remove());
 
-  const contextSignature = [
+  renderRouteAtlasHud(
+    shell,
+    map,
+    run,
     region,
-    biome ?? "",
-    step ?? "",
+    biome,
     currentRouteStep,
     routeRows,
     flavor,
-    biomeInfo?.effect ?? info.identity,
-  ].join("|");
-
-  if (context.dataset.prRouteContextSignature !== contextSignature) {
-    context.dataset.prRouteContextSignature = contextSignature;
-    context.innerHTML = `
-      <span class="pr-route-region">${info.label}</span>
-      <span class="pr-route-copy">
-        <b>${step ? `ETAPPE ${step}` : "EXPEDITION"}${biomeInfo ? ` · ${biomeInfo.label}` : ""}</b>
-        <small>${flavor}</small>
-      </span>
-      <span class="pr-route-progress-chip"><b>${String(currentRouteStep).padStart(2, "0")}</b><small>/${String(Math.max(routeRows, currentRouteStep)).padStart(2, "0")}</small></span>
-      <span class="pr-route-identity">${biomeInfo?.effect ?? info.identity}</span>
-    `;
-  }
-
-  let legend = map.parentElement?.querySelector<HTMLElement>(".pr-route-risk-legend");
-  if (!legend) {
-    legend = document.createElement("div");
-    legend.className = "pr-route-risk-legend";
-    legend.setAttribute("aria-label", "Routenrisiko");
-    legend.innerHTML = `
-      <span data-pr-risk="safe">SAFE</span>
-      <span data-pr-risk="balanced">BALANCED</span>
-      <span data-pr-risk="variable">VARIABLE</span>
-      <span data-pr-risk="dangerous">DANGER</span>
-      <button type="button" title="Die Farbe zeigt nur das ungefähre Risiko. Der genaue Inhalt bleibt verborgen." aria-label="Routenrisiko erklären">?</button>
-    `;
-    context.insertAdjacentElement("afterend", legend);
-  }
+  );
 };
 
 const enhanceEvent = (shell: HTMLElement) => {
@@ -1561,7 +1513,7 @@ export const mountGameExperience = () => {
           : mutation.target.parentElement;
       if (!target) return true;
       return !target.closest(
-        ".pr-route-context, .pr-route-board-side, .pr-route-scenery, .pr-city-summary, .pr-screen-transition, .pr-battle-intro, .pr-shiny-burst",
+        ".pr-route-context, .pr-route-board-side, .pr-route-scenery, .pr-route-atlas-hud, .pr-city-summary, .pr-screen-transition, .pr-battle-intro, .pr-shiny-burst",
       );
     });
     if (relevant) queueExperience();

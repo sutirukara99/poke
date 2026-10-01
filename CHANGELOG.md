@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.0.0-alpha.1 Adventure Atlas route redesign — 2026-10-01
+
+### Route / node system
+- Replaced the previous Expedition Board presentation with a new **Adventure Atlas** world-map view.
+- Removed the permanent route sidebars, risk legend and rectangular node-card layout.
+- Nodes are now circular waypoints embedded directly into the region map, with current choices enlarged as destinations, completed choices reduced to trail markers and unrevealed nodes shown as fogged map pins.
+- Gym, Rival, League and Legendary endpoints use landmark-style waypoint shapes so bosses read as destinations instead of ordinary cards.
+- Existing route connection logic remains intact, but SVG paths are visually integrated into the atlas as travel trails.
+
+### World & HUD
+- Added region-specific atlas landscapes for Kanto, Johto, Hoenn and Sinnoh plus biome tinting for forest, cave, coast/sea, snow and volcano routes.
+- Replaced duplicated route panels with one compact expedition HUD for route progress, money, balls, healing, badges/endless stage, relics and the current party.
+- Team management now opens from the atlas HUD instead of occupying permanent route space.
+- Arena routes and Endless routes receive their own route-mode labels.
+
+### Performance / responsive
+- Kept the atlas static: no continuous path animation, blur pass or sprite filters.
+- Atlas-owned DOM updates are excluded from the polish observer to avoid self-triggered rerenders.
+- Added dedicated tablet/mobile waypoint sizing, including compact boss landmarks and readable three-choice rows.
+
+
 ## 1.0.0-alpha.1 final friendly polish — 2026-10-01
 
 ### Launcher / active run
