@@ -17,6 +17,7 @@ type ScreenKey =
   | "quests"
   | "achievements"
   | "trainer"
+  | "result"
   | "history"
   | "settings"
   | "other";
@@ -175,6 +176,7 @@ const SCREEN_SELECTORS: Array<[ScreenKey, string]> = [
   ["inventory", ".inventory-screen, .inventory-grid"],
   ["quests", ".alpha-quest-board, .quest-board"],
   ["achievements", ".achievement-grid, .achievements-screen"],
+  ["result", ".summary-icon, .champion-parade, .result-progression"],
   ["history", ".history-list, .history-screen, .hall-of-fame"],
   ["settings", ".settings-screen, .settings-block"],
   ["summary", ".summary, .pokemon-summary"],
@@ -199,6 +201,7 @@ const SCREEN_LABELS: Partial<Record<ScreenKey, string>> = {
   quests: "QUESTS",
   achievements: "ERFOLGE",
   trainer: "TRAINERKARTE",
+  result: "RUN BEENDET",
   history: "RUN-ARCHIV",
   settings: "EINSTELLUNGEN",
 };
@@ -500,6 +503,86 @@ const enhanceTrainerCard = (shell: HTMLElement) => {
   );
 };
 
+const numericValue = (value: unknown) =>
+  typeof value === "number" && Number.isFinite(value) ? value : null;
+
+const getRunScore = (run: RecordLike) => {
+  const direct = numericValue(run.score);
+  if (direct !== null) return direct;
+
+  const score = asRecord(run.score);
+  return (
+    numericValue(score?.total) ??
+    numericValue(score?.score) ??
+    numericValue(score?.value)
+  );
+};
+
+const formatRunDuration = (run: RecordLike) => {
+  if (typeof run.startedAt !== "string" || typeof run.endedAt !== "string") {
+    return "—";
+  }
+
+  const start = Date.parse(run.startedAt);
+  const end = Date.parse(run.endedAt);
+  if (!Number.isFinite(start) || !Number.isFinite(end) || end < start) return "—";
+
+  const totalSeconds = Math.floor((end - start) / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return hours > 0
+    ? `${hours}H ${String(minutes).padStart(2, "0")}M`
+    : `${minutes}M ${String(seconds).padStart(2, "0")}S`;
+};
+
+const displayToken = (value: unknown, fallback = "—") =>
+  typeof value === "string" && value.trim()
+    ? value.replaceAll("-", " ").toUpperCase()
+    : fallback;
+
+const enhanceRunResult = (shell: HTMLElement, run: RecordLike | null) => {
+  if (!run || run.result === "active") return;
+
+  const resultRoot =
+    shell.querySelector<HTMLElement>(".summary-icon")?.parentElement ??
+    shell.querySelector<HTMLElement>(".champion-parade")?.parentElement;
+  if (!resultRoot || resultRoot.querySelector(".pr-run-record")) return;
+
+  resultRoot.dataset.prRunResult = run.result === "win" ? "win" : "loss";
+
+  const region = getRegionFromValue(run.region);
+  const score = getRunScore(run);
+  const record = document.createElement("section");
+  record.className = "pr-run-record";
+  record.setAttribute("aria-label", "Run-Zusammenfassung");
+  record.innerHTML = `
+    <div class="pr-run-record-head">
+      <span>${run.result === "win" ? "CHAMPION RECORD" : "RUN RECORD"}</span>
+      <small>${region ? REGIONS[region].label : "POKÉREGIONS"}</small>
+    </div>
+    <div class="pr-run-record-grid">
+      <span><b>${displayToken(run.difficulty)}</b><small>SCHWIERIGKEIT</small></span>
+      <span><b>${displayToken(run.trainerClass)}</b><small>KLASSE</small></span>
+      <span><b>${formatRunDuration(run)}</b><small>ZEIT</small></span>
+      <span><b>${Array.isArray(run.badges) ? run.badges.length : 0}</b><small>ORDEN</small></span>
+      <span><b>${numericValue(run.defeated) ?? 0}</b><small>SIEGE</small></span>
+      <span><b>${score === null ? "—" : Math.round(score).toLocaleString("de-DE")}</b><small>SCORE</small></span>
+    </div>
+    <div class="pr-run-seed">
+      <span>SEED</span>
+      <code>${typeof run.seed === "string" ? run.seed : "—"}</code>
+    </div>
+  `;
+
+  const stats = resultRoot.querySelector(".stats");
+  if (stats) stats.insertAdjacentElement("afterend", record);
+  else resultRoot.querySelector("h2")?.insertAdjacentElement("afterend", record);
+
+  const champion = resultRoot.querySelector<HTMLElement>(".champion-parade");
+  if (champion) champion.dataset.prShareCard = "hall-of-fame";
+};
+
 const enhanceShop = (shell: HTMLElement) => {
   shell.querySelectorAll<HTMLElement>(".shop-screen").forEach((shop) => {
     shop.dataset.prShop = "mart";
@@ -553,7 +636,7 @@ const getBattleIntro = (run: RecordLike | null) => {
     kind,
   ].join("|");
 
-  return { title, subtitle, signature };
+  return { title, subtitle, signature, kind };
 };
 
 const enhanceBattle = (shell: HTMLElement, run: RecordLike | null) => {
@@ -561,7 +644,12 @@ const enhanceBattle = (shell: HTMLElement, run: RecordLike | null) => {
   if (!field) return;
 
   const intro = getBattleIntro(run);
+  field.dataset.prBattleKind = intro.kind || "wild";
+  const nativeTrainerIntro = ["gym", "league", "boss"].includes(intro.kind);
+
   if (
+    !nativeTrainerIntro &&
+    !field.classList.contains("trainer-intro-field") &&
     field.dataset.prIntroSignature !== intro.signature &&
     Number(asRecord(run?.battle)?.turn ?? 0) <= 1
   ) {
@@ -569,7 +657,7 @@ const enhanceBattle = (shell: HTMLElement, run: RecordLike | null) => {
     field.querySelector(".pr-battle-intro")?.remove();
 
     const overlay = document.createElement("div");
-    overlay.className = "pr-battle-intro";
+    overlay.className = `pr-battle-intro pr-battle-intro-${intro.kind || "wild"}`;
     overlay.innerHTML = `<b>${intro.title}</b><small>${intro.subtitle}</small>`;
     field.append(overlay);
 
@@ -672,6 +760,7 @@ const applyExperience = () => {
   enhanceCollections(shell);
   enhanceShop(shell);
   enhanceTrainerCard(shell);
+  enhanceRunResult(shell, run);
   enhanceEmptyStates(shell);
   enhanceBattle(shell, run);
   showScreenTransition(screen, region, run);
