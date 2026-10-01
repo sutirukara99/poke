@@ -1,36 +1,32 @@
 import { readLocalSaveObject } from "../cloud/supabase";
 
-const SHOWDOWN = "https://play.pokemonshowdown.com";
-
 type RegionKey = "kanto" | "johto" | "hoenn" | "sinnoh";
-type TerrainKey = "grass" | "water" | "cave" | "indoor" | "snow";
+type SceneKey =
+  | "grass"
+  | "forest"
+  | "coast"
+  | "cave"
+  | "city"
+  | "ruins"
+  | "mountain"
+  | "volcano"
+  | "marsh"
+  | "snow"
+  | "night"
+  | "arena";
 
-const OFFICIAL_FX: Record<string, string> = {
-  normal: "hit.png",
-  fire: "fire.png",
-  water: "water.png",
-  electric: "lightning.png",
-  grass: "plant.png",
-  ice: "ice.png",
-  fighting: "hit.png",
-  poison: "poison.png",
-  psychic: "psychic.png",
-  ground: "rocks.png",
-  rock: "rocks.png",
-  flying: "wind.png",
-  bug: "plant.png",
-  ghost: "psychic.png",
-  dark: "psychic.png",
-  dragon: "shine.png",
-  steel: "rocks.png",
-  fairy: "shine.png",
-};
+type FxFamily = "projectile" | "beam" | "slash" | "impact" | "aura";
 
 const getRun = () => {
   const save = readLocalSaveObject();
   if (!save || !save.run || typeof save.run !== "object") return null;
   return save.run as Record<string, unknown>;
 };
+
+const asRecord = (value: unknown) =>
+  value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
 
 const getRegion = (): RegionKey | null => {
   const run = getRun();
@@ -40,36 +36,38 @@ const getRegion = (): RegionKey | null => {
     : null;
 };
 
-const getMapIndex = () => {
-  const run = getRun();
-  return typeof run?.mapIndex === "number" ? run.mapIndex : 0;
-};
-
 const getBattleKind = () => {
-  const run = getRun();
-  const battle =
-    run?.battle && typeof run.battle === "object"
-      ? (run.battle as Record<string, unknown>)
-      : null;
-  return typeof battle?.kind === "string" ? battle.kind : "";
+  const battle = asRecord(getRun()?.battle);
+  return typeof battle?.kind === "string" ? battle.kind.toLowerCase() : "";
 };
 
-const getTerrain = (
-  field: HTMLElement,
-  region: RegionKey | null,
-): TerrainKey => {
+const getScene = (field: HTMLElement): SceneKey => {
+  const run = getRun();
+  const node = asRecord(run?.node);
+  const biome = typeof node?.biome === "string" ? node.biome.toLowerCase() : "";
   const kind = getBattleKind();
 
-  if (["gym", "league"].includes(kind)) return "indoor";
-  if (region === "sinnoh" && getMapIndex() === 6) return "snow";
-  if (field.classList.contains("battle-theme-water")) return "water";
+  if (kind === "gym" || kind === "league") return "arena";
+  if (field.classList.contains("battle-theme-arena")) return "arena";
   if (field.classList.contains("battle-theme-cave")) return "cave";
-  if (field.classList.contains("battle-theme-arena")) return "indoor";
+  if (field.classList.contains("battle-theme-water")) return "coast";
+
+  if (biome === "forest") return "forest";
+  if (biome === "coast" || biome === "sea") return "coast";
+  if (biome === "cave") return "cave";
+  if (biome === "city") return "city";
+  if (biome === "ruins") return "ruins";
+  if (biome === "mountain") return "mountain";
+  if (biome === "volcano") return "volcano";
+  if (biome === "marsh") return "marsh";
+  if (biome === "snow") return "snow";
+  if (biome === "night") return "night";
+
   return "grass";
 };
 
 const animateBattleSprite = (img: HTMLImageElement) => {
-  if (img.dataset.prAnimated === "1") return;
+  if (img.dataset.prAnimated === "2") return;
 
   const source = img.currentSrc || img.src;
   const match = source.match(/\/([^/]+)\.png(?:\?.*)?$/i);
@@ -86,9 +84,9 @@ const animateBattleSprite = (img: HTMLImageElement) => {
       ? "ani-shiny"
       : "ani";
 
-  const animated = `${SHOWDOWN}/sprites/${folder}/${slug}.gif`;
+  const animated = `https://play.pokemonshowdown.com/sprites/${folder}/${slug}.gif`;
 
-  img.dataset.prAnimated = "1";
+  img.dataset.prAnimated = "2";
   img.dataset.prStaticSrc = source;
   img.decoding = "async";
 
@@ -116,45 +114,115 @@ const typeFromFx = (fx: HTMLElement) => {
   return "normal";
 };
 
-const assetUrl = (filename: string) =>
-  new URL(`ui/battlefx/${filename}`, document.baseURI).toString();
-
-const enhanceAttackFx = (fx: HTMLElement) => {
-  if (fx.dataset.prEnhanced === "2") return;
-  fx.dataset.prEnhanced = "2";
-
-  fx.querySelectorAll(".pr-attack-asset,.pr-attack-impact").forEach((node) => {
-    node.remove();
-  });
-
-  const type = typeFromFx(fx);
-  const asset = document.createElement("img");
-  asset.className = "pr-attack-asset";
-  asset.alt = "";
-  asset.setAttribute("aria-hidden", "true");
-  asset.src = assetUrl(OFFICIAL_FX[type] ?? OFFICIAL_FX.normal);
-  asset.addEventListener("error", () => asset.remove(), { once: true });
-  fx.append(asset);
-
-  const impact = document.createElement("span");
-  impact.className = "pr-attack-impact";
-  impact.setAttribute("aria-hidden", "true");
-  fx.append(impact);
+const familyForType = (type: string): FxFamily => {
+  if (["fire", "water", "ice", "electric", "dragon"].includes(type)) {
+    return type === "electric" || type === "water" ? "beam" : "projectile";
+  }
+  if (["grass", "bug", "flying", "steel"].includes(type)) return "slash";
+  if (["normal", "fighting", "ground", "rock"].includes(type)) return "impact";
+  return "aura";
 };
 
-const enhanceField = (field: HTMLElement) => {
-  const region = getRegion();
-  const terrain = getTerrain(field, region);
-  const kind = getBattleKind();
+const isHeavyType = (type: string) =>
+  ["fighting", "ground", "rock", "dragon", "steel"].includes(type);
 
+const buildScene = (field: HTMLElement) => {
+  let scene = field.querySelector<HTMLElement>(":scope > .pr-battle-scene");
+  if (!scene) {
+    scene = document.createElement("div");
+    scene.className = "pr-battle-scene";
+    scene.setAttribute("aria-hidden", "true");
+    scene.innerHTML = `
+      <span class="pr-scene-sky"></span>
+      <span class="pr-scene-far"></span>
+      <span class="pr-scene-mid"></span>
+      <span class="pr-scene-ground"></span>
+      <span class="pr-scene-atmosphere">
+        <i></i><i></i><i></i><i></i><i></i><i></i>
+      </span>
+      <span class="pr-scene-vignette"></span>
+    `;
+    field.prepend(scene);
+  }
+
+  const region = getRegion();
+  const sceneKey = getScene(field);
+  field.dataset.prScene = sceneKey;
   if (region) field.dataset.prRegion = region;
   else delete field.dataset.prRegion;
 
-  delete field.dataset.prRegionLabel;
-  field.dataset.prTerrain = terrain;
-
+  const kind = getBattleKind();
   if (kind) field.dataset.prBattleKind = kind;
   else delete field.dataset.prBattleKind;
+};
+
+const resetClass = (
+  node: HTMLElement,
+  className: string,
+  duration: number,
+) => {
+  node.classList.remove(className);
+  void node.offsetWidth;
+  node.classList.add(className);
+  window.setTimeout(() => node.classList.remove(className), duration);
+};
+
+const addImpactReaction = (fx: HTMLElement, type: string) => {
+  const field = fx.closest<HTMLElement>(".gba-battlefield");
+  if (!field) return;
+
+  const fromPlayer = fx.classList.contains("fx-player");
+  const target = field.querySelector<HTMLElement>(
+    fromPlayer ? ".enemy-sprite" : ".player-sprite",
+  );
+  if (target) resetClass(target, "pr-hit-react", 520);
+
+  if (isHeavyType(type)) resetClass(field, "pr-heavy-impact", 360);
+  else resetClass(field, "pr-light-impact", 280);
+};
+
+const enhanceAttackFx = (fx: HTMLElement) => {
+  if (fx.dataset.prEnhanced === "3") return;
+  fx.dataset.prEnhanced = "3";
+
+  const type = typeFromFx(fx);
+  const family = familyForType(type);
+  fx.dataset.prFxType = type;
+  fx.dataset.prFxFamily = family;
+
+  fx.querySelectorAll(".pr-fx-system,.pr-attack-asset,.pr-attack-impact").forEach((node) => {
+    node.remove();
+  });
+
+  const system = document.createElement("span");
+  system.className = "pr-fx-system";
+  system.setAttribute("aria-hidden", "true");
+
+  const trail = document.createElement("i");
+  trail.className = "pr-fx-trail";
+  const projectile = document.createElement("i");
+  projectile.className = "pr-fx-projectile";
+  const impact = document.createElement("i");
+  impact.className = "pr-fx-impact";
+  const ring = document.createElement("i");
+  ring.className = "pr-fx-ring";
+
+  const sparks = document.createElement("span");
+  sparks.className = "pr-fx-sparks";
+  for (let index = 0; index < 10; index += 1) {
+    const spark = document.createElement("i");
+    spark.style.setProperty("--spark-index", String(index));
+    sparks.append(spark);
+  }
+
+  system.append(trail, projectile, impact, ring, sparks);
+  fx.append(system);
+
+  addImpactReaction(fx, type);
+};
+
+const enhanceField = (field: HTMLElement) => {
+  buildScene(field);
 
   field
     .querySelectorAll<HTMLImageElement>(".enemy-sprite, .player-sprite")
