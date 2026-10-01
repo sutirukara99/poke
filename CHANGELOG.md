@@ -36,6 +36,15 @@
 - Scoped the battle visual MutationObserver so unrelated UI mutations no longer trigger battle enhancement work.
 - Added typed `playUiSound`, `playBattleSound`, `playRewardSound` and `playSystemSound` hooks via a `pokeregions:sound` event for future audio without coupling gameplay to final sound assets.
 
+### Battle & run-end presentation
+- Native Gym, Rival and League trainer intros are now preserved without a redundant second overlay from the polish layer.
+- Wild, standard Trainer and Legendary encounters keep a fast one-shot intro, with Legendary encounters receiving a distinct but restrained treatment.
+- Boss, Gym, League and Legendary battlefields now communicate importance through border/title hierarchy instead of permanent glow.
+- Keyboard shortcuts and always-visible Ability HUD information are visually de-emphasized so the battle command, moves and HP state read first.
+- Finished runs now receive a compact Run Record with difficulty, class, elapsed time, badges, wins, score when available and seed.
+- Champion runs receive a cleaner Hall of Fame share-card treatment, while losses keep a quieter visual hierarchy.
+- Run-result layout remains responsive down to phone widths and does not expose internal run/account UUIDs.
+
 ### Consistency & QA
 - Player-facing Rogue Point currency copy is now consistently named **Meta Points** while the internal `metaPoints` save key remains unchanged.
 - Added smoke coverage for region event weighting, the anti-repetition state, the expanded event pool and currency terminology.
