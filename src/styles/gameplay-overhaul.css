@@ -4163,3 +4163,16 @@ body.pr-game-ui .alpha-shell main:has(.canvas-overworld) > .run-world-bar,
 body.pr-game-ui .alpha-shell main:has(.canvas-overworld) > .run-quests{
   display:none!important;
 }
+
+
+body.pr-game-ui .alpha-shell section.playful-event:has(.ow-city-hub){
+  padding:0!important;
+  overflow:hidden;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+body.pr-game-ui .alpha-shell section.playful-event:has(.ow-city-hub) > :not(.ow-city-hub){
+  display:none!important;
+}
