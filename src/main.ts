@@ -5,6 +5,7 @@ import { mountCloudAccountUi } from "./cloud/account-ui";
 import { mountAdminUi } from "./cloud/admin-ui";
 import { mountGameGrantSync } from "./cloud/game-grant-sync";
 import { mountLeaderboardUi } from "./cloud/leaderboard-ui";
+import { mountBattleVisualPolish } from "./polish/battle-visuals";
 
 declare global {
   interface Window {
@@ -111,3 +112,4 @@ void mountCloudAccountUi();
 void mountAdminUi();
 void mountGameGrantSync();
 void mountLeaderboardUi();
+mountBattleVisualPolish();
