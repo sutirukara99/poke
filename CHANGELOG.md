@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.0.0-alpha.1 The Journey — 2026-10-01
+
+### Neues Reiseprinzip
+- Das sichtbare Node-/Map-System wurde durch **The Journey** ersetzt. Spieler sehen nicht mehr den gesamten Encounter-Graphen, sondern nur den aktuellen Ort und die Wege, die unmittelbar vor ihnen liegen.
+- Wege werden über Landschaft, Richtung und natürliche Hinweise beschrieben. Technische Kategorien wie Wild-, Trainer-, Shop- oder Event-Node bleiben im Hintergrund und werden nicht mehr als Routenstruktur offengelegt.
+- Bestehende Kampf-, Fang-, Shop-, Stadt-, Tutor-, Mystery- und Boss-Systeme bleiben als Content-Engine erhalten, werden aber durch die neue Reise ausgelöst.
+
+### Reiseaktionen
+- Jeder neue Gebietsabschnitt startet mit 6 Reiseenergie. Normales Weiterreisen kostet keine Energie und kann deshalb niemals einen Run blockieren.
+- **Umgebung lesen** kostet 1 Energie und macht aus vagen Landschaftshinweisen konkrete Spuren wie Stimmen, Bewegung im Gras, Rauch oder entfernte Lichter.
+- **Abseits suchen** kostet 1 Energie und kann Geld, Vorräte oder regionale Entdeckungen aufdecken.
+- **Kurzes Lager** kostet 2 Energie und regeneriert einen Teil der Team-KP; pro Gebiet kann nur einmal gelagert werden.
+- Nach abgeschlossenen Reisebegegnungen regeneriert sich 1 Energie. PokéCenter füllen die Reiseenergie vollständig auf.
+
+### Entdeckungen & Regionen
+- Kanto, Johto, Hoenn und Sinnoh besitzen eigene versteckte Entdeckungen mit regionalem Flavor und kleinen Belohnungen.
+- Einzigartige Funde werden sowohl im aktuellen Run als auch accountweit als **Welt-Entdeckungen** gespeichert.
+- Die Trainerkarte zeigt den accountweiten Entdeckungsfortschritt als neuen Prestige-Wert.
+- Landschaft, Farbwelt und Wegdarstellung reagieren auf Region und Biom statt auf generische Node-Farben.
+
+### Wartungsmodus
+- Die Wartungsseite wurde für den Umbau wieder aktiviert und bleibt nach dem Deploy absichtlich aktiv.
+- Der bestehende Admin-Bypass bleibt verfügbar, damit der neue Reise-Loop vor der öffentlichen Freigabe getestet werden kann.
+
+
 ## 1.0.0-alpha.1 Adventure Atlas route redesign — 2026-10-01
 
 ### Route / node system
