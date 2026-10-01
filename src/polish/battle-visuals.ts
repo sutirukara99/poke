@@ -3,52 +3,28 @@ import { readLocalSaveObject } from "../cloud/supabase";
 const SHOWDOWN = "https://play.pokemonshowdown.com";
 
 type RegionKey = "kanto" | "johto" | "hoenn" | "sinnoh";
+type TerrainKey = "grass" | "water" | "cave" | "indoor" | "snow";
 
-const REGION_LABELS: Record<RegionKey, string> = {
-  kanto: "KANTO · GEN I",
-  johto: "JOHTO · GEN II",
-  hoenn: "HOENN · GEN III",
-  sinnoh: "SINNOH · GEN IV",
-};
-
-const TYPE_ASSETS: Record<string, string> = {
-  normal: "impact.png",
-  fire: "fireball.png",
-  water: "waterwisp.png",
+const OFFICIAL_FX: Record<string, string> = {
+  normal: "hit.png",
+  fire: "fire.png",
+  water: "water.png",
   electric: "lightning.png",
-  grass: "leaf1.png",
-  ice: "iceball.png",
-  fighting: "fist.png",
-  poison: "poisonwisp.png",
-  psychic: "mistball.png",
+  grass: "plant.png",
+  ice: "ice.png",
+  fighting: "hit.png",
+  poison: "poison.png",
+  psychic: "psychic.png",
   ground: "rocks.png",
-  rock: "rock1.png",
-  flying: "feather.png",
-  bug: "web.png",
-  ghost: "shadowball.png",
-  dark: "blackwisp.png",
-  dragon: "flareball.png",
-  steel: "gear.png",
+  rock: "rocks.png",
+  flying: "wind.png",
+  bug: "plant.png",
+  ghost: "psychic.png",
+  dark: "psychic.png",
+  dragon: "shine.png",
+  steel: "rocks.png",
   fairy: "shine.png",
 };
-
-const MOVE_ASSETS: Array<[RegExp, string]> = [
-  [/(thunderbolt|thunder|thunder-wave|volt|spark)/, "lightning.png"],
-  [/(flamethrower|fire-blast|ember|flame|fire-punch)/, "fireball.png"],
-  [/(overheat|flare-blitz)/, "flareball.png"],
-  [/(shadow-ball|shadow)/, "shadowball.png"],
-  [/(energy-ball|solar-beam)/, "energyball.png"],
-  [/(razor-leaf|leaf-blade|vine-whip)/, "leaf1.png"],
-  [/(ice-beam|aurora-beam)/, "iceball.png"],
-  [/(ice-shard|icicle)/, "icicle.png"],
-  [/(water-pulse|hydro-pump|aqua|surf)/, "waterwisp.png"],
-  [/(psychic|psybeam|confusion)/, "mistball.png"],
-  [/(rock-slide|stone-edge|rock-throw)/, "rocks.png"],
-  [/(slash|cut|night-slash|air-slash)/, "leftslash.png"],
-  [/(bite|crunch)/, "topbite.png"],
-  [/(close-combat|brick-break|punch|force-palm)/, "fist.png"],
-  [/(metal-claw|iron-head|gyro-ball)/, "gear.png"],
-];
 
 const getRun = () => {
   const save = readLocalSaveObject();
@@ -58,9 +34,9 @@ const getRun = () => {
 
 const getRegion = (): RegionKey | null => {
   const run = getRun();
-  const region = typeof run?.region === "string" ? run.region.toLowerCase() : "";
-  return ["kanto", "johto", "hoenn", "sinnoh"].includes(region)
-    ? (region as RegionKey)
+  const value = typeof run?.region === "string" ? run.region.toLowerCase() : "";
+  return ["kanto", "johto", "hoenn", "sinnoh"].includes(value)
+    ? (value as RegionKey)
     : null;
 };
 
@@ -78,11 +54,17 @@ const getBattleKind = () => {
   return typeof battle?.kind === "string" ? battle.kind : "";
 };
 
-const getTerrain = (field: HTMLElement, region: RegionKey | null) => {
+const getTerrain = (
+  field: HTMLElement,
+  region: RegionKey | null,
+): TerrainKey => {
+  const kind = getBattleKind();
+
+  if (["gym", "league"].includes(kind)) return "indoor";
   if (region === "sinnoh" && getMapIndex() === 6) return "snow";
   if (field.classList.contains("battle-theme-water")) return "water";
   if (field.classList.contains("battle-theme-cave")) return "cave";
-  if (field.classList.contains("battle-theme-arena")) return "arena";
+  if (field.classList.contains("battle-theme-arena")) return "indoor";
   return "grass";
 };
 
@@ -105,15 +87,15 @@ const animateBattleSprite = (img: HTMLImageElement) => {
       : "ani";
 
   const animated = `${SHOWDOWN}/sprites/${folder}/${slug}.gif`;
+
   img.dataset.prAnimated = "1";
   img.dataset.prStaticSrc = source;
+  img.decoding = "async";
 
   img.addEventListener(
     "error",
     () => {
-      if (img.src === animated && img.dataset.prStaticSrc) {
-        img.src = img.dataset.prStaticSrc;
-      }
+      if (img.dataset.prStaticSrc) img.src = img.dataset.prStaticSrc;
     },
     { once: true },
   );
@@ -134,38 +116,24 @@ const typeFromFx = (fx: HTMLElement) => {
   return "normal";
 };
 
-const moveFromFx = (fx: HTMLElement) => {
-  for (const className of fx.classList) {
-    if (className.startsWith("move-fx-")) return className.slice(8);
-  }
-  return "";
-};
-
-const assetForFx = (fx: HTMLElement) => {
-  const move = moveFromFx(fx);
-  if (move) {
-    const matched = MOVE_ASSETS.find(([pattern]) => pattern.test(move));
-    if (matched) return matched[1];
-  }
-  return TYPE_ASSETS[typeFromFx(fx)] ?? "impact.png";
-};
+const assetUrl = (filename: string) =>
+  new URL(`ui/battlefx/${filename}`, document.baseURI).toString();
 
 const enhanceAttackFx = (fx: HTMLElement) => {
-  if (fx.dataset.prEnhanced === "1") return;
-  fx.dataset.prEnhanced = "1";
+  if (fx.dataset.prEnhanced === "2") return;
+  fx.dataset.prEnhanced = "2";
 
+  fx.querySelectorAll(".pr-attack-asset,.pr-attack-impact").forEach((node) => {
+    node.remove();
+  });
+
+  const type = typeFromFx(fx);
   const asset = document.createElement("img");
   asset.className = "pr-attack-asset";
   asset.alt = "";
   asset.setAttribute("aria-hidden", "true");
-  asset.src = `${SHOWDOWN}/fx/${assetForFx(fx)}`;
-  asset.addEventListener(
-    "error",
-    () => {
-      asset.remove();
-    },
-    { once: true },
-  );
+  asset.src = assetUrl(OFFICIAL_FX[type] ?? OFFICIAL_FX.normal);
+  asset.addEventListener("error", () => asset.remove(), { once: true });
   fx.append(asset);
 
   const impact = document.createElement("span");
@@ -179,22 +147,22 @@ const enhanceField = (field: HTMLElement) => {
   const terrain = getTerrain(field, region);
   const kind = getBattleKind();
 
-  if (region) {
-    field.dataset.prRegion = region;
-    field.dataset.prRegionLabel = REGION_LABELS[region];
-  } else {
-    delete field.dataset.prRegion;
-    delete field.dataset.prRegionLabel;
-  }
+  if (region) field.dataset.prRegion = region;
+  else delete field.dataset.prRegion;
 
+  delete field.dataset.prRegionLabel;
   field.dataset.prTerrain = terrain;
+
   if (kind) field.dataset.prBattleKind = kind;
+  else delete field.dataset.prBattleKind;
 
-  field.querySelectorAll<HTMLImageElement>(".enemy-sprite, .player-sprite").forEach(
-    animateBattleSprite,
-  );
+  field
+    .querySelectorAll<HTMLImageElement>(".enemy-sprite, .player-sprite")
+    .forEach(animateBattleSprite);
 
-  field.querySelectorAll<HTMLElement>(".type-attack-fx").forEach(enhanceAttackFx);
+  field
+    .querySelectorAll<HTMLElement>(".type-attack-fx")
+    .forEach(enhanceAttackFx);
 };
 
 const enhanceBattleUi = () => {
