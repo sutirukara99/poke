@@ -134,7 +134,10 @@ if (!js.includes('type:"journeyTravel"')) throw new Error("Journey travel action
 if (!js.includes('QjourneyDiscoveryPools')) throw new Error("Regional Journey discoveries are missing.");
 if (!js.includes('d.worldDiscoveries??=[]')) throw new Error("Persistent world discovery migration is missing.");
 if (!js.includes('...(d.worldDiscoveries??[])')) throw new Error("Journey discoveries can repeat after being found account-wide.");
-if (!js.includes('className:`journey-world region-${u} biome-${q}${m?" journey-arena":""}`')) throw new Error("Journey world presentation is missing.");
+if (!js.includes('pokemon-route-screen')) throw new Error("Pokemon route presentation is missing.");
+if (!js.includes('pokemon-route-scene')) throw new Error("Pokemon overworld scene is missing.");
+if (!js.includes('pokemon-dialogue-box')) throw new Error("Pokemon-style dialogue box is missing.");
+if (!js.includes('pokemon-pokenav')) throw new Error("Pokemon route HUD is missing.");
 if (js.includes('className:`route-map mini-map pixel-map-crawler')) throw new Error("Legacy visible node-map renderer still exists.");
 if (js.includes("Knoten")) throw new Error("Player-facing node terminology remains in Journey build.");
 
