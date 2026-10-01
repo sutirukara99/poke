@@ -624,7 +624,7 @@ const renderRouteAtlasHud = (
 };
 
 const enhanceRoute = (shell: HTMLElement, run: RecordLike | null) => {
-  const journey = shell.querySelector<HTMLElement>(".journey-world");
+  const journey = shell.querySelector<HTMLElement>(".free-roam-overworld, .journey-world");
   if (journey) {
     const board =
       journey.closest<HTMLElement>(".adventure-board") ?? journey.parentElement;

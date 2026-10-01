@@ -34,12 +34,15 @@ const required = [
   "rogue-die",
   "black-feather",
   "QjourneyState",
-  "journey-world",
-  "journeyTravel",
+  "free-roam-overworld",
+  "overworldMove",
+  "overworldInteract",
+  "overworldTrigger",
+  "QowBuild",
+  "QowEnsure",
   "worldDiscoveries",
-  "UMSCHAUEN",
-  "SUCHEN",
-  "RASTEN",
+  "WASD zum Laufen",
+  "E zum Interagieren",
   "QalphaCompletion",
   "QalphaSetLane",
   "QalphaQuestReady",
@@ -129,15 +132,17 @@ if (!js.includes("QalphaRow.length===3")) throw new Error("safe secret generatio
 if (!js.includes("QalphaRepairRoute(a)")) throw new Error("route advance repair hook missing");
 
 if (!js.includes('journey:QjourneyState()')) throw new Error("Journey state is missing from new runs.");
-if (!js.includes('type:"journeyAction"')) throw new Error("Journey exploration actions are missing.");
-if (!js.includes('type:"journeyTravel"')) throw new Error("Journey travel action is missing.");
+if (!js.includes('type:"overworldMove"')) throw new Error("Free-roam movement action is missing.");
+if (!js.includes('type:"overworldInteract"')) throw new Error("Free-roam interaction action is missing.");
+if (!js.includes('type:"overworldTrigger"')) throw new Error("Free-roam encounter trigger is missing.");
 if (!js.includes('QjourneyDiscoveryPools')) throw new Error("Regional Journey discoveries are missing.");
 if (!js.includes('d.worldDiscoveries??=[]')) throw new Error("Persistent world discovery migration is missing.");
-if (!js.includes('...(d.worldDiscoveries??[])')) throw new Error("Journey discoveries can repeat after being found account-wide.");
-if (!js.includes('pokemon-route-screen')) throw new Error("Pokemon route presentation is missing.");
-if (!js.includes('pokemon-route-scene')) throw new Error("Pokemon overworld scene is missing.");
-if (!js.includes('pokemon-dialogue-box')) throw new Error("Pokemon-style dialogue box is missing.");
-if (!js.includes('pokemon-pokenav')) throw new Error("Pokemon route HUD is missing.");
+if (!js.includes('QjourneyFindDiscovery(r.region,d.worldDiscoveries??[],u)')) throw new Error("Overworld discoveries are not checked against account-wide finds.");
+if (!js.includes('free-roam-overworld')) throw new Error("Free-roam overworld presentation is missing.");
+if (!js.includes('className:"ow-map"')) throw new Error("Free-roam tile map is missing.");
+if (!js.includes('className:"ow-player"')) throw new Error("Overworld player sprite is missing.");
+if (!js.includes('className:"ow-dialogue"')) throw new Error("Overworld dialogue UI is missing.");
+if (!js.includes('/ui/overworld/frlg/red-normal.png') && !js.includes('ow-player')) throw new Error("FireRed overworld player integration is missing.");
 if (js.includes('className:`route-map mini-map pixel-map-crawler')) throw new Error("Legacy visible node-map renderer still exists.");
 if (js.includes("Knoten")) throw new Error("Player-facing node terminology remains in Journey build.");
 
@@ -193,8 +198,8 @@ if (js.includes('return Math.min(100,Math.max(5,Math.floor(m*h)+(i==="boss"?4:0)
   throw new Error("Legacy Endless enemy Level 100 cap is still present.");
 }
 
-if (!js.includes('keyboardNodeId:')) throw new Error("Route keyboard selection is not wired to the map.");
-if (!js.includes('" keyboard-selected"')) throw new Error("Journey keyboard selection has no visible road state.");
+if (!js.includes('dirs={w:"up",arrowup:"up",s:"down",arrowdown:"down",a:"left",arrowleft:"left",d:"right",arrowright:"right"}')) throw new Error("WASD/arrow overworld controls are missing.");
+if (!js.includes('document.querySelector(".free-roam-overworld")')) throw new Error("Legacy route hotkeys are not disabled during free-roam.");
 
 if (!js.includes('type:"reorderTeam"')) {
   throw new Error("Party reorder action is missing.");

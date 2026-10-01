@@ -1,5 +1,39 @@
 # Changelog
 
+## 1.0.0-alpha.1 Free-Roam Overworld — 2026-10-02
+
+### Komplett neues Reisesystem
+- Das bisherige Journey-/Route-Auswahlprinzip wurde durch eine **frei begehbare Overworld** ersetzt.
+- Bewegung erfolgt mit **WASD oder Pfeiltasten**, Interaktion mit **E / Enter / Leertaste**.
+- Position, Blickrichtung, Schrittzahl, eingesammelte Funde und aktueller Overworld-Abschnitt werden direkt im Run gespeichert.
+- Nach einem Reload startet der Spieler nicht neu am Eingang, sondern bleibt im aktuellen Bereich.
+
+### Roguelike bleibt erhalten
+- Jede Overworld wird deterministisch aus **Run-Seed, Region, Karte, Etappe und Arena-Status** erzeugt.
+- Wege, Hindernisse, hohes Gras, Fundorte und Zielobjekte variieren pro Run, bleiben innerhalb desselben Seeds aber reproduzierbar.
+- Die bestehenden Rogue-Branches bleiben bestehen, werden aber nicht mehr als Auswahlkarten angezeigt: Der Spieler entscheidet durch tatsächliches Erkunden und Hinlaufen.
+- Wild-Branches können als zufällige Begegnung im hohen Gras ausgelöst werden.
+- Trainer-Branches können den Spieler im Sichtfeld erkennen und den Kampf automatisch starten.
+- Shops, Städte, Arena, Rivalen, Liga, Tutor, Mystery und andere Branches erscheinen als physische Overworld-Ziele.
+
+### Pokémon-Overworld
+- Neue 23×15-Tile-Feldkarten mit Kollisionen für Bäume, Felsen und Wasser.
+- Verwendet FireRed/LeafGreen-Overworld-Tiles und Object-Event-Sprites aus dem gepflegten FireRed-decomp als echte Pixel-Assets.
+- Spielerfigur, Trainer, Item-Ball und Schilder werden als Overworld-Sprites gerendert.
+- Das Lead-Pokémon läuft als sichtbarer Partner direkt hinter dem Trainer.
+- Ein klassischer Dialogbereich zeigt Interaktionshinweise und Encounter-Meldungen.
+
+### Exploration
+- Zusätzliche Item-Balls werden seedbasiert in der Welt verteilt und können Geld, Tränke, Pokébälle oder einzigartige Welt-Entdeckungen enthalten.
+- Die 16 accountweiten Welt-Entdeckungen bleiben erhalten und sind weiterhin Meta-Fortschritt.
+- Das alte Journey-Energie-Menü ist nicht mehr die primäre Navigation; die Welt selbst ist jetzt die Interaktion.
+
+### Sicherheit
+- Der bestehende Wegschutz gegen unlösbare Rogue-Branches bleibt aktiv.
+- Die alte A/D-Branch-Auswahl wird automatisch deaktiviert, sobald die Free-Roam-Overworld aktiv ist.
+- Wartungsmodus bleibt für den Umbau weiterhin aktiv.
+
+
 ## 1.0.0-alpha.1 Pokémon game-language pass — 2026-10-02
 
 ### Route presentation
