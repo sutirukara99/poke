@@ -905,6 +905,9 @@ const enhanceTrainerCard = (shell: HTMLElement) => {
   );
   const caught = Array.isArray(save.caught) ? save.caught.length : 0;
   const shiny = Array.isArray(save.shinyCaught) ? save.shinyCaught.length : 0;
+  const discoveries = Array.isArray(save.worldDiscoveries)
+    ? new Set(save.worldDiscoveries.map(String)).size
+    : 0;
   const achievements = Array.isArray(save.achievements)
     ? save.achievements.map(String)
     : [];
@@ -930,6 +933,7 @@ const enhanceTrainerCard = (shell: HTMLElement) => {
       <span><b>${endlessBest}</b><small>ENDLESS</small></span>
       <span><b>${dexPercent}%</b><small>POKÉDEX</small></span>
       <span><b>${shiny}</b><small>SHINIES</small></span>
+      <span><b>${discoveries}/16</b><small>ENTDECKUNGEN</small></span>
       <span><b>${achievements.length}</b><small>ERFOLGE</small></span>
     </div>
     <div class="pr-prestige-stamp ${firstWave ? "is-exclusive" : ""}">
