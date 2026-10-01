@@ -655,6 +655,15 @@ const applyExperience = () => {
     delete document.body.dataset.prRegion;
   }
 
+  const biome = currentRouteBiome(run);
+  if (biome) {
+    shell.dataset.prBiome = biome;
+    document.body.dataset.prBiome = biome;
+  } else {
+    delete shell.dataset.prBiome;
+    delete document.body.dataset.prBiome;
+  }
+
   classifyButtons(shell);
   enhanceMenu(shell);
   enhanceSetup(shell);
