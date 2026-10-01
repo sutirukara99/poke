@@ -3000,15 +3000,66 @@ body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-path-
 
 
 
+
 /* ========================================================================== */
-/* FREE-ROAM OVERWORLD · SEEDED ROGUELIKE MAP                                */
+/* ROGUELIKE OVERWORLD · ROOM FLOOR + CAMERA                                  */
 /* ========================================================================== */
+
+body.pr-game-ui:has(.free-roam-overworld){
+  background:#071014!important;
+  overflow-x:hidden;
+}
+
+body.pr-game-ui .alpha-shell:has(.free-roam-overworld){
+  width:min(100vw,1320px)!important;
+  max-width:none!important;
+  margin:0 auto!important;
+  padding:10px 16px 22px!important;
+  background:transparent!important;
+}
+
+body.pr-game-ui .alpha-shell:has(.free-roam-overworld)>.pr-game-chrome,
+body.pr-game-ui .alpha-shell:has(.free-roam-overworld)>.topbar,
+body.pr-game-ui .alpha-shell:has(.free-roam-overworld)>.site-footer,
+body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .run-world-bar,
+body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .run-quests,
+body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .notice,
+body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .run-strip,
+body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .modifier-strip,
+body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .party.playful-party,
+body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .pr-hud-toggle,
+body.pr-game-ui .alpha-shell:has(.free-roam-overworld) #pr-run-resource-hud,
+body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .pr-route-context,
+body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .pr-route-risk-legend,
+body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .pr-route-board-side,
+body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .pr-route-atlas-hud{
+  display:none!important;
+}
+
+body.pr-game-ui .alpha-shell:has(.free-roam-overworld)>.content{
+  width:100%!important;
+  max-width:none!important;
+  padding:0!important;
+}
+
+body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .play-layout{
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+}
+
+body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .play-layout>main{
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+}
 
 body.pr-game-ui .alpha-shell .adventure-board[data-pr-journey-system="true"]{
   display:block!important;
-  width:min(100%,1080px)!important;
-  max-width:1080px!important;
-  margin:0 auto!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
   padding:0!important;
   border:0!important;
   background:transparent!important;
@@ -3016,161 +3067,265 @@ body.pr-game-ui .alpha-shell .adventure-board[data-pr-journey-system="true"]{
 }
 
 body.pr-game-ui .alpha-shell .adventure-board[data-pr-journey-system="true"]>.map-banner,
-body.pr-game-ui .alpha-shell .adventure-board[data-pr-journey-system="true"]>.map-progress,
-body.pr-game-ui .alpha-shell .adventure-board[data-pr-journey-system="true"]>.pr-route-context,
-body.pr-game-ui .alpha-shell .adventure-board[data-pr-journey-system="true"]>.pr-route-risk-legend,
-body.pr-game-ui .alpha-shell .adventure-board[data-pr-journey-system="true"]>.pr-route-board-side,
-body.pr-game-ui .alpha-shell .adventure-board[data-pr-journey-system="true"]>.pr-route-atlas-hud,
-body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .run-strip.playful-strip.game-hud,
-body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .modifier-strip,
-body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .party.playful-party{
+body.pr-game-ui .alpha-shell .adventure-board[data-pr-journey-system="true"]>.map-progress{
   display:none!important;
 }
 
-body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .play-layout{
-  display:block!important;
-  width:min(100%,1120px)!important;
-  margin:0 auto!important;
-}
-body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .play-layout>main{
-  width:100%!important;
-  max-width:none!important;
-}
+/* ------------------------- game frame ------------------------------------ */
 
 .free-roam-overworld{
   --ow-tile:32px;
-  --ow-border:#202a34;
   position:relative;
-  width:min(100%,980px);
+  width:min(100%,1180px);
   margin:0 auto;
   overflow:hidden;
-  border:4px solid var(--ow-border);
-  border-radius:7px;
-  background:#cad5c5;
-  box-shadow:0 7px 0 #111820,0 18px 40px rgba(0,0,0,.25);
+  border:2px solid #29434b;
+  border-radius:6px;
+  background:#071014;
+  color:#e5eef0;
+  box-shadow:
+    0 0 0 1px rgba(116,173,188,.12),
+    0 20px 54px rgba(0,0,0,.42);
 }
 
-/* HUD stays small so the world is the game. */
-.ow-hud{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  min-height:62px;
-  padding:7px 9px;
-  border-bottom:4px solid var(--ow-border);
-  background:#eef1e8;
-  box-shadow:inset 0 0 0 2px #fff;
-}
-.ow-area{
-  display:grid;
-  gap:3px;
-  min-width:0;
-}
-.ow-area small{
-  color:#557187!important;
-  font:700 5px/1 "Press Start 2P",monospace!important;
-}
-.ow-area strong{
-  color:#26333d;
-  font:700 20px/1 "Pixelify Sans",system-ui,sans-serif;
-}
-.ow-area span{
-  color:#6f7978;
-  font:700 7px/1 "Pixelify Sans",system-ui,sans-serif;
-}
-.ow-stats{
-  display:flex;
-  align-items:center;
-  overflow:hidden;
-  border:3px solid #293844;
-  border-radius:4px;
-  background:#faf9ee;
-  box-shadow:inset 0 0 0 2px #fff;
-}
-.ow-stats span{
-  min-width:86px;
-  padding:8px 10px;
-  border-left:1px solid #bbc1b9;
-  color:#31424c;
-  font:700 9px/1 "Pixelify Sans",system-ui,sans-serif;
-  text-align:center;
-}
-.ow-stats span:first-child{border-left:0}
-
-/* Viewport: fixed GBA-like playfield. */
 .ow-viewport{
   position:relative;
-  display:grid;
-  place-items:center;
-  min-height:520px;
-  padding:18px;
+  height:min(76vh,720px);
+  min-height:590px;
   overflow:hidden;
   outline:none;
+  background:#071014;
+  isolation:isolate;
+}
+
+.ow-viewport::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:0;
+  pointer-events:none;
   background:
-    linear-gradient(180deg,#8fc3d2 0 17%,#78a970 17% 100%);
+    radial-gradient(circle at 50% 46%,rgba(45,92,74,.14),transparent 45%),
+    linear-gradient(180deg,#0a1719,#071012 70%);
 }
 
 .ow-viewport::after{
   content:"";
   position:absolute;
-  z-index:50;
+  z-index:80;
   inset:0;
   pointer-events:none;
-  box-shadow:inset 0 0 42px rgba(20,32,28,.16);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.035),
+    inset 0 0 90px rgba(0,0,0,.48);
 }
 
+/* ------------------------- compact rogue HUD ----------------------------- */
+
+.ow-hud{
+  position:absolute;
+  z-index:90;
+  top:12px;
+  left:12px;
+  right:12px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto 38px;
+  align-items:stretch;
+  gap:7px;
+  pointer-events:none;
+}
+
+.ow-area,
+.ow-stats,
+.ow-menu-button{
+  pointer-events:auto;
+  border:1px solid #35515a!important;
+  border-radius:4px!important;
+  background:rgba(7,18,22,.92)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.035),
+    0 4px 12px rgba(0,0,0,.22)!important;
+  backdrop-filter:blur(5px);
+}
+
+.ow-area{
+  display:grid;
+  align-content:center;
+  gap:3px;
+  min-width:0;
+  padding:8px 11px;
+  border-left:3px solid #65a871!important;
+}
+
+.ow-area small{
+  color:#72949b!important;
+  font:700 5px/1.2 "Press Start 2P",monospace!important;
+  letter-spacing:.06em;
+}
+
+.ow-area strong{
+  overflow:hidden;
+  color:#ecf4ef;
+  font:700 17px/1 "Pixelify Sans",system-ui,sans-serif;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.ow-stats{
+  display:flex;
+  overflow:hidden;
+}
+
+.ow-stats span{
+  display:grid;
+  place-items:center;
+  min-width:82px;
+  padding:7px 9px;
+  border-left:1px solid #263c43;
+  color:#a9bbc0;
+  font:700 8px/1 "Pixelify Sans",system-ui,sans-serif;
+  white-space:nowrap;
+}
+
+.ow-stats span:first-child{border-left:0}
+
+body.pr-game-ui .alpha-shell .ow-menu-button{
+  display:grid!important;
+  place-items:center!important;
+  width:38px!important;
+  min-width:38px!important;
+  min-height:0!important;
+  padding:0!important;
+  color:#dce8eb!important;
+  font:700 16px/1 "Pixelify Sans",system-ui,sans-serif!important;
+}
+
+/* ------------------------- camera + floor -------------------------------- */
+
 .ow-map{
-  position:relative;
+  position:absolute;
+  z-index:5;
   display:grid;
   grid-template-columns:repeat(var(--ow-cols),var(--ow-tile));
   grid-template-rows:repeat(var(--ow-rows),var(--ow-tile));
   width:calc(var(--ow-cols) * var(--ow-tile));
   height:calc(var(--ow-rows) * var(--ow-tile));
-  overflow:visible;
-  border:3px solid rgba(30,48,41,.6);
-  background:#65a657;
+  background:#0c1818;
   image-rendering:pixelated;
-  box-shadow:0 7px 0 rgba(34,54,43,.3);
+  transition:left 90ms linear,top 90ms linear;
+  will-change:left,top;
 }
 
-/*
- * FireRed primary/general tile sheet:
- * original 128×320, rendered at 2× so every original 16px tile becomes 32px.
- */
 .ow-tile{
   position:relative;
   z-index:1;
   width:var(--ow-tile);
   height:var(--ow-tile);
-  background-image:url("/ui/overworld/frlg/general-tiles.png");
-  background-repeat:no-repeat;
-  background-size:256px 640px;
+  overflow:hidden;
   image-rendering:pixelated;
 }
 
-/* Tile slots intentionally use original sheet positions, while a color base keeps
-   the world legible if a palette slot is especially transparent. */
-.ow-ground{background-color:#6aaa58;background-position:0 0}
-.ow-path{background-color:#c6ad73;background-position:-32px 0}
-.ow-grass{background-color:#4b9848;background-position:-64px 0}
-.ow-flower{background-color:#63a652;background-position:-96px 0}
-.ow-tree{background-color:#2f783d;background-position:0 -64px}
-.ow-water{background-color:#4b9fb2;background-position:-64px -64px}
-.ow-rock{background-color:#77786b;background-position:-128px -64px}
-.ow-sand{background-color:#ccb875;background-position:-160px 0}
+/* Clean pixel terrain. Official FRLG sprites remain for actors/items; the raw
+   decomp tile image is intentionally not used as a CSS atlas. */
+.ow-ground{
+  background:
+    linear-gradient(90deg,transparent 0 7px,rgba(28,90,51,.18) 7px 8px,transparent 8px 23px,rgba(31,102,57,.16) 23px 24px,transparent 24px),
+    linear-gradient(#4f9a55,#478d4e);
+}
 
+.ow-path{
+  background:
+    linear-gradient(90deg,rgba(103,84,50,.12) 0 1px,transparent 1px 15px,rgba(105,87,52,.1) 15px 16px,transparent 16px),
+    linear-gradient(#c8ae72,#b89a61);
+  box-shadow:inset 0 1px rgba(255,240,180,.12),inset 0 -1px rgba(82,62,34,.14);
+}
+
+.ow-grass{
+  background:
+    linear-gradient(135deg,transparent 0 37%,#2d733d 38% 43%,transparent 44% 100%) 0 0/16px 16px,
+    linear-gradient(45deg,transparent 0 46%,#357e43 47% 51%,transparent 52% 100%) 8px 5px/16px 16px,
+    #448e49;
+}
+
+.ow-flower{
+  background:
+    radial-gradient(circle at 9px 10px,#f4d759 0 2px,#ef8a91 2px 3px,transparent 4px),
+    radial-gradient(circle at 24px 23px,#f5ec9a 0 2px,#e8838c 2px 3px,transparent 4px),
+    #559b56;
+}
+
+.ow-water{
+  background:
+    linear-gradient(180deg,transparent 0 7px,rgba(183,229,238,.26) 8px 10px,transparent 11px 20px,rgba(24,96,132,.22) 21px 23px,transparent 24px),
+    #4c9ec2;
+}
+
+.ow-rock{
+  background:
+    linear-gradient(135deg,#6f756d 0 35%,#858a7e 36% 56%,#565d56 57% 100%);
+  box-shadow:inset 3px 3px rgba(255,255,255,.08),inset -3px -3px rgba(0,0,0,.16);
+}
+
+.ow-wall{
+  background:
+    linear-gradient(135deg,transparent 0 38%,rgba(121,169,106,.18) 39% 43%,transparent 44% 100%) 0 0/16px 16px,
+    linear-gradient(45deg,transparent 0 43%,rgba(18,66,35,.22) 44% 49%,transparent 50% 100%) 7px 3px/17px 17px,
+    #245c34;
+  box-shadow:inset 0 -4px rgba(8,35,20,.16);
+}
+
+.ow-bossfloor{
+  background:
+    linear-gradient(45deg,rgba(255,213,93,.14) 25%,transparent 25% 75%,rgba(255,213,93,.14) 75%) 0 0/12px 12px,
+    #77534c;
+}
+
+.biome-cave .ow-wall,
+.biome-volcano .ow-wall{
+  background:
+    linear-gradient(135deg,#404545 0 35%,#555957 36% 58%,#303536 59% 100%);
+}
 .biome-cave .ow-ground,
-.biome-cave .ow-path{filter:saturate(.6) brightness(.82)}
-.biome-cave .ow-grass{filter:saturate(.35) brightness(.75)}
-.biome-snow .ow-tile{filter:saturate(.55) brightness(1.18)}
-.biome-volcano .ow-tile{filter:saturate(.8) sepia(.18)}
-.region-hoenn .ow-water{filter:saturate(1.2)}
-.region-johto .ow-ground{filter:hue-rotate(-8deg) saturate(.9)}
+.biome-cave .ow-path{
+  filter:saturate(.45) brightness(.82);
+}
+.biome-snow .ow-ground,
+.biome-snow .ow-path{
+  filter:saturate(.45) brightness(1.28);
+}
+.biome-coast .ow-wall,
+.biome-sea .ow-wall{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.12) 0 2px,transparent 2px 11px,rgba(255,255,255,.08) 11px 13px,transparent 13px),
+    #367fa4;
+}
 
-/* Official overworld object sprites. */
+/* fog of war */
+.ow-tile.ow-unseen{
+  background:#061012!important;
+  box-shadow:none!important;
+  filter:none!important;
+}
+.ow-tile.ow-unseen::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:#050b0d;
+}
+.ow-tile.ow-fog{
+  filter:brightness(.42) saturate(.55);
+}
+.ow-tile.ow-fog::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:rgba(4,11,13,.34);
+}
+
+/* ------------------------- official FRLG actors -------------------------- */
+
 .ow-player{
-  z-index:30;
+  z-index:45;
   align-self:end;
   justify-self:center;
   width:32px;
@@ -3181,34 +3336,33 @@ body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .play-layout>main{
   background-size:288px 64px;
   image-rendering:pixelated;
   pointer-events:none;
-  filter:drop-shadow(0 2px 0 rgba(25,36,29,.28));
-}
-.ow-player[data-facing="right"]{
-  transform:scaleX(-1);
+  filter:drop-shadow(0 2px 0 rgba(0,0,0,.34));
 }
 
+.ow-player[data-facing="right"]{transform:scaleX(-1)}
+
 .ow-partner{
-  z-index:28;
+  z-index:42;
   align-self:end;
   justify-self:center;
   display:grid;
   place-items:end center;
   width:32px;
-  height:46px;
-  margin-top:-14px;
+  height:42px;
+  margin-top:-10px;
   pointer-events:none;
 }
 .ow-partner img{
-  width:38px!important;
-  height:38px!important;
+  width:36px!important;
+  height:36px!important;
   object-fit:contain!important;
   image-rendering:pixelated!important;
-  filter:drop-shadow(0 2px 0 rgba(25,36,29,.24));
+  filter:drop-shadow(0 2px 0 rgba(0,0,0,.28));
 }
 
 body.pr-game-ui .alpha-shell .ow-entity{
   position:relative!important;
-  z-index:22!important;
+  z-index:35!important;
   align-self:end!important;
   justify-self:center!important;
   display:grid!important;
@@ -3229,8 +3383,7 @@ body.pr-game-ui .alpha-shell .ow-entity{
 
 body.pr-game-ui .alpha-shell .ow-entity:hover,
 body.pr-game-ui .alpha-shell .ow-entity:focus-visible{
-  transform:none!important;
-  outline:2px solid rgba(255,241,120,.9)!important;
+  outline:1px solid rgba(247,219,91,.75)!important;
   outline-offset:1px!important;
 }
 
@@ -3243,212 +3396,231 @@ body.pr-game-ui .alpha-shell .ow-entity:focus-visible{
   background-position:0 0;
   background-size:320px 64px;
   image-rendering:pixelated;
-  filter:drop-shadow(0 2px 0 rgba(0,0,0,.24));
+  filter:drop-shadow(0 2px 0 rgba(0,0,0,.28));
 }
 .ow-npc.youngster{background-image:url("/ui/overworld/frlg/youngster.png")}
 .ow-npc.hiker{background-image:url("/ui/overworld/frlg/hiker.png")}
 
+.ow-pickup,
+.ow-item-ball{
+  image-rendering:pixelated!important;
+}
 .ow-pickup{
   height:32px!important;
   margin-top:0!important;
-  background-image:url("/ui/overworld/frlg/item-ball.png")!important;
-  background-repeat:no-repeat!important;
-  background-position:center bottom!important;
-  background-size:contain!important;
-  image-rendering:pixelated!important;
+  background:url("/ui/overworld/frlg/item-ball.png") center bottom/contain no-repeat!important;
 }
-
 .ow-item-ball{
   width:30px;
   height:30px;
   background:url("/ui/overworld/frlg/item-ball.png") center/contain no-repeat;
-  image-rendering:pixelated;
 }
 
-.ow-sign,
 .ow-gym-sign{
-  z-index:18;
-  align-self:end;
-  justify-self:center;
   width:32px;
   height:40px;
   margin-top:-8px;
-  background:url("/ui/overworld/frlg/sign.png") center bottom/contain no-repeat;
+  background:url("/ui/overworld/frlg/gym-sign.png") center bottom/contain no-repeat;
   image-rendering:pixelated;
-}
-.ow-gym-sign{
-  background-image:url("/ui/overworld/frlg/gym-sign.png");
 }
 
 .ow-rustle{
   display:grid;
   place-items:center;
-  width:28px;
-  height:28px;
-  border:0;
-  color:#fff5a3;
+  width:27px;
+  height:27px;
+  color:#f7e26c;
   font:700 18px/1 "Pixelify Sans",system-ui,sans-serif;
-  text-shadow:0 2px 0 #27642e;
+  text-shadow:0 2px 0 #174523;
 }
 
 .ow-event-marker{
   display:grid;
   place-items:center;
-  width:28px;
-  height:28px;
-  border:2px solid #273840;
+  width:26px;
+  height:26px;
+  border:2px solid #263a40;
   border-radius:50%;
-  background:#faf5d9;
-  color:#3d5260;
-  font:700 13px/1 "Pixelify Sans",system-ui,sans-serif;
-  box-shadow:0 2px 0 rgba(23,35,42,.25);
-}
-
-/* Bottom Pokémon dialogue/control bar. */
-.ow-command{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) auto auto;
-  align-items:stretch;
-  border-top:4px solid var(--ow-border);
-  background:#d7ddd4;
-}
-
-.ow-dialogue{
-  position:relative;
-  display:grid;
-  grid-template-columns:18px minmax(0,1fr);
-  align-items:center;
-  min-height:78px;
-  margin:7px 4px 7px 7px;
-  padding:10px 13px;
-  border:4px solid #294766;
-  border-radius:4px;
-  background:#fffef1;
-  box-shadow:inset 0 0 0 2px #fff;
-}
-.ow-dialogue b{
-  color:#d84f49;
+  background:#e9ead7;
+  color:#26383f;
   font:700 12px/1 "Pixelify Sans",system-ui,sans-serif;
-}
-.ow-dialogue p{
-  margin:0!important;
-  color:#29353d!important;
-  font:700 12px/1.4 "Pixelify Sans",system-ui,sans-serif!important;
+  box-shadow:0 2px 0 rgba(0,0,0,.25);
 }
 
-.ow-controls{
+/* ------------------------- floor prompt ---------------------------------- */
+
+.ow-floor-meta{
+  position:absolute;
+  z-index:90;
+  left:12px;
+  right:12px;
+  bottom:12px;
   display:grid;
-  align-content:center;
-  gap:5px;
-  min-width:150px;
-  margin:7px 3px;
-  padding:8px 10px;
-  border:3px solid #2b3b45;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:10px;
+  min-height:38px;
+  padding:6px 10px;
+  border:1px solid #314c54;
   border-radius:4px;
-  background:#f1f2e8;
-  box-shadow:inset 0 0 0 2px #fff;
+  background:rgba(6,16,20,.92);
+  box-shadow:0 3px 12px rgba(0,0,0,.22);
+  backdrop-filter:blur(5px);
 }
-.ow-controls span{
-  color:#4c5d62;
-  font:700 5px/1.35 "Press Start 2P",monospace;
+
+.ow-floor-meta span{
+  color:#719097;
+  font:700 5px/1 "Press Start 2P",monospace;
+  white-space:nowrap;
+}
+
+.ow-floor-meta b{
+  overflow:hidden;
+  color:#d9e4e6;
+  font:700 10px/1.2 "Pixelify Sans",system-ui,sans-serif;
+  text-align:center;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* ------------------------- run footer / party ---------------------------- */
+
+.ow-command{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  min-height:70px;
+  padding:8px 10px;
+  border-top:2px solid #29434b;
+  background:#09171b;
 }
 
 .ow-party-strip{
-  display:grid;
-  grid-template-columns:repeat(3,30px);
-  align-content:center;
-  gap:3px;
-  margin:7px 7px 7px 3px;
-  padding:6px;
-  border:3px solid #2b3b45;
-  border-radius:4px;
-  background:#f1f2e8;
-  box-shadow:inset 0 0 0 2px #fff;
+  display:flex;
+  gap:5px;
 }
+
 .ow-party-strip>span{
+  position:relative;
   display:grid;
   place-items:center;
-  width:30px;
-  height:30px;
-  border:1px solid #abb5ae;
-  border-radius:50%;
-  background:#e3e8df;
+  width:46px;
+  height:46px;
   overflow:hidden;
+  border:1px solid #2d464e;
+  border-radius:4px;
+  background:#102329;
 }
+
 .ow-party-strip>span[data-lead="true"]{
-  border-color:#c48e28;
-  background:#fff0ae;
+  border-color:#b89b46;
+  box-shadow:inset 0 -2px rgba(215,188,88,.16);
 }
+
 .ow-party-strip>span[data-fainted="true"]{
-  opacity:.35;
+  opacity:.34;
   filter:grayscale(1);
 }
+
 .ow-party-strip img{
-  width:28px!important;
-  height:28px!important;
+  width:38px!important;
+  height:38px!important;
   object-fit:contain!important;
   image-rendering:pixelated!important;
 }
 
-body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .run-footer{
-  width:min(100%,980px)!important;
-  margin:8px auto 0!important;
-  opacity:.58!important;
+.ow-party-strip i{
+  position:absolute;
+  left:3px;
+  right:auto;
+  bottom:3px;
+  height:3px;
+  max-width:40px;
+  border-radius:999px;
+  background:#63b66f;
 }
 
-/* On small screens the map stays pixel-perfect and becomes a framed camera. */
-@media(max-width:820px){
-  .free-roam-overworld{--ow-tile:28px}
-  .ow-viewport{
-    min-height:450px;
-    padding:10px;
-    overflow:auto;
-    justify-content:start;
+.ow-run-info{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:6px;
+}
+
+.ow-run-info span{
+  padding:5px 7px;
+  border:1px solid #29424a;
+  border-radius:3px;
+  background:#0e2025;
+  color:#789097;
+  font:700 5px/1 "Press Start 2P",monospace;
+}
+
+body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .run-footer,
+body.pr-game-ui .alpha-shell:has(.free-roam-overworld) .site-footer{
+  display:none!important;
+}
+
+/* ------------------------- responsive ------------------------------------ */
+
+@media(max-width:900px){
+  body.pr-game-ui .alpha-shell:has(.free-roam-overworld){
+    padding:6px!important;
   }
-  .ow-map{
-    flex:0 0 auto;
+  .ow-viewport{
+    min-height:520px;
+    height:72vh;
   }
   .ow-hud{
-    display:grid;
+    grid-template-columns:minmax(0,1fr) 38px;
   }
   .ow-stats{
-    width:100%;
+    grid-column:1/-1;
+    grid-row:2;
+    justify-self:start;
   }
-  .ow-stats span{
-    flex:1;
-    min-width:0;
-  }
-  .ow-command{
-    grid-template-columns:1fr;
-  }
-  .ow-dialogue{
-    margin:6px 6px 2px;
-  }
-  .ow-controls{
-    grid-template-columns:repeat(3,1fr);
-    min-width:0;
-    margin:2px 6px;
-  }
-  .ow-party-strip{
-    grid-template-columns:repeat(6,30px);
-    justify-content:center;
-    margin:2px 6px 6px;
+  .ow-menu-button{
+    grid-column:2;
+    grid-row:1;
   }
 }
 
-@media(max-width:560px){
-  .free-roam-overworld{--ow-tile:24px}
-  .ow-viewport{
-    min-height:390px;
-    padding:6px;
+@media(max-width:620px){
+  .free-roam-overworld{
+    border-radius:3px;
   }
-  .ow-area strong{font-size:16px}
-  .ow-stats span{padding:7px 5px;font-size:8px}
-  .ow-controls{
+  .ow-viewport{
+    min-height:460px;
+    height:68vh;
+  }
+  .ow-area strong{
+    font-size:14px;
+  }
+  .ow-stats span{
+    min-width:68px;
+    padding:6px;
+    font-size:7px;
+  }
+  .ow-floor-meta{
     grid-template-columns:1fr;
+    gap:3px;
+    text-align:center;
+  }
+  .ow-floor-meta span{
+    display:none;
+  }
+  .ow-command{
+    display:grid;
+  }
+  .ow-party-strip{
+    justify-content:center;
+  }
+  .ow-run-info{
+    justify-content:center;
   }
 }
 
 @media(prefers-reduced-motion:reduce){
-  .ow-player,.ow-npc,.ow-partner{transition:none!important}
+  .ow-map{transition:none}
 }
