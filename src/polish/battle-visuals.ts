@@ -211,7 +211,8 @@ const enhanceAttackFx = (fx: HTMLElement) => {
   sparks.className = "pr-fx-sparks";
   for (let index = 0; index < 10; index += 1) {
     const spark = document.createElement("i");
-    spark.style.setProperty("--spark-index", String(index));
+    spark.style.setProperty("--spark-angle", `${index * 36}deg`);
+    spark.style.setProperty("--spark-distance", `${34 + (index % 3) * 10}px`);
     sparks.append(spark);
   }
 
