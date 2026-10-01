@@ -1950,3 +1950,690 @@ body.pr-game-ui .alpha-shell .route-node.keyboard-focus:not(:disabled){
 body.pr-game-ui .alpha-shell .route-node.keyboard-focus .node-kicker{
   color:#f0d875!important;
 }
+
+
+/* ========================================================================== */
+/* ROUTE BOARD INTERFACE · MINIMAL GAME-BOARD PASS                            */
+/* ========================================================================== */
+
+body.pr-game-ui .alpha-shell[data-pr-game-screen="route"]{
+  width:min(100%,1500px)!important;
+}
+
+body.pr-game-ui .alpha-shell[data-pr-game-screen="route"] [data-pr-game-play-layout="true"],
+body.pr-game-ui .alpha-shell[data-pr-screen="route"] .play-layout{
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:0!important;
+}
+
+/* The route itself is the screen. Header and HUD become supporting UI. */
+body.pr-game-ui .alpha-shell[data-pr-game-screen="route"] .run-heading{
+  width:min(100%,1180px);
+  margin:0 auto 5px!important;
+  padding:5px 8px!important;
+  min-height:40px!important;
+}
+body.pr-game-ui .alpha-shell[data-pr-game-screen="route"] .run-heading h1{
+  font-size:18px!important;
+}
+body.pr-game-ui .alpha-shell[data-pr-game-screen="route"] .run-heading .muted{
+  display:none!important;
+}
+body.pr-game-ui .alpha-shell[data-pr-game-screen="route"] .modifier-strip{
+  width:min(100%,1180px)!important;
+}
+body.pr-game-ui .alpha-shell[data-pr-game-screen="route"] .pr-hud-toggle{
+  width:min(100%,1180px)!important;
+  margin-inline:auto!important;
+}
+
+/* Central expedition board with small, fixed information rails. */
+body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"]{
+  width:100%!important;
+  max-width:1320px!important;
+  margin:0 auto!important;
+  padding:8px!important;
+  gap:7px 9px!important;
+  border:1px solid #344b55!important;
+  background:#071319!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.22)!important;
+}
+
+@media(min-width:1101px){
+  body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"]{
+    display:grid!important;
+    grid-template-columns:168px minmax(0,1fr) 188px!important;
+    grid-template-rows:auto 3px auto minmax(0,1fr)!important;
+    align-items:start!important;
+  }
+
+  body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"] > .map-banner{
+    grid-column:2;
+    grid-row:1;
+  }
+  body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"] > .map-progress{
+    grid-column:2;
+    grid-row:2;
+  }
+  body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"] > .pr-route-context{
+    grid-column:2;
+    grid-row:3;
+  }
+  body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"] > .pr-route-risk-legend{
+    display:none!important;
+  }
+  body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"] > .route-map{
+    grid-column:2;
+    grid-row:4;
+  }
+  body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"] > .pr-route-board-left{
+    grid-column:1;
+    grid-row:1/5;
+  }
+  body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"] > .pr-route-board-right{
+    grid-column:3;
+    grid-row:1/5;
+  }
+
+  /* Full party controls are available as a deliberate overlay instead of a permanent column. */
+  body.pr-game-ui .alpha-shell[data-pr-game-screen="route"] .party.playful-party{
+    display:none!important;
+  }
+  body.pr-game-ui .alpha-shell[data-pr-game-screen="route"][data-pr-route-team-open="true"] .party.playful-party{
+    position:fixed!important;
+    z-index:760!important;
+    top:74px!important;
+    right:max(18px,calc((100vw - 1480px)/2 + 14px))!important;
+    display:block!important;
+    width:min(390px,calc(100vw - 36px))!important;
+    max-height:calc(100dvh - 96px)!important;
+    overflow:auto!important;
+    margin:0!important;
+    padding:13px!important;
+    border:1px solid #536b75!important;
+    background:#08171d!important;
+    box-shadow:0 24px 70px rgba(0,0,0,.55)!important;
+  }
+}
+
+body.pr-game-ui .alpha-shell .pr-route-party-close{
+  position:sticky!important;
+  top:0!important;
+  z-index:20!important;
+  float:right!important;
+  width:30px!important;
+  min-width:30px!important;
+  height:30px!important;
+  min-height:30px!important;
+  margin:-4px -4px 4px 4px!important;
+  padding:0!important;
+  border:1px solid #415a65!important;
+  background:#0a1b22!important;
+  box-shadow:none!important;
+  font-size:18px!important;
+}
+
+/* Side rails */
+.pr-route-board-side{
+  position:sticky;
+  top:72px;
+  display:grid;
+  align-content:start;
+  gap:7px;
+  min-width:0;
+  padding:8px;
+  border:1px solid #2c424c;
+  background:#09171d;
+  color:#dce6e9;
+}
+.pr-route-side-head{
+  display:grid;
+  gap:3px;
+  padding:2px 2px 7px;
+  border-bottom:1px solid #253b44;
+}
+.pr-route-side-head small{
+  color:var(--ui-region)!important;
+  font:700 5px/1 "Press Start 2P",monospace!important;
+  letter-spacing:.09em;
+}
+.pr-route-side-head strong{
+  color:#dce6e9;
+  font:700 14px/1 "Pixelify Sans",system-ui,sans-serif;
+  letter-spacing:.035em;
+}
+
+.pr-route-pack-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4px;
+}
+.pr-route-pack-grid>span{
+  display:grid;
+  grid-template-columns:22px 1fr;
+  grid-template-rows:auto auto;
+  align-items:center;
+  min-height:45px;
+  padding:5px;
+  border:1px solid #263b44;
+  background:#0b1b22;
+}
+.pr-route-pack-grid i{
+  grid-row:1/3;
+  display:grid;
+  place-items:center;
+  width:19px;height:19px;
+  border:1px solid #35505b;
+  color:var(--ui-region);
+  font:700 8px/1 "Pixelify Sans",system-ui,sans-serif;
+  font-style:normal;
+}
+.pr-route-pack-grid b{
+  color:#d8e2e5;
+  font:700 11px/1 "Pixelify Sans",system-ui,sans-serif;
+}
+.pr-route-pack-grid small{
+  color:#5b7079!important;
+  font:700 4px/1 "Press Start 2P",monospace!important;
+}
+
+.pr-route-side-section{
+  display:grid;
+  gap:5px;
+  padding:8px;
+  border:1px solid #263b44;
+  background:#0b1a20;
+}
+.pr-route-side-section>small{
+  color:#5c747e!important;
+  font:700 4.5px/1.3 "Press Start 2P",monospace!important;
+  letter-spacing:.07em;
+}
+.pr-route-side-section>strong{
+  color:#d9e3e6;
+  font:700 12px/1 "Pixelify Sans",system-ui,sans-serif;
+}
+.pr-route-side-section>p{
+  margin:0!important;
+  color:#687d86!important;
+  font-size:8px!important;
+  line-height:1.35!important;
+}
+
+.pr-route-team-mini{
+  display:grid;
+  gap:4px;
+}
+.pr-route-team-mon{
+  display:grid;
+  grid-template-columns:38px minmax(0,1fr);
+  align-items:center;
+  gap:6px;
+  min-height:48px;
+  padding:4px 5px;
+  border:1px solid #253b44;
+  background:#0b1a20;
+}
+.pr-route-team-mon[data-lead="true"]{
+  border-color:#8e793b;
+  box-shadow:inset 2px 0 0 #c7ab4c;
+}
+.pr-route-team-mon[data-fainted="true"]{
+  opacity:.42;
+  filter:saturate(.25);
+}
+.pr-route-team-sprite{
+  display:grid;
+  place-items:center;
+  width:36px;
+  height:36px;
+  overflow:hidden;
+  border:1px solid #2b444e;
+  background:#071218;
+}
+.pr-route-team-sprite img{
+  width:34px!important;
+  height:34px!important;
+  object-fit:contain!important;
+  image-rendering:pixelated!important;
+}
+.pr-route-team-copy{
+  display:grid;
+  gap:2px;
+  min-width:0;
+}
+.pr-route-team-copy strong{
+  overflow:hidden;
+  color:#dfe7ea;
+  font:700 10px/1 "Pixelify Sans",system-ui,sans-serif;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.pr-route-team-copy small{
+  color:#637983!important;
+  font-size:7px!important;
+}
+.pr-route-team-hp{
+  display:block;
+  height:4px;
+  overflow:hidden;
+  background:#17262c;
+}
+.pr-route-team-hp i{
+  display:block;
+  height:100%;
+  background:#69a971;
+}
+.pr-route-team-empty{
+  margin:0!important;
+  padding:10px 4px;
+  color:#647982!important;
+  font-size:8px!important;
+  text-align:center;
+}
+
+body.pr-game-ui .alpha-shell .pr-route-manage-team{
+  min-height:31px!important;
+  padding:0 7px!important;
+  border:1px solid #334c57!important;
+  background:#0d2129!important;
+  box-shadow:none!important;
+  color:#8ca0a8!important;
+  font:700 5px/1 "Press Start 2P",monospace!important;
+}
+body.pr-game-ui .alpha-shell .pr-route-manage-team:hover{
+  transform:none!important;
+  background:#122a33!important;
+}
+
+.pr-route-trait-list{
+  display:grid;
+  gap:3px;
+}
+.pr-route-trait-list span{
+  min-height:21px;
+  display:flex;
+  align-items:center;
+  padding:0 6px;
+  border-left:2px solid var(--ui-region);
+  background:#101f25;
+  color:#82949b;
+  font:700 7px/1 "Pixelify Sans",system-ui,sans-serif;
+}
+
+/* Compact board header */
+body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"]>.map-banner{
+  min-height:58px!important;
+  padding:8px 10px!important;
+  border:1px solid #2d4650!important;
+  background:#0a1a20!important;
+  box-shadow:none!important;
+}
+body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"]>.map-banner h2{
+  margin:2px 0!important;
+  font-size:19px!important;
+}
+body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"]>.map-banner p:not(.eyebrow){
+  font-size:8px!important;
+}
+body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"] .boss-preview{
+  min-width:112px!important;
+  padding:6px 8px!important;
+  border:1px solid #3b5058!important;
+  background:#101c21!important;
+}
+body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"] .boss-preview strong{
+  font-size:11px!important;
+}
+
+body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"]>.map-progress{
+  height:3px!important;
+  margin:0!important;
+  border:0!important;
+  background:#15262d!important;
+}
+body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"]>.map-progress span{
+  background:var(--ui-region)!important;
+}
+
+body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"]>.pr-route-context{
+  min-height:40px!important;
+  margin:0!important;
+  padding:5px 7px!important;
+  border:1px solid #2a414b!important;
+  border-left:2px solid var(--ui-region)!important;
+  background:#09181e!important;
+}
+body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"] .pr-route-region{
+  font-size:5px!important;
+}
+body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"] .pr-route-copy b{
+  font-size:10px!important;
+}
+body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"] .pr-route-copy small{
+  display:none!important;
+}
+body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"] .pr-route-progress-chip{
+  min-width:54px!important;
+  padding:4px 6px!important;
+}
+body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"] .pr-route-identity{
+  font-size:7px!important;
+}
+
+/* The center now reads as a game board instead of a stack of SaaS cards. */
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"]{
+  min-height:650px!important;
+  padding:26px 18px 28px!important;
+  border:1px solid #334c55!important;
+  background:#0a151a!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"]::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  opacity:.32;
+  background:
+    linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);
+  background-size:46px 46px;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"]::after{
+  content:"";
+  position:absolute;
+  inset:8px;
+  z-index:1;
+  pointer-events:none;
+  border:1px solid rgba(255,255,255,.03);
+  box-shadow:inset 0 0 40px rgba(0,0,0,.24);
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .pr-route-scenery{
+  opacity:.48;
+  filter:saturate(.72);
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .pr-route-scenery-fog{
+  opacity:.2;
+}
+
+/* Rows and lanes */
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-row{
+  min-height:104px!important;
+  padding:0 0 0 25px!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-row::before{
+  left:0!important;
+  width:18px!important;
+  height:18px!important;
+  border:1px solid #324951!important;
+  background:#09161b!important;
+  font-size:4px!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-row[data-pr-route-step-state="current"]::before{
+  border-color:var(--route-highlight)!important;
+  color:var(--route-highlight)!important;
+  box-shadow:none!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .node-options{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:10px!important;
+  align-items:center!important;
+}
+
+/* Node tiles: sprite first, copy second. */
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node{
+  --node-tile:#0c1a20;
+  width:min(128px,96%)!important;
+  min-height:88px!important;
+  grid-template-columns:1fr!important;
+  grid-template-rows:48px auto!important;
+  justify-items:center!important;
+  align-content:center!important;
+  gap:5px!important;
+  padding:7px 6px!important;
+  border:1px solid #354b54!important;
+  border-bottom:3px solid var(--node-accent)!important;
+  border-left:1px solid #354b54!important;
+  background:var(--node-tile)!important;
+  box-shadow:0 4px 0 rgba(0,0,0,.27)!important;
+  text-align:center!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node:hover:not(:disabled),
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node:focus-visible{
+  transform:translateY(-2px)!important;
+  border-color:var(--node-accent)!important;
+  background:#112329!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node::after{
+  display:none!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node .node-icon-shell{
+  width:47px!important;
+  height:47px!important;
+  border:0!important;
+  background:transparent!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node[data-pr-node-art="sprite"] .node-icon-shell{
+  background:
+    radial-gradient(circle at 50% 58%,var(--node-soft),transparent 65%)!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node .node-icon-shell img{
+  width:42px!important;
+  height:42px!important;
+  max-width:42px!important;
+  max-height:42px!important;
+  object-fit:contain!important;
+  image-rendering:pixelated!important;
+  filter:drop-shadow(0 3px 1px rgba(0,0,0,.35))!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .pr-node-kind-symbol{
+  right:-8px!important;
+  bottom:-3px!important;
+  min-width:17px!important;
+  height:17px!important;
+  border:1px solid var(--node-accent)!important;
+  background:#08151a!important;
+  font-size:6px!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node .node-copy{
+  width:100%;
+  gap:1px!important;
+  padding:0!important;
+  text-align:center!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node .node-kicker{
+  font-size:4px!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node .node-copy strong{
+  max-width:100%;
+  font-size:10px!important;
+  text-align:center;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node .node-copy small{
+  display:none!important;
+}
+
+/* Accessible/current nodes are bright; future nodes recede into the board. */
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node[data-pr-node-state="available"]{
+  transform:none!important;
+  border-color:var(--node-accent)!important;
+  border-bottom-width:3px!important;
+  box-shadow:
+    0 4px 0 rgba(0,0,0,.28),
+    0 0 0 2px color-mix(in srgb,var(--node-accent) 13%,transparent)!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node[data-pr-node-state="available"]::before{
+  content:"";
+  position:absolute;
+  inset:3px;
+  pointer-events:none;
+  border:1px solid color-mix(in srgb,var(--node-accent) 20%,transparent);
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node[data-pr-node-state="chosen"]{
+  background:color-mix(in srgb,var(--node-accent) 10%,#0c1a20 90%)!important;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--node-accent) 25%,transparent)!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node[data-pr-node-state="future"]{
+  opacity:.58!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node[data-pr-node-state="unknown"]{
+  width:58px!important;
+  min-height:58px!important;
+  grid-template-rows:1fr!important;
+  border:1px dashed #2c4149!important;
+  border-bottom:1px dashed #2c4149!important;
+  background:#091419!important;
+  box-shadow:none!important;
+  opacity:.42!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .unknown-route-node{
+  font-size:14px!important;
+}
+
+/* Goal/boss tiles get a little more visual weight without growing into cards. */
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node.node-goal,
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node[data-pr-node-tone="boss"]{
+  width:min(142px,98%)!important;
+  min-height:94px!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node.node-goal .node-icon-shell,
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node[data-pr-node-tone="boss"] .node-icon-shell{
+  width:52px!important;
+  height:52px!important;
+}
+
+/* Path lines are part of the board, not a debug overlay. */
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-path-lines path{
+  stroke:#40545c!important;
+  stroke-width:1.2!important;
+  stroke-dasharray:none!important;
+  opacity:.45!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-path-lines path.available{
+  stroke:var(--route-highlight)!important;
+  stroke-width:1.8!important;
+  stroke-dasharray:none!important;
+  opacity:.68!important;
+  animation:none!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-path-lines path.chosen{
+  stroke:var(--route-highlight)!important;
+  stroke-width:2.4!important;
+  filter:none!important;
+}
+
+/* Tooltip carries the detail that no longer clutters the tile. */
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node-tooltip{
+  width:190px!important;
+  padding:7px 8px!important;
+  border:1px solid #435963!important;
+  background:#071319!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.36)!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node-tooltip b{
+  font-size:6px!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node-tooltip small{
+  font-size:8px!important;
+}
+
+/* Region-flair: same board language, distinct world tint. */
+body.pr-game-ui .alpha-shell .route-map[data-pr-region="kanto"][data-pr-route-board="true"]{
+  background:
+    linear-gradient(rgba(213,107,101,.025),rgba(213,107,101,.025)),
+    #0a151a!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-region="johto"][data-pr-route-board="true"]{
+  background:
+    linear-gradient(rgba(213,182,91,.025),rgba(213,182,91,.025)),
+    #0a151a!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-region="hoenn"][data-pr-route-board="true"]{
+  background:
+    linear-gradient(rgba(95,170,199,.035),rgba(95,170,199,.035)),
+    #08161c!important;
+}
+body.pr-game-ui .alpha-shell .route-map[data-pr-region="sinnoh"][data-pr-route-board="true"]{
+  background:
+    linear-gradient(rgba(156,168,212,.035),rgba(156,168,212,.035)),
+    #0a151a!important;
+}
+
+/* Do not let the old footer compete with the board. */
+body.pr-game-ui .alpha-shell[data-pr-game-screen="route"] .run-footer{
+  width:min(100%,1180px)!important;
+  margin:5px auto 0!important;
+  min-height:32px!important;
+  padding:4px 7px!important;
+  opacity:.62;
+}
+body.pr-game-ui .alpha-shell[data-pr-game-screen="route"] .run-footer>span{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* Tablet: board first, native team panel below it. */
+@media(max-width:1100px){
+  .pr-route-board-side{
+    display:none!important;
+  }
+  body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"]{
+    display:block!important;
+    max-width:900px!important;
+  }
+  body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"]>.map-banner,
+  body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"]>.map-progress,
+  body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"]>.pr-route-context,
+  body.pr-game-ui .alpha-shell .adventure-board[data-pr-board-layout="true"]>.route-map{
+    margin-bottom:6px!important;
+  }
+  body.pr-game-ui .alpha-shell[data-pr-game-screen="route"] .party.playful-party{
+    display:block!important;
+    position:relative!important;
+    top:auto!important;
+    width:min(100%,900px)!important;
+    margin:8px auto 0!important;
+    max-height:none!important;
+  }
+  body.pr-game-ui .alpha-shell[data-pr-game-screen="route"] .pr-route-party-close{
+    display:none!important;
+  }
+}
+
+@media(max-width:660px){
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"]{
+    min-height:560px!important;
+    padding:18px 5px 22px!important;
+  }
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-row{
+    min-height:96px!important;
+    padding-left:20px!important;
+  }
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .node-options{
+    gap:4px!important;
+  }
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node{
+    width:min(104px,97%)!important;
+    min-height:78px!important;
+    grid-template-rows:40px auto!important;
+    padding:5px 3px!important;
+  }
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node .node-icon-shell{
+    width:39px!important;height:39px!important;
+  }
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node .node-icon-shell img{
+    width:36px!important;height:36px!important;
+  }
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node .node-copy strong{
+    font-size:8px!important;
+  }
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node .node-kicker{
+    display:none!important;
+  }
+}

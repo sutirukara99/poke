@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.0.0-alpha.1 route board pass — 2026-10-01
+
+### Expedition board
+- Reworked the route screen around a centered game-board layout inspired by classic roguelike map screens rather than stacked dashboard cards.
+- Desktop routes now use compact left/right support rails for Run Vorräte, Team and regional route traits while the node board owns the center of the screen.
+- The full Team manager is no longer a permanent route column; it opens deliberately from **TEAM VERWALTEN** and remains unchanged for management actions.
+- Tablet/mobile keep the native Team panel below the route instead of forcing the three-column desktop board.
+
+### Nodes
+- Route nodes are now compact sprite-first tiles instead of wide information cards.
+- Existing Pokémon/trainer/item sprites are used as the visual focus; labels stay short and full node explanations remain in hover/focus tooltips.
+- Available, chosen, future and hidden nodes have clearer board states without extra badges or permanent helper text.
+- Goal/boss nodes receive slightly more visual weight while staying inside the same board language.
+- Path lines are cleaner and behave like map connections rather than a debug overlay.
+- Keyboard-selected nodes continue to use the visible route cursor from the previous polish pass.
+
+### Regional identity
+- Kept the dark PokéRegions UI while giving Kanto, Johto, Hoenn and Sinnoh restrained board tinting.
+- Biome scenery remains behind the board at lower intensity so node readability wins over decoration.
+- Route traits now surface the current biome/region identity in the right support rail.
+
 ## 1.0.0-alpha.1 minimal home pass — 2026-10-01
 
 ### Less launcher, more game
