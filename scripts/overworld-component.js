@@ -19,7 +19,12 @@ l.jsxs("span",{children:["SEED ",String(y.seed).slice(0,16)]}),
 l.jsxs("span",{children:["FLOOR KEY ",Qm.key.slice(-28)]}),
 l.jsxs("span",{children:["BIOME ",Qm.biome," · ATTEMPT ",Qm.attempt]}),
 l.jsxs("span",{children:["ROOMS ",Qm.rooms.length," · TARGETS ",Qm.destinations.length]}),
-l.jsxs("span",{children:["DANGER ",Math.round(Qp.danger??0)," · SEEN ",(Qp.seen??[]).length]})
+l.jsxs("span",{children:["DANGER ",Math.round(Qp.danger??0)," · SEEN ",(Qp.seen??[]).length]}),
+l.jsxs("div",{className:"ow-debug-actions",children:[
+l.jsx("button",{type:"button",onClick:()=>h({type:"overworldDebug",action:"reveal"}),children:"MAP"}),
+l.jsx("button",{type:"button",onClick:()=>h({type:"overworldDebug",action:"wild"}),children:"WILD"}),
+l.jsx("button",{type:"button",onClick:()=>h({type:"overworldDebug",action:"exit"}),children:"EXIT"})
+]})
 ]})
 ]}),
 l.jsxs("footer",{className:"ow-command",children:[
