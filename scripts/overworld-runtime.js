@@ -16,7 +16,7 @@ const QowTileSize=16,QowW=45,QowH=31,QowSpawn={x:22,y:27};
 const QowCanvasW=480,QowCanvasH=320;
 const QowHash=a=>{let i=2166136261>>>0;for(let d=0;d<String(a).length;d++)i^=String(a).charCodeAt(d),i=Math.imul(i,16777619);return i>>>0};
 const QowRng=a=>{let i=a>>>0;return{next:()=>((i=Math.imul(i,1664525)+1013904223>>>0)/4294967296),int:(d,r)=>d+Math.floor(((i=Math.imul(i,1664525)+1013904223>>>0)/4294967296)*(r-d+1)),chance:d=>((i=Math.imul(i,1664525)+1013904223>>>0)/4294967296)<d,pick:d=>d[Math.floor(((i=Math.imul(i,1664525)+1013904223>>>0)/4294967296)*d.length)],state:()=>i}};
-const QowKey=a=>[a.seed,a.region,a.mode,a.mapIndex??0,a.step??0,a.arena?.step??"-",a.difficulty??"normal"].join("|");
+const QowKey=a=>[a.seed,a.region,a.mode,a.mapIndex??0,a.step??0,a.arena?.step??"-",a.difficulty??"normal",a.journey?.overworld?.debugSalt??0].join("|");
 const QowChoices=a=>{const i=a.arena?.route??a.route,d=a.arena?.step??a.step,r=a.arena?.path??a.path??[],u=!!a.fogRevealed||a.activeRelics?.includes?.("cracked-compass"),h=i?.[d]??[];return h.filter(m=>qu(i,d,r,Iy(m,!!a.arena))&&(!m.secret||u)).map(m=>({node:m,lane:Rc(m,h)}))};
 const QowBlocking=a=>!QowTileDefs[a]?.walkable;
 const QowTile=(a,i,d)=>i<0||d<0||i>=a.w||d>=a.h?"wall":a.tiles[d*a.w+i];
@@ -41,7 +41,7 @@ const QowBiomeProfile=a=>({
 const QowRegionBias=(a,i)=>a==="johto"&&i==="grassland"?"forest":a==="hoenn"&&i==="grassland"?"coast":a==="sinnoh"&&i==="grassland"?"mountain":i;
 const QowConditionLabel=a=>({dense:"Dichtes Gebiet",migration:"Seltene Migration",patrol:"Trainer-Patrouille",rich:"Reiche Fundorte",quiet:"Ruhige Route"}[a]??"Normale Route");
 const QowFloorFlavor=(a,i)=>{if(a.arena)return{timeOfDay:"day",weather:"clear",condition:"patrol"};const d=QowRng(QowHash(QowKey(a)+"|flavor")),r=d.pick(["day","day","day","dusk","night"]),u=d.pick(["quiet","quiet","dense","migration","patrol","rich"]);let h="clear";if(a.region==="hoenn"&&d.chance(.48)||["coast","sea","marsh"].includes(i)&&d.chance(.42))h="rain";else if((a.region==="sinnoh"||i==="snow")&&d.chance(.34))h="snow";else if(["forest","ruins"].includes(i)&&d.chance(.16))h="mist";return{timeOfDay:r,weather:h,condition:u}};
-const QowEnsure=a=>{a.journey??=QjourneyState();const i=QowKey(a),d=a.journey.overworld;if(!d||d.mapKey!==i)a.journey.overworld={mapKey:i,x:QowSpawn.x,y:QowSpawn.y,prevX:QowSpawn.x,prevY:QowSpawn.y,facing:"up",steps:0,grassSteps:0,danger:0,picked:[],defeatedTrainers:[],pendingNode:null,encounterOnly:!1,seen:QowVisible(QowSpawn.x,QowSpawn.y),lastMessage:"Erkunde das Gebiet. WASD zum Laufen · E zum Interagieren"};else{d.seen??=QowVisible(d.x??QowSpawn.x,d.y??QowSpawn.y),d.prevX??=d.x??QowSpawn.x,d.prevY??=d.y??QowSpawn.y,d.picked??=[],d.defeatedTrainers??=[],d.danger??=0,d.encounterOnly??=!1}return d};
+const QowEnsure=a=>{a.journey??=QjourneyState();const i=QowKey(a),d=a.journey.overworld;if(!d||d.mapKey!==i)a.journey.overworld={mapKey:i,x:QowSpawn.x,y:QowSpawn.y,prevX:QowSpawn.x,prevY:QowSpawn.y,facing:"up",steps:0,grassSteps:0,danger:0,picked:[],defeatedTrainers:[],pendingNode:null,encounterOnly:!1,debugSalt:0,seen:QowVisible(QowSpawn.x,QowSpawn.y),lastMessage:"Erkunde das Gebiet. WASD zum Laufen · E zum Interagieren"};else{d.seen??=QowVisible(d.x??QowSpawn.x,d.y??QowSpawn.y),d.prevX??=d.x??QowSpawn.x,d.prevY??=d.y??QowSpawn.y,d.picked??=[],d.defeatedTrainers??=[],d.danger??=0,d.encounterOnly??=!1}return d};
 
 const QowCellKey=(a,i)=>a+","+i;
 const QowCellCols=[5,14,22,31,40],QowCellRows=[27,20,13,6];
