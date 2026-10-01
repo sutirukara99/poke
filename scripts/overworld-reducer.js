@@ -1,6 +1,7 @@
 if(i.type==="discardHeld"&&r.phase!=="battle"&&(r.heldItems[i.item]??0)>0){r.heldItems[i.item]--,r.message=Ge[i.item].name+" wurde weggeworfen.";return d}
 if(i.type==="overworldDebug"&&r.phase==="map"){
   const Qs=QowEnsure(r),Qm=QowBuild(r);
+  if(i.action==="regen"){Qs.debugSalt=(Qs.debugSalt??0)+1,Qs.pendingNode=null,Qs.lastMessage="Debug: Floor wird mit neuem Salt regeneriert.";return d}
   if(i.action==="reveal"){
     const Qall=[];for(let Qy=0;Qy<Qm.h;Qy++)for(let Qx=0;Qx<Qm.w;Qx++)Qall.push(Qx+","+Qy);
     Qs.seen=Qall,Qs.lastMessage="Debug: kompletter Floor aufgedeckt.";
