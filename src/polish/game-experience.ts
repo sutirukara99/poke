@@ -250,6 +250,45 @@ const detectScreen = (shell: HTMLElement): ScreenKey => {
 const textOf = (node: Element) =>
   (node.textContent ?? "").replace(/\s+/g, " ").trim();
 
+const normalizeSearch = (value: string) =>
+  value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]/g, "");
+
+type HyperTrainingMode = "search" | "all" | "improvable" | "perfect";
+
+let hyperTrainingQuery = "";
+let hyperTrainingMode: HyperTrainingMode = "search";
+
+const NODE_TYPES: Record<
+  string,
+  { label: string; symbol: string; tone: string }
+> = {
+  wild: { label: "WILD", symbol: "◉", tone: "encounter" },
+  trainer: { label: "TRAINER", symbol: "⚔", tone: "combat" },
+  mystery: { label: "EVENT", symbol: "?", tone: "event" },
+  shop: { label: "SHOP", symbol: "₽", tone: "utility" },
+  heal: { label: "RAST", symbol: "+", tone: "safe" },
+  item: { label: "FUND", symbol: "◆", tone: "reward" },
+  city: { label: "STADT", symbol: "▦", tone: "utility" },
+  tutor: { label: "TUTOR", symbol: "TM", tone: "utility" },
+  boss: { label: "RIVALE", symbol: "!", tone: "boss" },
+  gym: { label: "ARENA", symbol: "⬢", tone: "boss" },
+  league: { label: "LIGA", symbol: "★", tone: "boss" },
+  legendary: { label: "SELTEN", symbol: "✦", tone: "legendary" },
+};
+
+const routeNodeKind = (node: HTMLElement) => {
+  for (const className of node.classList) {
+    if (!className.startsWith("node-")) continue;
+    const kind = className.slice(5);
+    if (NODE_TYPES[kind]) return kind;
+  }
+  return "wild";
+};
+
 const classifyButtons = (shell: HTMLElement) => {
   shell.querySelectorAll<HTMLButtonElement>("button").forEach((button) => {
     const label = textOf(button).toUpperCase();
@@ -356,7 +395,27 @@ const classifyRouteRisk = (node: HTMLElement) => {
     risk = "variable";
   }
 
+  const kind = routeNodeKind(node);
+  const identity = NODE_TYPES[kind] ?? NODE_TYPES.wild;
   node.dataset.prRisk = risk;
+  node.dataset.prNodeKind = kind;
+  node.dataset.prNodeTone = identity.tone;
+  node.dataset.prNodeLabel = identity.label;
+  node.dataset.prNodeSymbol = identity.symbol;
+
+  if (node.classList.contains("path-chosen")) node.dataset.prNodeState = "chosen";
+  else if (node.classList.contains("node-accessible")) node.dataset.prNodeState = "available";
+  else if (node.classList.contains("node-unknown")) node.dataset.prNodeState = "unknown";
+  else node.dataset.prNodeState = "future";
+
+  const icon = node.querySelector<HTMLElement>(".node-icon-shell");
+  if (icon && !icon.querySelector(".pr-node-kind-symbol")) {
+    const symbol = document.createElement("span");
+    symbol.className = "pr-node-kind-symbol";
+    symbol.setAttribute("aria-hidden", "true");
+    symbol.textContent = identity.symbol;
+    icon.append(symbol);
+  }
 };
 
 const enhanceRoute = (shell: HTMLElement, run: RecordLike | null) => {
@@ -364,6 +423,30 @@ const enhanceRoute = (shell: HTMLElement, run: RecordLike | null) => {
   if (!map) return;
 
   map.querySelectorAll<HTMLElement>(".route-node").forEach(classifyRouteRisk);
+  map.dataset.prRouteBoard = "true";
+
+  map.querySelectorAll<HTMLElement>(".route-row").forEach((row, index, rows) => {
+    row.dataset.prRouteStep = String(index + 1).padStart(2, "0");
+    row.dataset.prRouteStepState = row.classList.contains("current")
+      ? "current"
+      : row.classList.contains("past")
+        ? "past"
+        : "future";
+    row.style.setProperty("--pr-route-progress", String(index / Math.max(1, rows.length - 1)));
+  });
+
+  if (!map.querySelector(":scope > .pr-route-scenery")) {
+    const scenery = document.createElement("span");
+    scenery.className = "pr-route-scenery";
+    scenery.setAttribute("aria-hidden", "true");
+    scenery.innerHTML = `
+      <i class="pr-route-scenery-back"></i>
+      <i class="pr-route-scenery-mid"></i>
+      <i class="pr-route-scenery-front"></i>
+      <i class="pr-route-scenery-fog"></i>
+    `;
+    map.prepend(scenery);
+  }
 
   const region = getRegionFromValue(run?.region) ?? getContextRegion();
   if (!region) return;
@@ -398,12 +481,25 @@ const enhanceRoute = (shell: HTMLElement, run: RecordLike | null) => {
     delete document.body.dataset.prBiome;
   }
 
+  const routeRows = map.querySelectorAll(".route-row").length;
+  const currentRouteStep =
+    typeof asRecord(run?.arena)?.step === "number"
+      ? Number(asRecord(run?.arena)?.step) + 1
+      : typeof run?.step === "number"
+        ? Number(run.step) + 1
+        : 1;
+
+  map.dataset.prRegion = region;
+  if (biome) map.dataset.prBiome = biome;
+  else delete map.dataset.prBiome;
+
   context.innerHTML = `
     <span class="pr-route-region">${info.label}</span>
     <span class="pr-route-copy">
       <b>${step ? `ETAPPE ${step}` : "EXPEDITION"}${biomeInfo ? ` · ${biomeInfo.label}` : ""}</b>
       <small>${flavor}</small>
     </span>
+    <span class="pr-route-progress-chip"><b>${String(currentRouteStep).padStart(2, "0")}</b><small>/${String(Math.max(routeRows, currentRouteStep)).padStart(2, "0")}</small></span>
     <span class="pr-route-identity">${biomeInfo?.effect ?? info.identity}</span>
   `;
 
@@ -431,6 +527,125 @@ const enhanceEvent = (shell: HTMLElement) => {
       button.dataset.prChoice = String(index + 1);
     });
   });
+};
+
+const applyHyperTrainingFilter = (section: HTMLElement) => {
+  const grid = section.querySelector<HTMLElement>(".iv-starter-grid");
+  if (!grid) return;
+
+  const cards = Array.from(grid.querySelectorAll<HTMLElement>(":scope > article"));
+  const query = normalizeSearch(hyperTrainingQuery);
+  let visible = 0;
+
+  cards.forEach((card) => {
+    const nameNode = card.querySelector(".iv-starter-head strong");
+    const name = normalizeSearch(nameNode?.textContent ?? "");
+    const copy = textOf(card);
+    const perfectMatch = copy.match(/(\d+)\s*\/\s*6\s*perfekte IVs/i);
+    const perfectCount = perfectMatch ? Number(perfectMatch[1]) : 0;
+
+    const matches =
+      hyperTrainingMode === "all"
+        ? true
+        : hyperTrainingMode === "improvable"
+          ? perfectCount < 6
+          : hyperTrainingMode === "perfect"
+            ? perfectCount >= 6
+            : Boolean(query && name.includes(query));
+
+    card.hidden = !matches;
+    card.dataset.prStarterName = name;
+    card.dataset.prPerfectIvs = String(perfectCount);
+    if (matches) visible += 1;
+  });
+
+  const status = section.querySelector<HTMLElement>(".pr-hyper-status");
+  if (status) {
+    if (hyperTrainingMode === "search" && !query) {
+      status.innerHTML = `<b>STARTER SUCHEN</b><small>Gib einen Namen ein – z. B. „feur“ für Feurigel.</small>`;
+    } else {
+      status.innerHTML = `<b>${visible} TREFFER</b><small>${hyperTrainingMode === "search" ? `Suche „${hyperTrainingQuery}“` : hyperTrainingMode === "all" ? "Alle verfügbaren Starter" : hyperTrainingMode === "improvable" ? "Noch verbesserbare Starter" : "Starter mit 6/6 perfekten IVs"}</small>`;
+    }
+  }
+
+  section.querySelectorAll<HTMLButtonElement>(".pr-hyper-filter").forEach((button) => {
+    button.setAttribute("aria-pressed", String(button.dataset.mode === hyperTrainingMode));
+  });
+};
+
+const enhanceHyperTraining = (shell: HTMLElement) => {
+  const section = shell.querySelector<HTMLElement>(".iv-lab-section");
+  if (!section) return;
+
+  const grid = section.querySelector<HTMLElement>(".iv-starter-grid");
+  if (!grid) return;
+
+  let toolbar = section.querySelector<HTMLElement>(".pr-hyper-toolbar");
+  if (!toolbar) {
+    toolbar = document.createElement("div");
+    toolbar.className = "pr-hyper-toolbar";
+    toolbar.innerHTML = `
+      <label class="pr-hyper-search">
+        <span>POKÉMON SUCHEN</span>
+        <span class="pr-hyper-input-wrap">
+          <input type="search" autocomplete="off" spellcheck="false" placeholder="z. B. feur, glum, bisa …" aria-label="Starter für Kronkorken suchen" />
+          <button type="button" class="pr-hyper-clear" aria-label="Suche löschen">×</button>
+        </span>
+      </label>
+      <div class="pr-hyper-filters" aria-label="Kronkorken Starter filtern">
+        <button type="button" class="pr-hyper-filter" data-mode="all">ALLE</button>
+        <button type="button" class="pr-hyper-filter" data-mode="improvable">VERBESSERBAR</button>
+        <button type="button" class="pr-hyper-filter" data-mode="perfect">PERFEKT</button>
+      </div>
+      <div class="pr-hyper-status" aria-live="polite"></div>
+    `;
+    grid.insertAdjacentElement("beforebegin", toolbar);
+
+    const input = toolbar.querySelector<HTMLInputElement>("input");
+    const clear = toolbar.querySelector<HTMLButtonElement>(".pr-hyper-clear");
+
+    input?.addEventListener("input", () => {
+      hyperTrainingQuery = input.value;
+      hyperTrainingMode = "search";
+      applyHyperTrainingFilter(section);
+    });
+
+    input?.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      hyperTrainingQuery = "";
+      hyperTrainingMode = "search";
+      input.value = "";
+      applyHyperTrainingFilter(section);
+    });
+
+    clear?.addEventListener("click", () => {
+      hyperTrainingQuery = "";
+      hyperTrainingMode = "search";
+      if (input) {
+        input.value = "";
+        input.focus();
+      }
+      applyHyperTrainingFilter(section);
+    });
+
+    toolbar.querySelectorAll<HTMLButtonElement>(".pr-hyper-filter").forEach((button) => {
+      button.addEventListener("click", () => {
+        const mode = button.dataset.mode as HyperTrainingMode | undefined;
+        if (!mode) return;
+        hyperTrainingMode = mode;
+        hyperTrainingQuery = "";
+        if (input) input.value = "";
+        applyHyperTrainingFilter(section);
+      });
+    });
+  }
+
+  const input = toolbar.querySelector<HTMLInputElement>("input");
+  if (input && input.value !== hyperTrainingQuery && document.activeElement !== input) {
+    input.value = hyperTrainingQuery;
+  }
+
+  applyHyperTrainingFilter(section);
 };
 
 const enhanceCollections = (shell: HTMLElement) => {
@@ -757,6 +972,7 @@ const applyExperience = () => {
   enhanceSetup(shell);
   enhanceRoute(shell, run);
   enhanceEvent(shell);
+  enhanceHyperTraining(shell);
   enhanceCollections(shell);
   enhanceShop(shell);
   enhanceTrainerCard(shell);
