@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.0.0-alpha.1 overall polish pass — 2026-10-01
+
+### Flow & battle clarity
+- Added collapsible battle history with a persisted preference so the command area stays compact without losing combat information.
+- Added restrained low/critical HP states and a catch-window cue for weakened wild encounters.
+- Removed generic screen flashes from normal Wild/Trainer encounters while preserving special Rival, Gym, League and Legendary presentation.
+- Updated battle shortcut behavior so **B opens the ball chooser** and the displayed shortcut guide matches the actual controls.
+- Route keyboard navigation now visibly highlights the selected node before Enter confirms it.
+
+### Mystery Event variety
+- Added eight region-flavored Mystery Events: Abandoned Center, Route Photographer, Apricorn Craftsman, Bell Tower Echo, Storm Wreckage, Secret Base, Coronet Crystal and Snow Rescue.
+- Wired the new events into existing regional weighting and anti-repetition logic instead of creating a second event system.
+- Added safe/cost/risk visual treatment to event choices while keeping exact hidden outcomes hidden where appropriate.
+
+### Admin & consistency
+- Added a dedicated Admin **Unlock Endless** action for the selected player through the existing trusted game-grant pipeline.
+- Unified remaining PokéMart polish labels with the newer **Versorgung** route concept.
+- Expanded smoke checks for the regional event pool, battle ball-menu shortcut and visible keyboard route selection.
+
 ## 1.0.0-alpha.1 game identity pass — 2026-10-01
 
 ### Game-first UX

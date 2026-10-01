@@ -191,7 +191,7 @@ const SCREEN_LABELS: Partial<Record<ScreenKey, string>> = {
   route: "ROUTE",
   battle: "KAMPF",
   event: "EREIGNIS",
-  shop: "POKÉMARKT",
+  shop: "VERSORGUNG",
   loot: "BELOHNUNG",
   party: "TEAM",
   summary: "POKÉMON",
@@ -533,6 +533,17 @@ const enhanceEvent = (shell: HTMLElement) => {
     card.querySelectorAll<HTMLButtonElement>("button").forEach((button, index) => {
       button.style.setProperty("--pr-choice-index", String(index + 1));
       button.dataset.prChoice = String(index + 1);
+
+      const copy = textOf(button).toLowerCase();
+      const tone =
+        /\d+\s*%|risiko|verliert|schaden|fluch|kampf|gegenwehr|gefähr/.test(copy)
+          ? "risk"
+          : /₽|kaufen|zahlen|opfern|kosten/.test(copy)
+            ? "cost"
+            : /heilen|sicher|garantiert|annehmen|beobachten|weiter/.test(copy)
+              ? "safe"
+              : "choice";
+      button.dataset.prEventTone = tone;
     });
   });
 };
@@ -933,9 +944,87 @@ const getBattleIntro = (run: RecordLike | null) => {
   return { title, subtitle, signature, kind };
 };
 
+const BATTLE_LOG_COLLAPSE_KEY = "pokeregions:battle-log-collapsed";
+
+const readBattleLogCollapsed = () => {
+  try {
+    return window.localStorage.getItem(BATTLE_LOG_COLLAPSE_KEY) === "1";
+  } catch {
+    return false;
+  }
+};
+
+const writeBattleLogCollapsed = (collapsed: boolean) => {
+  try {
+    window.localStorage.setItem(BATTLE_LOG_COLLAPSE_KEY, collapsed ? "1" : "0");
+  } catch {
+    // Keep the current DOM state even when storage is unavailable.
+  }
+};
+
+const hpState = (pokemon: RecordLike | null) => {
+  if (!pokemon) return "unknown";
+  const hp = numericValue(pokemon.hp);
+  const maxHp = numericValue(pokemon.maxHp);
+  if (hp === null || maxHp === null || maxHp <= 0) return "unknown";
+  const ratio = hp / maxHp;
+  if (ratio <= 0.2) return "critical";
+  if (ratio <= 0.45) return "low";
+  return "ok";
+};
+
 const enhanceBattle = (shell: HTMLElement, run: RecordLike | null) => {
   const field = shell.querySelector<HTMLElement>(".gba-battlefield");
   if (!field) return;
+
+  const battleRoot =
+    field.closest<HTMLElement>(".retro-battle-shell") ?? shell;
+  const battle = asRecord(run?.battle);
+  const activeIndex = numericValue(battle?.active) ?? 0;
+  const enemyIndex = numericValue(battle?.enemyIndex) ?? 0;
+  const team = Array.isArray(run?.team) ? run.team : [];
+  const enemies = Array.isArray(battle?.enemies) ? battle.enemies : [];
+  const player = asRecord(team[activeIndex]);
+  const enemy = asRecord(enemies[enemyIndex]);
+
+  battleRoot.dataset.prPlayerHp = hpState(player);
+  battleRoot.dataset.prEnemyHp = hpState(enemy);
+
+  const battleKind =
+    typeof battle?.kind === "string" ? battle.kind.toLowerCase() : "";
+  const enemyHp = numericValue(enemy?.hp);
+  const enemyMaxHp = numericValue(enemy?.maxHp);
+  battleRoot.dataset.prCatchWindow = String(
+    (battleKind === "wild" || battleKind === "legendary") &&
+      enemyHp !== null &&
+      enemyMaxHp !== null &&
+      enemyMaxHp > 0 &&
+      enemyHp / enemyMaxHp <= 0.35,
+  );
+
+  const log = battleRoot.querySelector<HTMLElement>(".battle-log");
+  if (log) {
+    let toggle = battleRoot.querySelector<HTMLButtonElement>(
+      ":scope > .pr-battle-log-toggle",
+    );
+    if (!toggle) {
+      toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "pr-battle-log-toggle";
+      log.insertAdjacentElement("beforebegin", toggle);
+      toggle.addEventListener("click", () => {
+        const collapsed = battleRoot.dataset.prBattleLogCollapsed !== "true";
+        battleRoot.dataset.prBattleLogCollapsed = String(collapsed);
+        writeBattleLogCollapsed(collapsed);
+        queueExperience();
+      });
+    }
+
+    const collapsed = readBattleLogCollapsed();
+    battleRoot.dataset.prBattleLogCollapsed = String(collapsed);
+    toggle.setAttribute("aria-expanded", String(!collapsed));
+    toggle.innerHTML = `<span>KAMPFLOG</span><small>${collapsed ? "anzeigen" : "letzte Aktionen"}</small><b aria-hidden="true">${collapsed ? "▾" : "▴"}</b>`;
+  }
 
   const intro = getBattleIntro(run);
   field.dataset.prBattleKind = intro.kind || "wild";
@@ -992,6 +1081,13 @@ const showScreenTransition = (
     return;
   }
 
+  const battle = asRecord(run?.battle);
+  const kind = typeof battle?.kind === "string" ? battle.kind.toLowerCase() : "";
+  if (screen === "battle" && (kind === "trainer" || kind === "wild")) {
+    lastScreen = screen;
+    return;
+  }
+
   lastScreen = screen;
   let overlay = document.querySelector<HTMLElement>(".pr-screen-transition");
   if (!overlay) {
@@ -1001,8 +1097,6 @@ const showScreenTransition = (
     document.body.append(overlay);
   }
 
-  const battle = asRecord(run?.battle);
-  const kind = typeof battle?.kind === "string" ? battle.kind.toLowerCase() : "";
   const label =
     screen === "battle" && kind === "gym"
       ? "ARENA"

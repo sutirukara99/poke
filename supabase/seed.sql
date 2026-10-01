@@ -9,7 +9,7 @@ values
   (
     'currency.rogue_points',
     'currency',
-    'Rogue Points',
+    'Meta Points',
     'Permanente Meta-Währung für PokéRegions.',
     'common',
     true,

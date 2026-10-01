@@ -4052,3 +4052,19 @@ body{
     animation-iteration-count:1!important;
   }
 }
+
+
+/* Admin quality-of-life: make irreversible/progression shortcuts visually distinct. */
+.pr-admin-endless-unlock{
+  border-color:#6d5a91!important;
+  background:
+    linear-gradient(135deg,rgba(100,76,145,.12),transparent 58%),
+    #fff!important;
+}
+.pr-admin-endless-unlock h4{
+  color:#4f3d76;
+}
+.pr-admin-endless-unlock .primary{
+  background:linear-gradient(180deg,#7657a4,#513778)!important;
+  border-color:#392751!important;
+}

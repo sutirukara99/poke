@@ -41,7 +41,7 @@ const SCREEN_LABELS: Record<ScreenKey, string> = {
   route: "REGIONSROUTE",
   battle: "KAMPF",
   event: "EREIGNIS",
-  shop: "POKÉMARKT",
+  shop: "VERSORGUNG",
   loot: "BELOHNUNG",
   party: "TEAM",
   summary: "POKÉMON",

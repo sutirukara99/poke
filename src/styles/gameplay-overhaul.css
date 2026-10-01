@@ -1827,3 +1827,126 @@ body.pr-game-ui .alpha-shell .supply-pack-grid>button:hover{
     width:26px!important;height:26px!important;
   }
 }
+
+
+/* ========================================================================== */
+/* OVERALL POLISH · BATTLE READABILITY / EVENT CHOICES / KEYBOARD            */
+/* ========================================================================== */
+
+body.pr-game-ui .alpha-shell button:focus-visible,
+body.pr-game-ui .alpha-shell [role="button"]:focus-visible,
+body.pr-game-ui .alpha-shell select:focus-visible,
+body.pr-game-ui .alpha-shell input:focus-visible{
+  outline:2px solid #d8c364!important;
+  outline-offset:2px!important;
+  box-shadow:0 0 0 4px rgba(216,195,100,.12)!important;
+}
+
+/* A compact battle log keeps the command area in view on laptops and mobile. */
+body.pr-game-ui .alpha-shell .pr-battle-log-toggle{
+  display:grid!important;
+  grid-template-columns:auto minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:8px!important;
+  width:100%!important;
+  min-height:31px!important;
+  margin:7px 0 0!important;
+  padding:5px 8px!important;
+  border:1px solid #294754!important;
+  border-bottom:0!important;
+  border-radius:0!important;
+  background:#091a22!important;
+  color:#dbe6ea!important;
+  box-shadow:none!important;
+  text-align:left!important;
+}
+.pr-battle-log-toggle>span{
+  font:700 6px/1 "Press Start 2P",monospace;
+  letter-spacing:.08em;
+}
+.pr-battle-log-toggle>small{
+  color:#6f8792!important;
+  font-size:8px!important;
+}
+.pr-battle-log-toggle>b{
+  color:#8ea4ad;
+  font-size:11px;
+}
+body.pr-game-ui .alpha-shell .retro-battle-shell[data-pr-battle-log-collapsed="true"] .battle-log{
+  display:none!important;
+}
+body.pr-game-ui .alpha-shell .retro-battle-shell[data-pr-battle-log-collapsed="false"] .pr-battle-log-toggle{
+  border-bottom-color:#203b46!important;
+}
+
+/* HP states read at a glance without turning the whole battlefield red. */
+body.pr-game-ui .alpha-shell .retro-battle-shell[data-pr-player-hp="low"] .player-info{
+  border-color:#a58242!important;
+  box-shadow:inset 3px 0 0 #a58242!important;
+}
+body.pr-game-ui .alpha-shell .retro-battle-shell[data-pr-player-hp="critical"] .player-info{
+  border-color:#b65159!important;
+  box-shadow:inset 3px 0 0 #c45a63,0 0 16px rgba(180,68,77,.1)!important;
+}
+body.pr-game-ui .alpha-shell .retro-battle-shell[data-pr-player-hp="critical"] .player-info .mon-line strong{
+  color:#ffd9dc!important;
+}
+body.pr-game-ui .alpha-shell .retro-battle-shell[data-pr-enemy-hp="critical"] .enemy-info{
+  border-color:#9a674d!important;
+}
+body.pr-game-ui .alpha-shell .retro-battle-shell[data-pr-catch-window="true"] .enemy-info{
+  border-color:#56866d!important;
+  box-shadow:inset -3px 0 0 #56866d!important;
+}
+body.pr-game-ui .alpha-shell .retro-battle-shell[data-pr-catch-window="true"] .catch-command:not(:disabled){
+  border-color:#66957a!important;
+  box-shadow:inset 0 -2px 0 #66957a!important;
+}
+
+/* Event decisions communicate their character before the click. */
+body.pr-game-ui .alpha-shell .mystery-event-card button[data-pr-event-tone]{
+  position:relative!important;
+}
+body.pr-game-ui .alpha-shell .mystery-event-card button[data-pr-event-tone="risk"]{
+  border-left:3px solid #a85954!important;
+}
+body.pr-game-ui .alpha-shell .mystery-event-card button[data-pr-event-tone="cost"]{
+  border-left:3px solid #a78746!important;
+}
+body.pr-game-ui .alpha-shell .mystery-event-card button[data-pr-event-tone="safe"]{
+  border-left:3px solid #53816a!important;
+}
+body.pr-game-ui .alpha-shell .mystery-event-card button[data-pr-event-tone="risk"]:after,
+body.pr-game-ui .alpha-shell .mystery-event-card button[data-pr-event-tone="cost"]:after,
+body.pr-game-ui .alpha-shell .mystery-event-card button[data-pr-event-tone="safe"]:after{
+  position:absolute;
+  top:5px;
+  right:7px;
+  color:#708791;
+  font:700 6px/1 "Press Start 2P",monospace;
+  letter-spacing:.06em;
+}
+body.pr-game-ui .alpha-shell .mystery-event-card button[data-pr-event-tone="risk"]:after{content:"RISIKO"}
+body.pr-game-ui .alpha-shell .mystery-event-card button[data-pr-event-tone="cost"]:after{content:"KOSTEN"}
+body.pr-game-ui .alpha-shell .mystery-event-card button[data-pr-event-tone="safe"]:after{content:"SICHER"}
+
+@media(max-width:620px){
+  .pr-battle-log-toggle>small{display:none!important}
+  body.pr-game-ui .alpha-shell .pr-battle-log-toggle{
+    grid-template-columns:auto 1fr!important;
+  }
+  .pr-battle-log-toggle>b{justify-self:end}
+}
+
+
+/* Keyboard route navigation now has a visible cursor, not just hidden state. */
+body.pr-game-ui .alpha-shell .route-node.keyboard-focus:not(:disabled){
+  border-color:#e0c862!important;
+  box-shadow:
+    0 0 0 2px rgba(224,200,98,.18),
+    inset 0 -3px 0 #e0c862!important;
+  transform:translateY(-2px)!important;
+}
+body.pr-game-ui .alpha-shell .route-node.keyboard-focus .node-kicker{
+  color:#f0d875!important;
+}

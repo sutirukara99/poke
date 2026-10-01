@@ -330,7 +330,7 @@ body{
   font-size:9px;
 }
 
-/* PokéMart, loot, collection screens */
+/* Legacy supply screen hooks, loot and collection screens */
 .alpha-shell .shop-screen[data-pr-shop="mart"]{
   max-width:1120px;
   margin-inline:auto;

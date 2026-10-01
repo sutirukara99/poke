@@ -511,6 +511,64 @@ must('" · Autosave · Pokéball ",a.balls," · Hyperball ",a.ultraBalls," · PC
 
 # Replace remaining player-facing "shop" language tied to route nodes/classes.
 s=s.replace("mehr Shop/Stadt-Pfade","mehr Versorgungs-/Stadtpfade").replace("mehr Shop- und Fund-Pfade","mehr Versorgungs- und Fund-Pfade")
+
+# -----------------------------------------------------------------------------
+# 2026-10-01 overall polish: richer regional events + battle command cleanup
+# -----------------------------------------------------------------------------
+
+polish_events = r'''z0.push(
+{id:"abandoned-center",icon:"+",title:"Das verlassene Pokémon-Center",text:"Am Rand der Route steht ein altes Pokémon-Center. Ein Notstromlicht flackert noch hinter der staubigen Scheibe.",choices:[{id:"salvage",label:"Notlager durchsuchen",detail:"+1 Supertrank · +1 Superball"},{id:"power",label:"Notstrom aktivieren",detail:"80 ₽ · Team um 35 % heilen",cost:80}]},
+{id:"route-photographer",icon:"▣",title:"Der Routenfotograf",text:"Ein Reisefotograf sucht ein starkes Motiv für seine nächste Reportage und kennt dafür überraschend viele Abkürzungen.",choices:[{id:"pose",label:"Für die Reportage posieren",detail:"+140 ₽ · restliche Route aufdecken"},{id:"tips",label:"Routen-Tipps tauschen",detail:"+1 Flottball · sicher"}]},
+{id:"apricorn-craftsman",icon:"◉",title:"Der Aprikoko-Handwerker",text:"Unter einem kleinen Vordach arbeitet ein alter Handwerker an ungewöhnlichen Pokébällen. Zwei davon sind fast fertig.",choices:[{id:"commission",label:"Sonderanfertigung bestellen",detail:"120 ₽ · +1 Netzball · +1 Finsterball",cost:120},{id:"sample",label:"Muster testen",detail:"+1 Superball"}]},
+{id:"bell-tower-echo",icon:"♫",title:"Das Echo des Glockenturms",text:"Der Wind trägt einen einzelnen Glockenton über die Route. Für einen Moment scheint selbst dein Team stehen zu bleiben.",choices:[{id:"follow",label:"Dem Klang folgen",detail:"Team um 20 % heilen · Route aufdecken"},{id:"offering",label:"Kleine Opfergabe",detail:"90 ₽ · Sonderbonbon + Finsterball",cost:90}]},
+{id:"storm-wreckage",icon:"☂",title:"Treibgut nach dem Sturm",text:"Zwischen nassen Felsen steckt eine aufgebrochene Transportkiste. Die nächste Welle könnte sie jederzeit fortreißen.",choices:[{id:"salvage",label:"Kiste bergen",detail:"60 %: Netzball + Supertrank · sonst 15 % Team-KP"},{id:"secure",label:"Nur sichere Vorräte nehmen",detail:"+1 Trank · +1 Pokéball"}]},
+{id:"secret-base",icon:"⌂",title:"Die verlassene Geheimbasis",text:"Hinter dichtem Laub findest du eine alte Geheimbasis. Die Trainingsgeräte funktionieren noch.",choices:[{id:"rest",label:"Kurz ausruhen",detail:"Team um 30 % heilen"},{id:"spar",label:"Trainingsparcours nutzen",detail:"+220 ₽ · Team verliert 10 % KP"}]},
+{id:"coronet-crystal",icon:"◇",title:"Kristall im Kraterberg",text:"In einer Felsspalte pulsiert ein ungewöhnlicher Kristall. Die Luft darum fühlt sich elektrisch geladen an.",choices:[{id:"inspect",label:"Kristall untersuchen",detail:"55 %: Entwicklungsitem + Sonderbonbon · sonst 15 % Team-KP"},{id:"leave",label:"Nicht anfassen",detail:"Sicher weiterziehen"}]},
+{id:"snow-rescue",icon:"✚",title:"Spuren im Schneesturm",text:"Abseits des Pfades entdeckst du frische Spuren und einen verlorenen Rucksack. Jemand braucht offenbar Hilfe.",choices:[{id:"rescue",label:"Den Spuren folgen",detail:"+180 ₽ · +1 Flottball · Team verliert 8 % KP"},{id:"detour",label:"Geschützten Umweg nehmen",detail:"Team um 12 % heilen"}]}
+);'''
+must('function Bk(a,i){',polish_events+'function Bk(a,i){','expanded regional event pool')
+
+must('$0=new Set(["berry-bush","lost-backpack","old-shrine","wandering-merchant","fortune-teller","injured-pokemon","shady-deal","ancient-map","strange-egg","rocket-scout","fisher-jetty","weather-station","hidden-cave","fossil-researcher","lost-trainer","pokemon-nest","traveling-nurse","rescued-return","debt-collector","rocket-cache","shrine-guardian"])',
+     '$0=new Set(["berry-bush","lost-backpack","old-shrine","wandering-merchant","fortune-teller","injured-pokemon","shady-deal","ancient-map","strange-egg","rocket-scout","fisher-jetty","weather-station","hidden-cave","fossil-researcher","lost-trainer","pokemon-nest","traveling-nurse","rescued-return","debt-collector","rocket-cache","shrine-guardian","abandoned-center","route-photographer","apricorn-craftsman","bell-tower-echo","storm-wreckage","secret-base","coronet-crystal","snow-rescue"])',
+     'validate new regional events')
+
+must('kanto:["rocket-scout","lost-backpack","lost-trainer","traveling-nurse"]',
+     'kanto:["rocket-scout","lost-backpack","lost-trainer","traveling-nurse","abandoned-center","route-photographer"]',
+     'Kanto event variety')
+must('johto:["old-shrine","fortune-teller","ancient-map","strange-egg"]',
+     'johto:["old-shrine","fortune-teller","ancient-map","strange-egg","apricorn-craftsman","bell-tower-echo"]',
+     'Johto event variety')
+must('hoenn:["berry-bush","fisher-jetty","weather-station","pokemon-nest"]',
+     'hoenn:["berry-bush","fisher-jetty","weather-station","pokemon-nest","storm-wreckage","secret-base"]',
+     'Hoenn event variety')
+must('sinnoh:["hidden-cave","fossil-researcher","ancient-map","shady-deal"]',
+     'sinnoh:["hidden-cave","fossil-researcher","ancient-map","shady-deal","coronet-crystal","snow-rescue"]',
+     'Sinnoh event variety')
+
+polish_event_reducer = r'''if(i.type==="mysteryChoice"&&r.phase==="node"){const QalphaPolishEvent=r.mysteryEvent,QalphaPolishChoice=i.choice;if(QalphaPolishEvent==="abandoned-center"){if(QalphaPolishChoice==="salvage")r.superPotions=(r.superPotions??0)+1,QalphaGiveSpecialBall(r,u,"great"),r.message="Im Notlager findest du einen Supertrank und einen Superball.",Ke(r,u);else if(QalphaPolishChoice==="power"&&r.money>=80)r.money-=80,Hk(r,.35),r.message="Der Notstrom reicht für eine kurze Behandlung. Dein Team erholt sich um 35 %.",Ke(r,u)}else if(QalphaPolishEvent==="route-photographer"){if(QalphaPolishChoice==="pose")r.money+=140,r.fogRevealed=!0,r.message="Die Reportage zahlt sich aus: +140 ₽ und der Fotograf zeigt dir seine Routenkarte.",Ke(r,u);else if(QalphaPolishChoice==="tips")QalphaGiveSpecialBall(r,u,"quick"),r.message="Für deine Tipps schenkt dir der Fotograf einen Flottball.",Ke(r,u)}else if(QalphaPolishEvent==="apricorn-craftsman"){if(QalphaPolishChoice==="commission"&&r.money>=120)r.money-=120,QalphaGiveSpecialBall(r,u,"net"),QalphaGiveSpecialBall(r,u,"dusk"),r.message="Sonderanfertigung fertig: Netzball und Finsterball.",Ke(r,u);else if(QalphaPolishChoice==="sample")QalphaGiveSpecialBall(r,u,"great"),r.message="Der Handwerker überlässt dir einen robusten Superball.",Ke(r,u)}else if(QalphaPolishEvent==="bell-tower-echo"){if(QalphaPolishChoice==="follow")Hk(r,.2),r.fogRevealed=!0,r.message="Der Klang führt dich auf einen ruhigen Pfad. Team +20 % KP, Route aufgedeckt.",Ke(r,u);else if(QalphaPolishChoice==="offering"&&r.money>=90)r.money-=90,r.rareCandies++,QalphaGiveSpecialBall(r,u,"dusk"),r.message="Nach der Opfergabe findest du ein Sonderbonbon und einen Finsterball.",Ke(r,u)}else if(QalphaPolishEvent==="storm-wreckage"){if(QalphaPolishChoice==="salvage"){if(u.chance(.6))QalphaGiveSpecialBall(r,u,"net"),r.superPotions=(r.superPotions??0)+1,r.message="Die Bergung gelingt: Netzball und Supertrank.";else ky(r,.15),r.message="Eine Welle erwischt euch. Dein Team verliert 15 % KP.";Ke(r,u)}else if(QalphaPolishChoice==="secure")r.potions++,r.balls++,r.message="Du nimmst nur sichere Vorräte: +1 Trank und +1 Pokéball.",Ke(r,u)}else if(QalphaPolishEvent==="secret-base"){if(QalphaPolishChoice==="rest")Hk(r,.3),r.message="Die Geheimbasis bietet eine sichere Pause. Team +30 % KP.",Ke(r,u);else if(QalphaPolishChoice==="spar")ky(r,.1),r.money+=220,r.message="Der Parcours ist hart: −10 % Team-KP, aber +220 ₽ Trainingsprämie.",Ke(r,u)}else if(QalphaPolishEvent==="coronet-crystal"){if(QalphaPolishChoice==="inspect"){if(u.chance(.55)){const QalphaStone=Ac(r,u);r.rareCandies++,r.message="Der Kristall reagiert: "+(ks[QalphaStone]??QalphaStone)+" und ein Sonderbonbon."}else ky(r,.15),r.message="Die Energie entlädt sich. Dein Team verliert 15 % KP.";Ke(r,u)}else if(QalphaPolishChoice==="leave")r.message="Du lässt den Kristall unberührt und ziehst sicher weiter.",Ke(r,u)}else if(QalphaPolishEvent==="snow-rescue"){if(QalphaPolishChoice==="rescue")ky(r,.08),r.money+=180,QalphaGiveSpecialBall(r,u,"quick"),r.message="Die Rettung gelingt: +180 ₽ und ein Flottball, aber dein Team verliert 8 % KP.",Ke(r,u);else if(QalphaPolishChoice==="detour")Hk(r,.12),r.message="Im Windschatten kann sich dein Team erholen: +12 % KP.",Ke(r,u)}}'''
+must('if(i.type==="useStatus"&&["map","node","battle"].includes(r.phase)',
+     polish_event_reducer+'if(i.type==="useStatus"&&["map","node","battle"].includes(r.phase)',
+     'regional event outcomes')
+
+must('je.key.toLowerCase()==="b"&&b&&a.balls>0&&(je.preventDefault(),G({type:"catch"}))',
+     'je.key.toLowerCase()==="b"&&b&&QalphaBallTotal(a)>0&&(je.preventDefault(),QalphaSetBallsOpen(!0))',
+     'B opens the catch ball menu')
+must('Tasten 1/2 = Attacken · B = Pokéball · U = Hyperball · M = Meisterball',
+     '1/2 Attacke · B Ball-Menü · F Flucht · H Trank · Shift+1–6 Wechsel',
+     'battle keyboard help matches current controls')
+
+
+# Route keyboard navigation existed already; make the currently selected node visible.
+must('function x4({route:a,step:i,path:d=[],revealed:r,region:u,dispatch:h,arena:m=!1})',
+     'function x4({route:a,step:i,path:d=[],revealed:r,region:u,dispatch:h,arena:m=!1,keyboardNodeId:QalphaKeyboardNodeId=null})',
+     'route keyboard focus prop')
+must('R.eliteTrainer?"elite-trainer":"",R.secret?"secret-route":"",v&&(!R.secret||r)?"":"node-unknown"]',
+     'R.eliteTrainer?"elite-trainer":"",R.secret?"secret-route":"",R.id===QalphaKeyboardNodeId?"keyboard-focus":"",v&&(!R.secret||r)?"":"node-unknown"]',
+     'route keyboard focus class')
+must('revealed:a.fogRevealed||a.activeRelics.includes("cracked-compass"),region:a.region,dispatch:r,arena:!!a.arena',
+     'revealed:a.fogRevealed||a.activeRelics.includes("cracked-compass"),region:a.region,dispatch:r,arena:!!a.arena,keyboardNodeId:(J[oe]?.filter(O=>qu(J,oe,x,Iy(O,!!a.arena))&&(!O.secret||a.fogRevealed||a.activeRelics.includes("cracked-compass")))[QalphaLane]?.id??null)',
+     'route keyboard selection wiring')
+
 # Player-facing currency is consistently named Meta Points. Internal save keys remain metaPoints.
 s=s.replace("Rogue-Punkte","Meta Points").replace("Rogue-Punkt","Meta Point")
 out=ROOT/'public/recovered/v1.0.0-alpha.1-r7.js'
