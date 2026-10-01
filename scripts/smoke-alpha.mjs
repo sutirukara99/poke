@@ -21,6 +21,14 @@ const required = [
   "lost-trainer",
   "pokemon-nest",
   "traveling-nurse",
+  "abandoned-center",
+  "route-photographer",
+  "apricorn-craftsman",
+  "bell-tower-echo",
+  "storm-wreckage",
+  "secret-base",
+  "coronet-crystal",
+  "snow-rescue",
   "recentEvents",
   "Meta Points",
   "rogue-die",
@@ -101,9 +109,14 @@ if (!js.includes('a.route=gh(bh(a.seed,a.endlessMap),a.region,a.endlessMap,a.tra
 if (!js.includes('p.types.length&&p.types.some(b=>Ls[h]?.types.includes(b))')) throw new Error("Biome trainer archetype weighting missing");
 if (!js.includes("mehr Wild- und Fundpfade")) throw new Error("Player-facing class route identity copy missing");
 
-if (!js.includes('kanto:["rocket-scout","lost-backpack","lost-trainer","traveling-nurse"]')) throw new Error("Kanto event identity weighting missing");
-if (!js.includes('hoenn:["berry-bush","fisher-jetty","weather-station","pokemon-nest"]')) throw new Error("Hoenn event identity weighting missing");
+if (!js.includes('kanto:["rocket-scout","lost-backpack","lost-trainer","traveling-nurse","abandoned-center","route-photographer"]')) throw new Error("Kanto event identity weighting missing");
+if (!js.includes('hoenn:["berry-bush","fisher-jetty","weather-station","pokemon-nest","storm-wreckage","secret-base"]')) throw new Error("Hoenn event identity weighting missing");
 if (!js.includes("recentEvents=[...(i.recentEvents??[])")) throw new Error("Mystery anti-repetition history missing");
+if (!js.includes('johto:["old-shrine","fortune-teller","ancient-map","strange-egg","apricorn-craftsman","bell-tower-echo"]')) throw new Error("Johto expanded event identity weighting missing");
+if (!js.includes('sinnoh:["hidden-cave","fossil-researcher","ancient-map","shady-deal","coronet-crystal","snow-rescue"]')) throw new Error("Sinnoh expanded event identity weighting missing");
+if (!js.includes('QalphaPolishEvent==="snow-rescue"')) throw new Error("New regional event outcomes missing");
+if (!js.includes('QalphaSetBallsOpen(!0)')) throw new Error("B shortcut does not open the ball chooser");
+if (!js.includes("B Ball-Menü")) throw new Error("Battle shortcut copy is stale");
 if (js.includes("Rogue-Punkte")) throw new Error("Legacy player-facing Rogue-Punkte copy remains; use Meta Points.");
 
 if (!js.includes("QalphaRow.length===3")) throw new Error("safe secret generation missing");
