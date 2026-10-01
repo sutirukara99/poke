@@ -3002,9 +3002,16 @@ body.pr-game-ui .alpha-shell .pr-secondary-mode{
 }
 
 body.pr-game-ui .alpha-shell .pr-secondary-mode:hover:not(:disabled){
+  transform:none!important;
   translate:0 -1px;
   border-color:#44626a!important;
   background:#102329!important;
+  box-shadow:0 10px 24px rgba(0,0,0,.16)!important;
+}
+body.pr-game-ui .alpha-shell .pr-secondary-mode:active:not(:disabled){
+  transform:none!important;
+  translate:0 0;
+  box-shadow:0 6px 16px rgba(0,0,0,.12)!important;
 }
 
 .pr-secondary-mode-icon{
