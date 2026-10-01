@@ -2938,3 +2938,59 @@ body.pr-game-ui .alpha-shell .retro-battle-shell .battle-actions button:hover:no
     min-width:0;
   }
 }
+
+
+/* ========================================================================== */
+/* ROUTE PERFORMANCE PASS                                                      */
+/* ========================================================================== */
+
+/* Keep node feedback cheap: no per-sprite GPU filters and no animated lift. */
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node{
+  transition:border-color .08s linear,background-color .08s linear!important;
+  will-change:auto!important;
+  contain:layout paint!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node:hover:not(:disabled),
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node:focus-visible{
+  transform:none!important;
+  translate:0!important;
+  box-shadow:0 3px 0 rgba(0,0,0,.22)!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node[data-pr-node-state="available"]{
+  box-shadow:0 3px 0 rgba(0,0,0,.22)!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node[data-pr-node-state="available"]::before{
+  display:none!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node .node-icon-shell img,
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .pr-route-scenery{
+  filter:none!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"]::after{
+  box-shadow:none!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node-tooltip{
+  box-shadow:0 5px 14px rgba(0,0,0,.24)!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-path-lines{
+  pointer-events:none!important;
+}
+
+body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-path-lines path{
+  filter:none!important;
+  animation:none!important;
+  transition:none!important;
+}
+
+@media(prefers-reduced-motion:reduce){
+  body.pr-game-ui .alpha-shell .route-map[data-pr-route-board="true"] .route-node{
+    transition:none!important;
+  }
+}
