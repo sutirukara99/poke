@@ -31,13 +31,29 @@ const context = {
 
 vm.createContext(context);
 vm.runInContext(
-  tilesets + "\n" + source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowW,QowH};",
+  tilesets + "\n" + source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowW,QowH,QowActiveTileset};",
   context,
   { filename: "overworld-runtime.js" },
 );
 
 const ow = context.__ow;
 if (!ow) throw new Error("Overworld runtime did not expose validation hooks.");
+
+const tileset = ow.QowActiveTileset;
+if (tileset?.id !== "pokeregions-gba") throw new Error("Semantic overworld tileset is missing.");
+if (tileset.tileSize !== 16) throw new Error("Overworld tileset must stay on 16px logical tiles.");
+if (Buffer.from(tileset.metatilesB64, "base64").length !== 10_240) {
+  throw new Error("FRLG primary metatile data is incomplete.");
+}
+if (!Array.isArray(tileset.palettes) || tileset.palettes.length !== 16 || tileset.palettes.some((p) => p.length !== 16)) {
+  throw new Error("FRLG palette reconstruction data is incomplete.");
+}
+for (const [semantic, id] of Object.entries(tileset.semanticMetatiles)) {
+  if (!Number.isInteger(id) || id < 0 || id >= 640) throw new Error("Invalid FRLG metatile mapping for " + semantic);
+  if (tileset.tiles[semantic] && tileset.tiles[semantic].metatileId !== id) {
+    throw new Error("Semantic tile definition does not match FRLG mapping for " + semantic);
+  }
+}
 
 const node = (id, kind, biome) => ({
   id,
