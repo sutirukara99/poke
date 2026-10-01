@@ -9,6 +9,7 @@
 ### Neuer prozeduraler Kern
 - Floors sind jetzt **45×31 Tiles** groß und entstehen aus einem logischen Raumgraphen mit Räumen, Korridoren, Schleifen, Nebenbereichen, Loot-Räumen und physischen Rogue-Zielen.
 - Der Generator trennt Layout und Biom-Painting. Kanto, Johto, Hoenn und Sinnoh besitzen eigene Biases; zusätzlich sind Wald, Höhle, Küste, Stadt, Ruinen, Berge, Vulkan, Moor, Schnee und Nacht als Profile vorbereitet.
+- Das rohe FRLG-`general-tiles.png` wird jetzt korrekt rekonstruiert: 4-bpp-Tiles + originale `metatiles.bin`-Komposition + alle 16 General-Paletten werden im Canvas zu echten 16×16-Metatiles zusammengesetzt. Kein blindes CSS-Slicing mehr.
 - Jeder Floor wird vor Nutzung per BFS auf Spawn, Ziele und Pickups validiert. Nach deterministischen Regenerationsversuchen greift eine sichere Fallback-Map.
 
 ### Pokémon-Spielgefühl
