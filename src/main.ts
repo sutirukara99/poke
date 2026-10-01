@@ -2,6 +2,7 @@
 import "./styles/alpha.css";
 import { ACTIVE_BUILD, RECOVERY_BASELINE } from "./recovery/version";
 import { mountCloudAccountUi } from "./cloud/account-ui";
+import { mountAdminUi } from "./cloud/admin-ui";
 
 declare global {
   interface Window {
@@ -105,3 +106,4 @@ bootTimer = window.setTimeout(() => {
 
 
 void mountCloudAccountUi();
+void mountAdminUi();

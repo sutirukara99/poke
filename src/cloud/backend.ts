@@ -476,3 +476,284 @@ export const adminSetAccountState = async (
   });
   assertNoError(error);
 };
+
+
+export type AdminAuditRow = {
+  id: string;
+  actor_user_id: string | null;
+  action: string;
+  target_user_id: string | null;
+  entity_type: string | null;
+  entity_key: string | null;
+  payload: Record<string, unknown>;
+  created_at: string;
+};
+
+export const adminFetchCatalogAll = async (): Promise<CatalogItemRow[]> => {
+  const client = requireClient();
+  const { data, error } = await client
+    .from("catalog_items")
+    .select("*")
+    .order("sort_order")
+    .order("name");
+
+  assertNoError(error);
+  return (data ?? []) as CatalogItemRow[];
+};
+
+export const adminFetchAchievementsAll = async (): Promise<AchievementRow[]> => {
+  const client = requireClient();
+  const { data, error } = await client
+    .from("achievements")
+    .select("*")
+    .order("sort_order")
+    .order("name");
+
+  assertNoError(error);
+  return (data ?? []) as AchievementRow[];
+};
+
+export const adminFetchEventsAll = async (): Promise<EventRow[]> => {
+  const client = requireClient();
+  const { data, error } = await client
+    .from("events")
+    .select("*")
+    .order("sort_order")
+    .order("created_at", { ascending: false });
+
+  assertNoError(error);
+  return (data ?? []) as EventRow[];
+};
+
+export const adminFetchFeatureFlagsAll = async (): Promise<FeatureFlagRow[]> => {
+  const client = requireClient();
+  const { data, error } = await client
+    .from("feature_flags")
+    .select("*")
+    .order("flag_key");
+
+  assertNoError(error);
+  return (data ?? []) as FeatureFlagRow[];
+};
+
+export const adminFetchAnnouncementsAll = async (): Promise<AnnouncementRow[]> => {
+  const client = requireClient();
+  const { data, error } = await client
+    .from("announcements")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  assertNoError(error);
+  return (data ?? []) as AnnouncementRow[];
+};
+
+export const adminFetchAuditLog = async (limit = 100): Promise<AdminAuditRow[]> => {
+  const client = requireClient();
+  const { data, error } = await client
+    .from("admin_audit_log")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  assertNoError(error);
+  return (data ?? []) as AdminAuditRow[];
+};
+
+export const adminFetchUserInventory = async (
+  userId: string,
+): Promise<AccountInventoryRow[]> => {
+  const client = requireClient();
+  const { data, error } = await client
+    .from("account_inventory")
+    .select("*")
+    .eq("user_id", userId)
+    .order("updated_at", { ascending: false });
+
+  assertNoError(error);
+  return (data ?? []) as AccountInventoryRow[];
+};
+
+export const adminFetchUserAchievements = async (
+  userId: string,
+): Promise<UserAchievementRow[]> => {
+  const client = requireClient();
+  const { data, error } = await client
+    .from("user_achievements")
+    .select("*")
+    .eq("user_id", userId)
+    .order("unlocked_at", { ascending: false });
+
+  assertNoError(error);
+  return (data ?? []) as UserAchievementRow[];
+};
+
+export const adminFetchUserRoles = async (userId: string): Promise<AppRole[]> => {
+  const client = requireClient();
+  const { data, error } = await client
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userId)
+    .order("role");
+
+  assertNoError(error);
+  return (data ?? []).map((row) => row.role as AppRole);
+};
+
+export const adminGrantRole = async (userId: string, role: AppRole) => {
+  const client = requireClient();
+  const { error } = await client
+    .from("user_roles")
+    .upsert({ user_id: userId, role }, { onConflict: "user_id,role" });
+
+  assertNoError(error);
+};
+
+export const adminRemoveRole = async (userId: string, role: AppRole) => {
+  if (role === "player") throw new Error("Die Basisrolle player wird nicht entfernt.");
+  const client = requireClient();
+  const { error } = await client
+    .from("user_roles")
+    .delete()
+    .eq("user_id", userId)
+    .eq("role", role);
+
+  assertNoError(error);
+};
+
+export const adminSaveRewardBundle = async (bundle: {
+  id?: string;
+  bundle_key: string;
+  name: string;
+  description: string;
+  is_active: boolean;
+  metadata?: Record<string, unknown>;
+}) => {
+  const client = requireClient();
+  const payload = {
+    ...bundle,
+    bundle_key: bundle.bundle_key.trim(),
+    metadata: bundle.metadata ?? {},
+  };
+  const { data, error } = await client
+    .from("reward_bundles")
+    .upsert(payload, { onConflict: "bundle_key" })
+    .select("*")
+    .single();
+
+  assertNoError(error);
+  return data as RewardBundleRow;
+};
+
+export const adminSaveRewardBundleEntry = async (entry: {
+  id?: string;
+  bundle_id: string;
+  reward_type: "item" | "entitlement" | "achievement";
+  reward_key: string;
+  quantity: number;
+  metadata?: Record<string, unknown>;
+  sort_order?: number;
+}) => {
+  const client = requireClient();
+  const payload = {
+    ...entry,
+    reward_key: entry.reward_key.trim(),
+    metadata: entry.metadata ?? {},
+    sort_order: entry.sort_order ?? 0,
+  };
+  const { data, error } = await client
+    .from("reward_bundle_entries")
+    .upsert(payload, { onConflict: "bundle_id,reward_type,reward_key" })
+    .select("*")
+    .single();
+
+  assertNoError(error);
+  return data as RewardBundleEntryRow;
+};
+
+export const adminDeleteRewardBundleEntry = async (entryId: string) => {
+  const client = requireClient();
+  const { error } = await client
+    .from("reward_bundle_entries")
+    .delete()
+    .eq("id", entryId);
+
+  assertNoError(error);
+};
+
+export const adminSaveEvent = async (
+  event: Omit<EventRow, "created_at" | "updated_at">,
+) => {
+  const client = requireClient();
+  const { data, error } = await client
+    .from("events")
+    .upsert(event, { onConflict: "event_key" })
+    .select("*")
+    .single();
+
+  assertNoError(error);
+  return data as EventRow;
+};
+
+export const adminSaveFeatureFlag = async (
+  flag: Omit<FeatureFlagRow, "updated_at">,
+) => {
+  const client = requireClient();
+  const { data, error } = await client
+    .from("feature_flags")
+    .upsert(flag, { onConflict: "flag_key" })
+    .select("*")
+    .single();
+
+  assertNoError(error);
+  return data as FeatureFlagRow;
+};
+
+export const adminSaveAnnouncement = async (
+  announcement: Omit<AnnouncementRow, "created_at" | "updated_at">,
+) => {
+  const client = requireClient();
+  const { data, error } = await client
+    .from("announcements")
+    .upsert(announcement, { onConflict: "announcement_key" })
+    .select("*")
+    .single();
+
+  assertNoError(error);
+  return data as AnnouncementRow;
+};
+
+export const adminDeletePromoCode = async (id: string) => {
+  const client = requireClient();
+  const { error } = await client.from("promo_codes").delete().eq("id", id);
+  assertNoError(error);
+};
+
+export const adminDeleteCatalogItem = async (itemKey: string) => {
+  const client = requireClient();
+  const { error } = await client.from("catalog_items").delete().eq("item_key", itemKey);
+  assertNoError(error);
+};
+
+export const adminDeleteAchievement = async (achievementKey: string) => {
+  const client = requireClient();
+  const { error } = await client
+    .from("achievements")
+    .delete()
+    .eq("achievement_key", achievementKey);
+  assertNoError(error);
+};
+
+export const adminDeleteEvent = async (eventKey: string) => {
+  const client = requireClient();
+  const { error } = await client.from("events").delete().eq("event_key", eventKey);
+  assertNoError(error);
+};
+
+export const adminDeleteAnnouncement = async (announcementKey: string) => {
+  const client = requireClient();
+  const { error } = await client
+    .from("announcements")
+    .delete()
+    .eq("announcement_key", announcementKey);
+  assertNoError(error);
+};
