@@ -3,11 +3,13 @@ import "./styles/alpha.css";
 import "./styles/game-experience.css";
 import "./styles/design-overhaul.css";
 import "./styles/gameplay-overhaul.css";
+import "./styles/maintenance.css";
 import { ACTIVE_BUILD, RECOVERY_BASELINE } from "./recovery/version";
 import { mountCloudAccountUi } from "./cloud/account-ui";
 import { mountAdminUi } from "./cloud/admin-ui";
 import { mountGameGrantSync } from "./cloud/game-grant-sync";
 import { mountLeaderboardUi } from "./cloud/leaderboard-ui";
+import { waitForMaintenanceAccess } from "./cloud/maintenance";
 import { mountBattleVisualPolish } from "./polish/battle-visuals";
 import { mountDesignOverhaul } from "./polish/design-overhaul";
 import { mountGameExperience } from "./polish/game-experience";
@@ -211,8 +213,9 @@ const bootGame = () => {
   mountGameSoundHooks();
 };
 
-const start = () => {
+const start = async () => {
+  await waitForMaintenanceAccess();
   bootGame();
 };
 
-start();
+void start();
