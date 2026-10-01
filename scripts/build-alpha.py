@@ -624,7 +624,8 @@ const QjourneyFindDiscovery=(a,i,d)=>{const r=QjourneyDiscoveryPools[a]??[],u=r.
 const QjourneyApplyDiscovery=(a,i)=>{if(!i)return"";if(i.reward==="heal"){for(const d of a.team)ct(d)&&(d.hp=Math.min(d.maxHp,d.hp+Math.ceil(d.maxHp*.2)));return"Dein Team erholt sich um 20 %."}if(i.reward==="money"){const d=160;a.money+=d;return"+160 ₽ gefunden."}if(i.reward==="balls")return a.balls+=2,"+2 Pokébälle gefunden.";if(i.reward==="ultra")return a.ultraBalls+=1,"+1 Hyperball gefunden.";return a.rareCandies+=1,"+1 Sonderbonbon gefunden."};
 
 '''
-overworld_runtime=(ROOT/'scripts/overworld-runtime.js').read_text()\ns=s.replace('const Dc=()=>({',journey_helpers+overworld_runtime+'const Dc=()=>({',1)
+overworld_runtime=(ROOT/'scripts/overworld-runtime.js').read_text()
+s=s.replace('const Dc=()=>({',journey_helpers+overworld_runtime+'const Dc=()=>({',1)
 
 # Save/run defaults and migration.
 s=s.replace('giftStarters:{},alphaQuestClaims:[],settings:{','giftStarters:{},alphaQuestClaims:[],worldDiscoveries:[],settings:{',1)
