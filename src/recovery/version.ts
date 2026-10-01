@@ -14,5 +14,5 @@ export const ACTIVE_BUILD = {
   version: "1.0.0-alpha.1",
   source: "Alpha launch candidate reconstructed from recovered v0.9.4 production bundle",
   javascriptAsset: "recovered/v1.0.0-alpha.1-r7.js",
-  designLayer: "src/styles/alpha.css",
+  designLayer: "src/styles/design-overhaul.css",
 } as const satisfies ActiveBuildManifest;
