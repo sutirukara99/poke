@@ -63,6 +63,8 @@ if(i.type==="overworldInteract"&&r.phase==="map"){
     r.rng=u.state;
     return d
   }
+  const Qnpc=Qm.npcs?.find(Q=>Q.x===Qf.x&&Q.y===Qf.y||Q.x===Qs.x&&Q.y===Qs.y);
+  if(Qnpc){Qs.lastMessage=Qnpc.dialogue;return d}
   const Qdest=Qm.destinations.find(Q=>Q.x===Qf.x&&Q.y===Qf.y||Q.x===Qs.x&&Q.y===Qs.y);
   if(Qdest){Qs.pendingNode=Qdest.id,Qs.encounterOnly=!1,Qs.lastMessage=QowKindLabel(Qdest.kind)+".";return d}
   Qs.lastMessage="Hier gibt es nichts zum Interagieren.";
