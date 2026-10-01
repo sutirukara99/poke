@@ -4,6 +4,7 @@ import { ACTIVE_BUILD, RECOVERY_BASELINE } from "./recovery/version";
 import { mountCloudAccountUi } from "./cloud/account-ui";
 import { mountAdminUi } from "./cloud/admin-ui";
 import { mountGameGrantSync } from "./cloud/game-grant-sync";
+import { mountLeaderboardUi } from "./cloud/leaderboard-ui";
 
 declare global {
   interface Window {
@@ -109,3 +110,4 @@ bootTimer = window.setTimeout(() => {
 void mountCloudAccountUi();
 void mountAdminUi();
 void mountGameGrantSync();
+void mountLeaderboardUi();
