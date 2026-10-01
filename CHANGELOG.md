@@ -36,6 +36,14 @@
 - Scoped the battle visual MutationObserver so unrelated UI mutations no longer trigger battle enhancement work.
 - Added typed `playUiSound`, `playBattleSound`, `playRewardSound` and `playSystemSound` hooks via a `pokeregions:sound` event for future audio without coupling gameplay to final sound assets.
 
+### Trainer class identity
+- Trainer classes now influence the route generator instead of existing mainly as catch-rate modifiers.
+- Type-focused classes receive distinct path tendencies: e.g. Angler favors Wild/Mystery, Wanderer favors Fund/Trainer and Aromalady favors Heal/Mystery.
+- Existing specialist classes now reinforce their fantasy: Feldsanitäter sees more healing windows, Schatzjäger more item nodes, Forscher more item/tutor opportunities and Taktiker more trainer-heavy routes.
+- Class route identity persists when advancing to later Story maps and Endless maps while remaining deterministic from the run seed.
+- Normal trainer archetypes now prefer type themes that fit the active biome, while generic trainer classes remain in the pool to avoid predictability.
+- Run-setup class descriptions now explain both the combat/economy bonus and the route-style impact.
+
 ### Battle & run-end presentation
 - Native Gym, Rival and League trainer intros are now preserved without a redundant second overlay from the polish layer.
 - Wild, standard Trainer and Legendary encounters keep a fast one-shot intro, with Legendary encounters receiving a distinct but restrained treatment.
