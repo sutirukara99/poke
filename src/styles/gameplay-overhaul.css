@@ -4142,3 +4142,18 @@ body.pr-game-ui .alpha-shell .ow-city-service-title button{
     bottom:72px;
   }
 }
+
+
+/* The recovered shell may still create its legacy journey banner internally.
+   Once the Canvas world is present it becomes infrastructure only, never UI. */
+body.pr-game-ui .alpha-shell .adventure-board:has(.canvas-overworld){
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+body.pr-game-ui .alpha-shell .adventure-board:has(.canvas-overworld) > .map-banner,
+body.pr-game-ui .alpha-shell .adventure-board:has(.canvas-overworld) > .map-progress{
+  display:none!important;
+}
