@@ -2076,12 +2076,11 @@ body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"]{
 }
 
 body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] > .pr-launcher-statusbar,
-body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] > .hero,
-body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] > .menu-hero,
-body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] > .pr-launcher-news,
-body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] > .dashboard,
-body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] > .bottom-note{
+body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] > .content{
   margin-left:232px!important;
+}
+body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] > .content{
+  min-width:0;
 }
 
 /* A persistent library rail makes the hub feel like a real game launcher. */
@@ -2562,11 +2561,7 @@ body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .trainer-card{
     display:none!important;
   }
   body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] > .pr-launcher-statusbar,
-  body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] > .hero,
-  body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] > .menu-hero,
-  body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] > .pr-launcher-news,
-  body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] > .dashboard,
-  body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] > .bottom-note{
+  body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] > .content{
     margin-left:0!important;
   }
   .pr-launcher-statusbar{
