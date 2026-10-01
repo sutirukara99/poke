@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import vm from "node:vm";
 
+const tilesets = await readFile(new URL("./overworld-tilesets.js", import.meta.url), "utf8");
 const source = await readFile(new URL("./overworld-runtime.js", import.meta.url), "utf8");
 
 const context = {
@@ -30,7 +31,7 @@ const context = {
 
 vm.createContext(context);
 vm.runInContext(
-  source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowW,QowH};",
+  tilesets + "\n" + source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowW,QowH};",
   context,
   { filename: "overworld-runtime.js" },
 );
