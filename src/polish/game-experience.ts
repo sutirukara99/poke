@@ -624,6 +624,35 @@ const renderRouteAtlasHud = (
 };
 
 const enhanceRoute = (shell: HTMLElement, run: RecordLike | null) => {
+  const journey = shell.querySelector<HTMLElement>(".journey-world");
+  if (journey) {
+    const board =
+      journey.closest<HTMLElement>(".adventure-board") ?? journey.parentElement;
+    if (board) {
+      board.dataset.prJourneySystem = "true";
+      delete board.dataset.prRouteAtlas;
+      delete board.dataset.prBoardLayout;
+      board
+        .querySelectorAll<HTMLElement>(
+          ".pr-route-atlas-hud, .pr-route-board-side, .pr-route-risk-legend, .pr-route-context, .pr-route-scenery",
+        )
+        .forEach((node) => node.remove());
+    }
+
+    const region = getRegionFromValue(run?.region) ?? getContextRegion();
+    if (region) {
+      journey.dataset.prRegion = region;
+      shell.dataset.prRegion = region;
+    }
+    const biome = currentRouteBiome(run);
+    if (biome) {
+      journey.dataset.prBiome = biome;
+      shell.dataset.prBiome = biome;
+      document.body.dataset.prBiome = biome;
+    }
+    return;
+  }
+
   const map = shell.querySelector<HTMLElement>(".route-map");
   if (!map) return;
 
