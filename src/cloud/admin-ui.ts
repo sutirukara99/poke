@@ -555,7 +555,7 @@ class AdminUi {
       ),
     );
     const grantType = selectInput([
-      { value: "meta_points", label: "Rogue-/Meta-Punkte" },
+      { value: "meta_points", label: "Meta Points" },
       { value: "bottle_caps", label: "Kronkorken" },
       { value: "gold_bottle_caps", label: "Goldkronkorken" },
       { value: "ability_capsules", label: "Ability Capsules" },
