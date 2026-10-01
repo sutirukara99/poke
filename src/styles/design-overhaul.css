@@ -2013,3 +2013,54 @@ body.pr-game-ui *::-webkit-scrollbar-thumb{
     transition:none!important;
   }
 }
+
+
+/* Trainer passport is part of the hub, not another dashboard card. */
+body.pr-game-ui .alpha-shell .trainer-passport{
+  border:1px solid #2c4954!important;
+  border-left:3px solid var(--ui-region)!important;
+  border-radius:0!important;
+  background:
+    linear-gradient(90deg,var(--ui-region-soft),transparent 52%),
+    #091d25!important;
+  box-shadow:none!important;
+}
+body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .trainer-passport{
+  margin-top:8px!important;
+}
+body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .trainer-passport .passport-header{
+  min-height:68px!important;
+  padding:8px 10px!important;
+}
+body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .trainer-passport .passport-edit,
+body.pr-game-ui .alpha-shell[data-pr-game-screen="menu"] .trainer-passport .passport-run-peek{
+  display:none!important;
+}
+body.pr-game-ui .alpha-shell .trainer-passport .passport-collapse{
+  min-height:30px!important;
+  padding:0 9px!important;
+  border-color:#2c4954!important;
+  background:#081a22!important;
+  color:#7d939d!important;
+  font-size:9px!important;
+}
+body.pr-game-ui .alpha-shell .trainer-passport .passport-stats{
+  gap:3px!important;
+}
+body.pr-game-ui .alpha-shell .trainer-passport .passport-stats button{
+  min-height:54px!important;
+  border:1px solid #294651!important;
+  background:#091c24!important;
+}
+body.pr-game-ui .alpha-shell .trainer-passport .passport-actions{
+  gap:4px!important;
+  border-top:1px solid #213b46!important;
+}
+body.pr-game-ui .alpha-shell .trainer-passport .passport-region-grid article,
+body.pr-game-ui .alpha-shell .trainer-passport .hall-team article,
+body.pr-game-ui .alpha-shell .trainer-passport .passport-cosmetics>span{
+  border:1px solid #294651!important;
+  border-radius:0!important;
+  background:#091c24!important;
+  box-shadow:none!important;
+}
