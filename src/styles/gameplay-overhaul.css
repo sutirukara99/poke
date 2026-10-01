@@ -1076,7 +1076,7 @@ body.pr-game-ui .type-attack-fx.fx-enemy{
 }
 
 body.pr-game-ui .type-attack-fx>.attack-fx-core,
-body.pr-game-ui .type-attack-fx>i:not(.pr-fx-system *){
+body.pr-game-ui .type-attack-fx>i{
   display:none!important;
 }
 
@@ -1157,8 +1157,8 @@ body.pr-game-ui .type-attack-fx>i:not(.pr-fx-system *){
 }
 
 .pr-fx-sparks>i{
-  --a:calc(var(--spark-index) * 36deg);
-  --d:calc(34px + (var(--spark-index) % 3) * 10px);
+  --spark-angle:0deg;
+  --spark-distance:38px;
   left:0;
   top:0;
   width:7px;
@@ -1421,14 +1421,14 @@ body.pr-game-ui .type-attack-fx>i:not(.pr-fx-system *){
   100%{opacity:0;transform:scale(1.8)}
 }
 @keyframes prFxSpark{
-  0%,18%{opacity:0;transform:rotate(var(--a)) translateX(4px) scale(.3)}
+  0%,18%{opacity:0;transform:rotate(var(--spark-angle)) translateX(4px) scale(.3)}
   35%{opacity:1}
-  100%{opacity:0;transform:rotate(var(--a)) translateX(var(--d)) scale(.9)}
+  100%{opacity:0;transform:rotate(var(--spark-angle)) translateX(var(--spark-distance)) scale(.9)}
 }
 @keyframes prFxSparkFloat{
-  0%{opacity:0;transform:rotate(var(--a)) translateX(5px) scale(.2)}
+  0%{opacity:0;transform:rotate(var(--spark-angle)) translateX(5px) scale(.2)}
   30%{opacity:.9}
-  100%{opacity:0;transform:rotate(var(--a)) translateX(var(--d)) scale(1.2) rotate(45deg)}
+  100%{opacity:0;transform:rotate(var(--spark-angle)) translateX(var(--spark-distance)) scale(1.2) rotate(45deg)}
 }
 
 /* ========================================================================== */
