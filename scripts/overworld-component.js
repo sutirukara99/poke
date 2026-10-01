@@ -5,7 +5,7 @@ X.useEffect(()=>{let Qraf=0,Qdead=!1;const Qdirs={w:"up",arrowup:"up",s:"down",a
 return l.jsxs("section",{className:"free-roam-overworld rogue-floor canvas-overworld region-"+u+" biome-"+Qm.biome+" weather-"+Qm.weather+" time-"+Qm.timeOfDay+" condition-"+Qm.condition+(m?" overworld-arena":""),children:[
 l.jsxs("div",{className:"ow-viewport",tabIndex:0,"aria-label":"PokéRegions Overworld. WASD oder Pfeiltasten bewegen, E interagieren, M öffnet das Menü.",children:[
 l.jsxs("header",{className:"ow-hud",children:[
-l.jsxs("div",{className:"ow-area",children:[l.jsx("small",{children:we[u].name.toUpperCase()+" · FLOOR "+String(Qfloor).padStart(2,"0")}),l.jsx("strong",{children:U?.name??we[u].name}),l.jsx("span",{children:Qm.biome.toUpperCase()})]}),
+l.jsxs("div",{className:"ow-area",children:[l.jsx("small",{children:we[u].name.toUpperCase()+" · FLOOR "+String(Qfloor).padStart(2,"0")}),l.jsx("strong",{children:U?.name??we[u].name}),l.jsx("span",{children:Qm.biome.toUpperCase()+" · "+QowConditionLabel(Qm.condition)+" · "+Qm.timeOfDay.toUpperCase()+(Qm.weather!=="clear"?" · "+Qm.weather.toUpperCase():"")})]}),
 l.jsxs("div",{className:"ow-stats",children:[l.jsxs("span",{children:["₽ ",(y.money??0).toLocaleString("de-DE")]}),l.jsxs("span",{children:["ORDEN ",Qbadges]}),l.jsxs("span",{children:["GEFAHR ",Math.round(Qp.danger??0),"%"]})]}),
 l.jsx("button",{type:"button",className:"ow-menu-button","aria-label":"Spielmenü",onClick:()=>document.querySelector(".pr-game-menu-toggle")?.click(),children:"☰"})
 ]}),
