@@ -93,4 +93,6 @@ Setup, Discord OAuth and database migration instructions are documented in [`CLO
 
 ## Runtime visual assets
 
-Battle presentation uses remote Pokémon Showdown sprite/FX resources at runtime for animated battle sprites, generation-style battle backgrounds and move-effect imagery. These resources are referenced by URL rather than vendored into this repository. Pokémon and related assets remain the property of their respective rights holders; PokéRegions is an unofficial fan project.
+Battle Pokémon animations continue to use Pokémon Showdown's public sprite host at runtime. The cleaned battle presentation now vendors small terrain / battle-animation PNGs sourced from the pret decompilation projects for FireRed/LeafGreen, Crystal, Emerald and Platinum so Kanto, Johto, Hoenn and Sinnoh can visually follow their original game generations without depending on the previous stretched Showdown FX backdrops.
+
+Vendored battle assets live under `public/ui/battlebacks/` and `public/ui/battlefx/`. Pokémon and related assets remain the property of their respective rights holders; PokéRegions is an unofficial fan project.
