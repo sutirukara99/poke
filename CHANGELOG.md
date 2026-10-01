@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.0-alpha.1 minimal home pass — 2026-10-01
+
+### Less launcher, more game
+- Removed the permanent desktop library rail, build/status strip and Alpha-news wall from the title screen.
+- Rebuilt the home view around one centered PokéRegions identity and only the actions that matter immediately: continue, new run and trainer collection.
+- Kept the full feature set behind the existing hamburger / Trainer menu instead of displaying every destination at once.
+- Replaced the dashboard-heavy launcher layout with three large game-mode cards and a restrained regional landscape treatment.
+- Simplified the title-screen top chrome to a single menu control.
+- Hid Trainer Passport/dashboard details from the title screen; they remain accessible through the game menu.
+- Flattened and narrowed the utility drawer so secondary navigation stays functional without dominating the game.
+
+### Startup
+- Reduced the client boot presentation to logo, one status line and a thin progress bar.
+
 ## 1.0.0-alpha.1 launcher shell pass — 2026-10-01
 
 ### Hub / launcher identity
