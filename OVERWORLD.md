@@ -120,7 +120,9 @@ Old runs are migrated lazily by `QowEnsure`; existing Pokémon, items, money, ba
 
 Logical tile size is 16 px. The internal Canvas is 480×320 and scales with `image-rendering: pixelated`.
 
-Terrain is generated locally from the biome palette and tile semantics. Existing locally hosted FRLG object sprites are used for the trainer, NPC and item actors; there is no runtime dependency on an external sprite host for the overworld.
+Core outdoor terrain now uses the locally hosted FireRed/LeafGreen decomp source correctly: the browser reconstructs 16×16 metatiles from the original 4-bpp grayscale tile sheet, the primary `metatiles.bin` data and all 16 General palettes. Semantic terrain IDs such as ground, path, tall grass, water and sand map to explicit metatile IDs. Biomes without a suitable General metatile use the procedural GBA-style fallback renderer instead of abusing the raw sheet as a CSS atlas.
+
+Existing locally hosted FRLG object sprites are used for the trainer, NPC and item actors. There is no runtime dependency on an external sprite host for the overworld.
 
 ## Region identity
 
