@@ -630,7 +630,9 @@ const renderRouteBoardPanels = (
 };
 
 const enhanceRoute = (shell: HTMLElement, run: RecordLike | null) => {
-  const map = shell.querySelector<HTMLElement>(".route-map, .adventure-board");
+  const map =
+    shell.querySelector<HTMLElement>(".route-map") ??
+    shell.querySelector<HTMLElement>(".adventure-board");
   if (!map) return;
 
   map.querySelectorAll<HTMLElement>(".route-node").forEach(classifyRouteRisk);
@@ -1328,6 +1330,8 @@ const applyExperience = () => {
   const run = getRun();
   const region = getRegionFromValue(run?.region) ?? getContextRegion();
   const screen = detectScreen(shell);
+
+  if (screen !== "route") delete shell.dataset.prRouteTeamOpen;
 
   shell.dataset.prScreen = screen;
   document.body.dataset.prScreen = screen;
