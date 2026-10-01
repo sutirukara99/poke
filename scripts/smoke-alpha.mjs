@@ -133,7 +133,7 @@ if (!js.includes('type:"journeyAction"')) throw new Error("Journey exploration a
 if (!js.includes('type:"journeyTravel"')) throw new Error("Journey travel action is missing.");
 if (!js.includes('QjourneyDiscoveryPools')) throw new Error("Regional Journey discoveries are missing.");
 if (!js.includes('d.worldDiscoveries??=[]')) throw new Error("Persistent world discovery migration is missing.");
-if (!js.includes('className:`journey-world region-${u} biome-${q}`')) throw new Error("Journey world presentation is missing.");
+if (!js.includes('className:`journey-world region-${u} biome-${q}${m?" journey-arena":""}`')) throw new Error("Journey world presentation is missing.");
 if (js.includes('className:`route-map mini-map pixel-map-crawler')) throw new Error("Legacy visible node-map renderer still exists.");
 if (js.includes("Knoten")) throw new Error("Player-facing node terminology remains in Journey build.");
 
