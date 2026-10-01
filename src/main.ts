@@ -29,6 +29,62 @@ window.__POKEREGIONS_BUILD__ = ACTIVE_BUILD;
 let bootTimer: number | undefined;
 let bootObserver: MutationObserver | undefined;
 let booted = false;
+let launcherBoot: HTMLElement | null = null;
+let launcherBootRemoveTimer: number | undefined;
+
+const mountLauncherBoot = () => {
+  if (launcherBoot?.isConnected) return launcherBoot;
+
+  const overlay = document.createElement("div");
+  overlay.id = "pokeregions-launcher-boot";
+  overlay.className = "pr-launcher-boot";
+  overlay.setAttribute("role", "status");
+  overlay.setAttribute("aria-live", "polite");
+  overlay.innerHTML = `
+    <div class="pr-launcher-boot-window">
+      <div class="pr-launcher-boot-brand">
+        <span class="pr-launcher-boot-mark" aria-hidden="true"></span>
+        <span>
+          <small>POKÉREGIONS CLIENT</small>
+          <strong>PokéRegions</strong>
+        </span>
+      </div>
+      <div class="pr-launcher-boot-copy">
+        <span class="pr-launcher-boot-kicker">OPEN ALPHA · ${ACTIVE_BUILD.version}</span>
+        <h1>Expedition wird vorbereitet.</h1>
+        <p class="pr-launcher-boot-status">Lade Regionen, Trainerprofil und Spielsysteme …</p>
+      </div>
+      <div class="pr-launcher-boot-progress" aria-hidden="true"><i></i></div>
+      <div class="pr-launcher-boot-foot">
+        <span>LOCAL SAVE</span>
+        <span>CLOUD SYNC</span>
+        <span>GAME CLIENT</span>
+      </div>
+    </div>
+  `;
+  document.body.append(overlay);
+  launcherBoot = overlay;
+  return overlay;
+};
+
+const updateLauncherBoot = (message: string, stage: string) => {
+  const overlay = launcherBoot;
+  if (!overlay) return;
+  overlay.dataset.stage = stage;
+  const status = overlay.querySelector<HTMLElement>(".pr-launcher-boot-status");
+  if (status) status.textContent = message;
+};
+
+const dismissLauncherBoot = () => {
+  const overlay = launcherBoot;
+  if (!overlay) return;
+  overlay.classList.add("is-ready");
+  if (launcherBootRemoveTimer !== undefined) window.clearTimeout(launcherBootRemoveTimer);
+  launcherBootRemoveTimer = window.setTimeout(() => {
+    overlay.remove();
+    if (launcherBoot === overlay) launcherBoot = null;
+  }, 360);
+};
 
 const stopBootWatch = () => {
   if (bootTimer !== undefined) {
@@ -44,6 +100,9 @@ const showBootFailure = (message: string) => {
   if (!root) return;
 
   stopBootWatch();
+  if (launcherBootRemoveTimer !== undefined) window.clearTimeout(launcherBootRemoveTimer);
+  launcherBoot?.remove();
+  launcherBoot = null;
   document.body.classList.remove("pr-maintenance-mode", "pr-maintenance-unlock");
   document.body.classList.add("pr-design-overhaul");
 
@@ -103,11 +162,18 @@ const bootGame = () => {
     return;
   }
 
+  mountLauncherBoot();
+  updateLauncherBoot("Prüfe Spielstand und starte den Alpha-Client …", "client");
+
   const script = document.createElement("script");
   script.src = `${import.meta.env.BASE_URL}${ACTIVE_BUILD.javascriptAsset}`;
   script.async = false;
   script.dataset.recoveredBuild = RECOVERY_BASELINE.version;
   script.dataset.activeBuild = ACTIVE_BUILD.version;
+
+  script.addEventListener("load", () => {
+    updateLauncherBoot("Client geladen. Baue deinen Trainer-Hub auf …", "profile");
+  });
 
   script.addEventListener("error", () => {
     showBootFailure(
@@ -116,11 +182,13 @@ const bootGame = () => {
   });
 
   bootObserver = new MutationObserver(() => {
-    if (root.childElementCount > 0 && !root.querySelector(".alpha-boot-recovery")) {
+    if (root.querySelector(".alpha-shell") && !root.querySelector(".alpha-boot-recovery")) {
+      updateLauncherBoot("Bereit. Willkommen zurück, Trainer.", "ready");
+      dismissLauncherBoot();
       stopBootWatch();
     }
   });
-  bootObserver.observe(root, { childList: true });
+  bootObserver.observe(root, { childList: true, subtree: true });
 
   document.head.appendChild(script);
 
@@ -128,7 +196,7 @@ const bootGame = () => {
   // the recovered game client before React can mount.
   bootTimer = window.setTimeout(() => {
     const currentRoot = document.getElementById("root");
-    if (currentRoot && currentRoot.childElementCount === 0) {
+    if (currentRoot && !currentRoot.querySelector(".alpha-shell")) {
       showBootFailure(
         "Der Start dauert ungewöhnlich lange. Ein Neuladen behebt meist einen veralteten Cache.",
       );

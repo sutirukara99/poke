@@ -243,7 +243,10 @@ const ensureChrome = (shell: HTMLElement) => {
   const back = chrome.querySelector<HTMLButtonElement>(".pr-game-back");
 
   if (screenNode) screenNode.textContent = SCREEN_LABELS[screen];
-  if (regionNode) regionNode.textContent = REGION_LABELS[region] ?? "REGION NETWORK";
+  if (regionNode) {
+    regionNode.textContent =
+      screen === "menu" ? "GAME LIBRARY" : REGION_LABELS[region] ?? "REGION NETWORK";
+  }
 
   if (region) chrome.dataset.region = region;
   else delete chrome.dataset.region;
@@ -282,15 +285,19 @@ const collectMenuGroups = (shell: HTMLElement): DrawerGroup[] => {
   ]);
 
   const seen = new Set<HTMLButtonElement>();
+  const seenLabels = new Set<string>();
   const sources = [
-    ...shell.querySelectorAll<HTMLButtonElement>(".hero .actions button, .menu-hero .actions button"),
     ...shell.querySelectorAll<HTMLButtonElement>(".menu-library .menu-grid button"),
+    ...shell.querySelectorAll<HTMLButtonElement>(".hero .actions button, .menu-hero .actions button"),
   ];
 
   for (const button of sources) {
     if (seen.has(button)) continue;
     seen.add(button);
     const label = getButtonLabel(button);
+    const labelKey = normalize(label).toLowerCase();
+    if (seenLabels.has(labelKey)) continue;
+    seenLabels.add(labelKey);
     const upper = label.toUpperCase();
     let group = "trainer";
 
@@ -519,7 +526,238 @@ const renderDrawer = (shell: HTMLElement) => {
   drawer.replaceChildren(header, context, body, footer);
 };
 
+let launcherSignature = "";
+
+const renderLauncherHome = (shell: HTMLElement) => {
+  const groups = collectMenuGroups(shell);
+  const hero = shell.querySelector<HTMLElement>(".hero, .menu-hero");
+  if (!hero) return;
+
+  const account = document.querySelector<HTMLButtonElement>(".cloud-account-pill");
+  const admin = document.querySelector<HTMLButtonElement>(".pr-admin-trigger");
+  const version =
+    textOf(hero.querySelector(".art-label")) ||
+    textOf(shell.querySelector(".version")) ||
+    "1.0 ALPHA";
+  const heroSummary =
+    textOf(hero.querySelector(".hero-copy > p:not(.eyebrow)")) ||
+    "Baue deinen Run, entwickle deinen Trainer und erobere vier Regionen.";
+  const tags = Array.from(hero.querySelectorAll<HTMLElement>(".hero-tags span"))
+    .map((node) => textOf(node))
+    .filter(Boolean)
+    .slice(0, 3);
+
+  const signature = JSON.stringify({
+    groups: groups.map((group) => ({
+      key: group.key,
+      entries: group.entries.map((entry) => [
+        entry.key,
+        entry.label,
+        entry.meta,
+        entry.disabled,
+      ]),
+    })),
+    version,
+    heroSummary,
+    tags,
+    account: textOf(account),
+    admin: Boolean(admin),
+  });
+
+  let sidebar = shell.querySelector<HTMLElement>(":scope > .pr-launcher-sidebar");
+  let statusbar = shell.querySelector<HTMLElement>(":scope > .pr-launcher-statusbar");
+
+  if (signature === launcherSignature && sidebar && statusbar) return;
+  launcherSignature = signature;
+
+  if (!sidebar) {
+    sidebar = make("aside", "pr-launcher-sidebar");
+    sidebar.setAttribute("aria-label", "PokéRegions Launcher Navigation");
+    shell.querySelector(":scope > .pr-game-chrome")?.insertAdjacentElement("afterend", sidebar);
+  }
+
+  const sidebarHead = make("div", "pr-launcher-side-head");
+  const sideMark = make("span", "pr-launcher-side-mark");
+  sideMark.setAttribute("aria-hidden", "true");
+  const sideCopy = make("span", "pr-launcher-side-copy");
+  sideCopy.append(
+    make("strong", "", "POKÉREGIONS"),
+    make("small", "", "GAME LIBRARY"),
+  );
+  sidebarHead.append(sideMark, sideCopy);
+
+  const sidebarBody = make("div", "pr-launcher-side-body");
+  for (const group of groups) {
+    const section = make("section", "pr-launcher-group");
+    section.dataset.group = group.key;
+    section.append(make("small", "pr-launcher-group-title", group.label));
+
+    group.entries.forEach((entry, index) => {
+      const button = make("button", "pr-launcher-entry");
+      button.type = "button";
+      button.disabled = Boolean(entry.disabled);
+      button.dataset.group = group.key;
+      if (group.key === "play" && index === 0) button.dataset.launcherPrimary = "true";
+
+      const icon = make("span", "pr-launcher-entry-icon", entry.icon);
+      const copy = make("span", "pr-launcher-entry-copy");
+      copy.append(
+        make("strong", "", entry.label),
+        entry.meta ? make("small", "", entry.meta) : make("small", "", ""),
+      );
+      const arrow = make("span", "pr-launcher-entry-arrow", "›");
+      button.append(icon, copy, arrow);
+      button.addEventListener("click", entry.activate);
+      section.append(button);
+    });
+
+    sidebarBody.append(section);
+  }
+
+  const sidebarFoot = make("footer", "pr-launcher-side-foot");
+  const build = make("div", "pr-launcher-build");
+  build.append(
+    make("span", "pr-launcher-live-dot"),
+    make("span", "", "OPEN ALPHA"),
+    make("small", "", version.replace(/\s+/g, " ")),
+  );
+  sidebarFoot.append(build);
+
+  if (account) {
+    const accountButton = make("button", "pr-launcher-account");
+    accountButton.type = "button";
+    accountButton.innerHTML =
+      '<span aria-hidden="true">☁</span><span><b>ACCOUNT & CLOUD</b><small></small></span><i aria-hidden="true">›</i>';
+    const detail = accountButton.querySelector("small");
+    if (detail) detail.textContent = textOf(account) || "Cloud-Spielstand";
+    accountButton.addEventListener("click", () => account.click());
+    sidebarFoot.append(accountButton);
+  }
+
+  if (admin) {
+    const adminButton = make("button", "pr-launcher-admin", "◆ ADMIN CONTROL");
+    adminButton.type = "button";
+    adminButton.addEventListener("click", () => admin.click());
+    sidebarFoot.append(adminButton);
+  }
+
+  sidebar.replaceChildren(sidebarHead, sidebarBody, sidebarFoot);
+
+  if (!statusbar) {
+    statusbar = make("div", "pr-launcher-statusbar");
+    sidebar.insertAdjacentElement("afterend", statusbar);
+  }
+
+  const statusCopy = make("div", "pr-launcher-status-copy");
+  statusCopy.append(
+    make("small", "", "READY TO PLAY"),
+    make("strong", "", heroSummary),
+  );
+
+  const statusMeta = make("div", "pr-launcher-status-meta");
+  const buildChip = make("span", "pr-launcher-status-chip");
+  buildChip.innerHTML = '<small>BUILD</small><b></b>';
+  const buildValue = buildChip.querySelector("b");
+  if (buildValue) buildValue.textContent = version.replace(/\s+/g, " ");
+
+  const saveChip = make("span", "pr-launcher-status-chip");
+  saveChip.innerHTML = '<small>SAVE</small><b></b>';
+  const saveValue = saveChip.querySelector("b");
+  if (saveValue) saveValue.textContent = account ? "CLOUD READY" : "LOCAL";
+
+  statusMeta.append(buildChip, saveChip);
+  if (tags[0]) {
+    const progressChip = make("span", "pr-launcher-status-chip");
+    progressChip.innerHTML = '<small>STATUS</small><b></b>';
+    const progressValue = progressChip.querySelector("b");
+    if (progressValue) progressValue.textContent = tags[0];
+    statusMeta.append(progressChip);
+  }
+
+  const openMenu = make("button", "pr-launcher-more", "LIBRARY +");
+  openMenu.type = "button";
+  openMenu.addEventListener("click", openDrawer);
+
+  statusbar.replaceChildren(statusCopy, statusMeta, openMenu);
+
+  let news = shell.querySelector<HTMLElement>(".pr-launcher-news");
+  if (!news) {
+    news = make("section", "pr-launcher-news");
+    news.setAttribute("aria-label", "Aktuelle Alpha Highlights");
+    hero.insertAdjacentElement("afterend", news);
+  }
+
+  const newsHead = make("header", "pr-launcher-news-head");
+  const newsTitle = make("span");
+  newsTitle.append(
+    make("small", "", "LATEST UPDATE"),
+    make("strong", "", "ALPHA BUILD HIGHLIGHTS"),
+  );
+  const newsBuild = make("span", "pr-launcher-news-build", version.replace(/\s+/g, " "));
+  newsHead.append(newsTitle, newsBuild);
+
+  const newsGrid = make("div", "pr-launcher-news-grid");
+  const stories = [
+    {
+      kicker: "GAMEPLAY",
+      title: "Runs lesen sich schneller",
+      copy: "Klarere Battles, kompakter Kampf-Log, sichtbare Keyboard-Navigation und weniger unnötige Unterbrechungen.",
+      icon: "▶",
+    },
+    {
+      kicker: "REGIONS",
+      title: "Mehr Mystery-Varianz",
+      copy: "Kanto, Johto, Hoenn und Sinnoh besitzen zusätzliche regionale Events mit eigenen Risiko- und Reward-Pfaden.",
+      icon: "?",
+    },
+    {
+      kicker: "OPEN ALPHA",
+      title: "Dein Feedback baut das Spiel",
+      copy: "PokéRegions wird weiter aktiv poliert. Bugs, Balance und UX-Feedback fließen direkt in kommende Builds.",
+      icon: "●",
+    },
+  ];
+
+  stories.forEach((story, index) => {
+    const article = make("article", "pr-launcher-news-card");
+    article.dataset.story = String(index + 1);
+    const icon = make("span", "pr-launcher-news-icon", story.icon);
+    const copy = make("span", "pr-launcher-news-copy");
+    copy.append(
+      make("small", "", story.kicker),
+      make("strong", "", story.title),
+      make("p", "", story.copy),
+    );
+    article.append(icon, copy);
+
+    if (index === stories.length - 1) {
+      const discord = shell.querySelector<HTMLAnchorElement>(".discord-community-link");
+      if (discord?.href) {
+        const community = make("button", "pr-launcher-news-action", "COMMUNITY →");
+        community.type = "button";
+        community.addEventListener("click", () =>
+          window.open(discord.href, "_blank", "noopener,noreferrer"),
+        );
+        article.append(community);
+      }
+    }
+
+    newsGrid.append(article);
+  });
+
+  news.replaceChildren(newsHead, newsGrid);
+};
+
+const clearLauncherHome = (shell: HTMLElement) => {
+  launcherSignature = "";
+  shell.querySelector(":scope > .pr-launcher-sidebar")?.remove();
+  shell.querySelector(":scope > .pr-launcher-statusbar")?.remove();
+  shell.querySelector(".pr-launcher-news")?.remove();
+};
+
 const enhanceHome = (shell: HTMLElement) => {
+  renderLauncherHome(shell);
+
   const library = shell.querySelector<HTMLElement>(".menu-library");
   if (library) library.dataset.prCollapsedLibrary = "true";
 
@@ -652,6 +890,7 @@ const applyDesign = () => {
   markGameScreens(shell);
 
   if (screen === "menu") enhanceHome(shell);
+  else clearLauncherHome(shell);
   if (screen === "setup") enhanceSetup(shell);
 
   renderDrawer(shell);

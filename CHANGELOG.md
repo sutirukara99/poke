@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.0.0-alpha.1 launcher shell pass — 2026-10-01
+
+### Hub / launcher identity
+- Rebuilt the main hub around a persistent launcher-style library rail on desktop while keeping the existing drawer as the compact/tablet/mobile fallback.
+- Added quick launcher navigation for Play, Trainer, Progress and System destinations without duplicating game state or replacing the original actions.
+- Added a dynamic status strip for current build, save mode and run status.
+- Added an in-client Alpha highlight/news row so the home screen reads like a maintained game client instead of a large web menu.
+- Refined the featured run banner, primary Play CTA and Trainer Passport presentation around a proper game-launcher hierarchy.
+- Added Account & Cloud and Admin quick access directly to the launcher rail when available.
+
+### Startup experience
+- Added a dedicated PokéRegions client boot overlay with build information and staged loading feedback.
+- The boot watchdog now waits for the actual game shell instead of treating any root content as a successful start.
+- Boot failures still fall back to the recovery UI and never delete or reset the local save.
+
+### Responsive behavior
+- Desktop uses the persistent launcher rail; medium layouts collapse back into the existing Library drawer.
+- News/status surfaces collapse progressively on tablet and mobile without hiding the primary Play path.
+- Reduced-motion preferences are respected by the new boot and launcher transitions.
+
 ## 1.0.0-alpha.1 overall polish pass — 2026-10-01
 
 ### Flow & battle clarity
