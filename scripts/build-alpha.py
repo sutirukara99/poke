@@ -425,6 +425,45 @@ for old,new in [
         raise SystemExit(f'class description anchor missing: {old}')
     s=s.replace(old,new)
 
+
+# -----------------------------------------------------------------------------
+# 2026-10-01 compact HUD / catch menu / supply-node pass
+# -----------------------------------------------------------------------------
+
+ball_helpers = r'''const QalphaBallDefs=[
+{id:"poke",action:"catch",field:"balls",name:"Pokéball",asset:"poke-ball",detail:"Solider Standardball."},
+{id:"great",action:"catchGreat",name:"Superball",asset:"great-ball",detail:"1,35× Fangchance."},
+{id:"ultra",action:"catchUltra",field:"ultraBalls",name:"Hyperball",asset:"ultra-ball",detail:"1,8× Fangchance."},
+{id:"net",action:"catchNet",name:"Netzball",asset:"net-ball",detail:"1,65× gegen Wasser oder Käfer."},
+{id:"dusk",action:"catchDusk",name:"Finsterball",asset:"dusk-ball",detail:"1,75× in Höhlen und auf Nachtpfaden."},
+{id:"quick",action:"catchQuick",name:"Flottball",asset:"quick-ball",detail:"2,2× in Runde 1."},
+{id:"master",action:"catchMaster",field:"masterBalls",name:"Meisterball",asset:"master-ball",detail:"Garantierter Fang."}
+],QalphaBallDefByAction=a=>QalphaBallDefs.find(i=>i.action===a),QalphaBallCount=(a,i)=>i.field?(a[i.field]??0):(a.specialBalls?.[i.id]??0),QalphaBallTotal=a=>QalphaBallDefs.reduce((i,d)=>i+QalphaBallCount(a,d),0);function QalphaTakeBall(a,i){if(QalphaBallCount(a,i)<=0)return!1;if(i.field)a[i.field]--;else a.specialBalls??={},a.specialBalls[i.id]=Math.max(0,(a.specialBalls[i.id]??0)-1);return!0}function QalphaGiveSpecialBall(a,i,d=null,r=1){a.specialBalls??={great:0,net:0,dusk:0,quick:0};const u=d??i.pick(["great","great","net","dusk","quick"]);a.specialBalls[u]=(a.specialBalls[u]??0)+r;return u}function QalphaCatchChance(a,i,d,r,u){if(!a)return 0;if(a.id==="master")return 1;let h=1;a.id==="great"?h=1.35:a.id==="ultra"?h=1.8:a.id==="net"&&(h=K[u.species].types.some(m=>m==="water"||m==="bug")?1.65:1):a.id==="dusk"&&(h=d.node?.biome==="cave"||d.node?.biome==="night"?1.75:1):a.id==="quick"&&(h=r.turn<=1?2.2:1);return Math.min(.98,i*h)}'''
+must('const Dc=()=>({',ball_helpers+'const Dc=()=>({','ball definitions and catch helpers')
+
+must('balls:Ve.startBalls,ultraBalls:0,masterBalls:0,potions:',
+     'balls:Ve.startBalls,ultraBalls:0,masterBalls:0,specialBalls:{great:0,net:0,dusk:0,quick:0},potions:',
+     'new run special balls')
+must('balls:Y(a.balls)?Number(a.balls):8,ultraBalls:Y(a.ultraBalls)?Number(a.ultraBalls):0,masterBalls:Y(a.masterBalls)?Number(a.masterBalls):0,potions:',
+     'balls:Y(a.balls)?Number(a.balls):8,ultraBalls:Y(a.ultraBalls)?Number(a.ultraBalls):0,masterBalls:Y(a.masterBalls)?Number(a.masterBalls):0,specialBalls:fe(a.specialBalls)?{great:Y(a.specialBalls.great)?Number(a.specialBalls.great):0,net:Y(a.specialBalls.net)?Number(a.specialBalls.net):0,dusk:Y(a.specialBalls.dusk)?Number(a.specialBalls.dusk):0,quick:Y(a.specialBalls.quick)?Number(a.specialBalls.quick):0}:{great:0,net:0,dusk:0,quick:0},potions:',
+     'migrated run special balls')
+
+# The old route-shop becomes a compact one-choice supply depot. Internally the legacy
+# kind stays "shop" so old saves remain valid; all player-facing copy is replaced.
+must('shop:["PokéMart","Vorräte, Heil- und Held Items"]',
+     'shop:["Versorgungsdepot","Wähle ein Versorgungspaket und zieh weiter"]',
+     'supply depot route label')
+must('shop:{src:tt("ultra-ball"),name:"PokéMart"}',
+     'shop:{src:tt("great-ball"),name:"Versorgungsdepot"}',
+     'supply depot node icon')
+must('const v4={wild:"WILD",trainer:"TRAINER",shop:"SHOP",mystery:',
+     'const v4={wild:"WILD",trainer:"TRAINER",shop:"VERSORGUNG",mystery:',
+     'supply depot route kicker')
+must('shop:["MARKT","Items, Heilung und Build-Werkzeuge kaufen"]',
+     'shop:["VERSORGUNG","Wähle genau ein kompaktes Versorgungspaket"]',
+     'supply depot node help')
+
+supply_reducer = r'''if(i.type==="supplyChoice"&&r.phase==="node"&&r.node?.kind==="shop"){r.specialBalls??={great:0,net:0,dusk:0,quick:0};if(i.choice==="catch"){r.balls+=2,QalphaGiveSpecialBall(r,u,"great"),r.message="Fangset genommen: +2 Pokébälle und +1 Superball."}else if(i.choice==="special"){QalphaGiveSpecialBall(r,u,"quick"),QalphaGiveSpecialBall(r,u,"dusk"),QalphaGiveSpecialBall(r,u,"net"),r.message="Spezialset genommen: +1 Flottball, +1 Finsterball und +1 Netzball."}else if(i.choice==="medic"){r.potions++,r.superPotions=(r.superPotions??0)+1,r.rareCandies++,r.message="Medizinset genommen: +1 Trank, +1 Supertrank und +1 Sonderbonbon."}else return a;Ke(r,u);return r.rng=u.state,d}'''
 # Player-facing currency is consistently named Meta Points. Internal save keys remain metaPoints.
 s=s.replace("Rogue-Punkte","Meta Points").replace("Rogue-Punkt","Meta Point")
 out=ROOT/'public/recovered/v1.0.0-alpha.1-r7.js'
