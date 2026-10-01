@@ -3928,3 +3928,123 @@ body.pr-game-ui .alpha-shell:has(.canvas-overworld) .play-layout>aside{
 @media(prefers-reduced-motion:reduce){
   .canvas-overworld .ow-transition-flash{animation:none}
 }
+
+
+/* ================= WALKABLE CITY HUB ================= */
+
+.ow-city-hub{
+  position:relative;
+  width:min(100%,900px);
+  margin:0 auto;
+  overflow:hidden;
+  border:1px solid #29444c;
+  border-radius:6px;
+  background:#08171b;
+  box-shadow:0 16px 44px rgba(0,0,0,.24);
+}
+
+.ow-city-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 12px;
+  border-bottom:1px solid #29444c;
+  background:#0b1d22;
+}
+
+.ow-city-head div{
+  display:grid;
+  gap:4px;
+}
+
+.ow-city-head small,
+.ow-city-head span{
+  color:#769198;
+  font:700 6px/1.2 "Press Start 2P",monospace;
+}
+
+.ow-city-head strong{
+  color:#dce8e9;
+  font:700 16px/1 "Pixelify Sans",system-ui,sans-serif;
+}
+
+.ow-city-canvas{
+  display:block;
+  width:100%;
+  aspect-ratio:3/2;
+  max-height:62vh;
+  background:#102018;
+  image-rendering:pixelated;
+  image-rendering:crisp-edges;
+}
+
+.ow-city-status{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:9px 12px;
+  border-top:1px solid #29444c;
+  color:#a8bcc1;
+  background:#0b1d22;
+}
+
+.ow-city-status b{
+  color:#e7df86;
+  font:700 8px/1.25 "Press Start 2P",monospace;
+}
+
+.ow-city-status span,
+.ow-city-message{
+  font:700 11px/1.25 "Pixelify Sans",system-ui,sans-serif;
+}
+
+.ow-city-message{
+  margin:0;
+  padding:8px 12px;
+  border-top:1px solid #213840;
+  color:#b8c9cc;
+  background:#0a191d;
+}
+
+.ow-city-service-panel{
+  position:absolute;
+  z-index:90;
+  inset:52px 12px 12px;
+  overflow:auto;
+  padding:12px;
+  border:1px solid #415e66;
+  border-radius:5px;
+  background:rgba(7,17,21,.97);
+  box-shadow:0 14px 45px rgba(0,0,0,.44);
+}
+
+.ow-city-service-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.ow-city-service-title strong{
+  color:#e7df86;
+  font:700 8px/1 "Press Start 2P",monospace;
+}
+
+body.pr-game-ui .alpha-shell .ow-city-service-title button{
+  width:32px!important;
+  min-width:32px!important;
+  min-height:30px!important;
+  padding:0!important;
+  border-radius:3px!important;
+  background:#10252b!important;
+}
+
+@media(max-width:620px){
+  .ow-city-hub{border-radius:3px}
+  .ow-city-canvas{max-height:56vh}
+  .ow-city-status{align-items:flex-start;flex-direction:column;gap:5px}
+  .ow-city-service-panel{inset:48px 6px 6px}
+}
