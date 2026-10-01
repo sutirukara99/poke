@@ -1937,3 +1937,16 @@ body.pr-game-ui .alpha-shell .mystery-event-card button[data-pr-event-tone="safe
   }
   .pr-battle-log-toggle>b{justify-self:end}
 }
+
+
+/* Keyboard route navigation now has a visible cursor, not just hidden state. */
+body.pr-game-ui .alpha-shell .route-node.keyboard-focus:not(:disabled){
+  border-color:#e0c862!important;
+  box-shadow:
+    0 0 0 2px rgba(224,200,98,.18),
+    inset 0 -3px 0 #e0c862!important;
+  transform:translateY(-2px)!important;
+}
+body.pr-game-ui .alpha-shell .route-node.keyboard-focus .node-kicker{
+  color:#f0d875!important;
+}
