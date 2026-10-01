@@ -92,6 +92,7 @@ const signature = (map) =>
     destinations: map.destinations.map(({ id, kind, x, y, room }) => ({ id, kind, x, y, room })),
     pickups: map.pickups,
     secrets: map.secrets,
+    npcs: map.npcs,
   });
 
 const regions = [
@@ -140,6 +141,12 @@ for (const [region, biome] of regions) {
       if (!(mapA.pickups ?? []).some((pickup) => pickup.room === secret.room && pickup.secret)) {
         throw new Error("Secret room has no secret pickup for " + seed);
       }
+    }
+    for (const npc of mapA.npcs ?? []) {
+      if (!reachable.has(npc.x + "," + npc.y)) {
+        throw new Error("Ambient NPC " + npc.id + " is unreachable for " + seed);
+      }
+      if (!npc.dialogue) throw new Error("Ambient NPC has no dialogue for " + seed);
     }
     if (!["clear", "rain", "snow", "mist"].includes(mapA.weather)) {
       throw new Error("Unknown weather for " + seed + ": " + mapA.weather);
