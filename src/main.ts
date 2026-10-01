@@ -1,11 +1,9 @@
 /// <reference types="vite/client" />
 import "./styles/alpha.css";
 import "./styles/game-experience.css";
-import "./styles/maintenance.css";
 import "./styles/design-overhaul.css";
 import "./styles/gameplay-overhaul.css";
 import { ACTIVE_BUILD, RECOVERY_BASELINE } from "./recovery/version";
-import { waitForMaintenanceAccess } from "./cloud/maintenance";
 import { mountCloudAccountUi } from "./cloud/account-ui";
 import { mountAdminUi } from "./cloud/admin-ui";
 import { mountGameGrantSync } from "./cloud/game-grant-sync";
@@ -213,19 +211,8 @@ const bootGame = () => {
   mountGameSoundHooks();
 };
 
-const start = async () => {
-  try {
-    // The recovered game asset is intentionally not requested before this
-    // resolves. Normal visitors therefore stay on the maintenance shell.
-    await waitForMaintenanceAccess();
-    bootGame();
-  } catch (error) {
-    showBootFailure(
-      error instanceof Error
-        ? error.message
-        : "Der Start konnte nicht vorbereitet werden.",
-    );
-  }
+const start = () => {
+  bootGame();
 };
 
-void start();
+start();
