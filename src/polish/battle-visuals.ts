@@ -185,11 +185,35 @@ const queueEnhance = () => {
   });
 };
 
+const BATTLE_SELECTOR =
+  ".gba-battlefield, .type-attack-fx, .enemy-sprite, .player-sprite";
+
+const mutationTouchesBattle = (mutation: MutationRecord) => {
+  const target = mutation.target;
+  if (
+    target instanceof Element &&
+    (target.matches(BATTLE_SELECTOR) || target.closest(".gba-battlefield"))
+  ) {
+    return true;
+  }
+
+  return Array.from(mutation.addedNodes).some(
+    (node) =>
+      node instanceof Element &&
+      (node.matches(BATTLE_SELECTOR) || Boolean(node.querySelector(BATTLE_SELECTOR))),
+  );
+};
+
 export const mountBattleVisualPolish = () => {
   enhanceBattleUi();
 
-  const observer = new MutationObserver(queueEnhance);
-  observer.observe(document.body, {
+  const root = document.getElementById("root");
+  if (!root) return;
+
+  const observer = new MutationObserver((mutations) => {
+    if (mutations.some(mutationTouchesBattle)) queueEnhance();
+  });
+  observer.observe(root, {
     childList: true,
     subtree: true,
     attributes: true,

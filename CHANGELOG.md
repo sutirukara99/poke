@@ -24,6 +24,18 @@
 - Flattened Party, PC, Pokédex, Shop, Loot and Trainer Card presentation to reduce dashboard-style nested cards.
 - Added friendlier empty-state copy and mobile-specific layout rules.
 
+### Journey & profile depth
+- Added biome-specific route flavor lines and compact encounter-type hints for grassland, forest, cave, coast, sea, city, ruins, mountain, volcano, marsh, snow and night routes.
+- Normal route-node weighting now reinforces regional identity: Kanto favors trainers/cities, Johto favors Mystery Events, Hoenn favors wild/nature nodes and Sinnoh favors trainer/event risk.
+- Added a compact route-risk legend that preserves hidden outcomes while making Safe/Balanced/Variable/Dangerous path intent easier to read.
+- Upgraded the Trainer Card with account prestige: completed regions, Hall of Fame entries, Endless best, Pokédex completion, Shinies and achievements.
+- Alpha `First Wave` ownership now appears as an exclusive Trainer Card prestige stamp.
+- Biome context now survives correctly when entering a battle directly or reloading during one.
+
+### Runtime architecture
+- Scoped the battle visual MutationObserver so unrelated UI mutations no longer trigger battle enhancement work.
+- Added typed `playUiSound`, `playBattleSound`, `playRewardSound` and `playSystemSound` hooks via a `pokeregions:sound` event for future audio without coupling gameplay to final sound assets.
+
 ### Consistency & QA
 - Player-facing Rogue Point currency copy is now consistently named **Meta Points** while the internal `metaPoints` save key remains unchanged.
 - Added smoke coverage for region event weighting, the anti-repetition state, the expanded event pool and currency terminology.

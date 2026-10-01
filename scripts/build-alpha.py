@@ -359,6 +359,17 @@ must(',!h)return l.jsx("p",{children:"Der Weg ist still geworden."});',
 must('if(i.type==="leave"&&r.phase==="node"&&((ve=r.node)==null?void 0:ve.kind)!=="mystery"&&Ke(r,u),i.type==="buy"',
      'if(i.type==="emergencyLeave"&&r.phase==="node")return Ke(r,u),r.rng=u.state,d;if(i.type==="leave"&&r.phase==="node"&&((ve=r.node)==null?void 0:ve.kind)!=="mystery"&&Ke(r,u),i.type==="buy"','emergency node exit')
 
+# Region identity also changes the normal route-node mix, not only biome visuals/events.
+must('function E0(a,i){const d=["wild","wild","wild","trainer","trainer","trainer","item","item","mystery","shop","heal","tutor","city"],r=[];for(;r.length<i;){const u=a.pick(d);r.includes(u)||r.push(u)}return r}',
+     'function E0(a,i,d=null){const r=["wild","wild","wild","trainer","trainer","trainer","item","item","mystery","shop","heal","tutor","city"],u={kanto:["trainer","trainer","trainer","city","shop"],johto:["mystery","mystery","mystery","heal","wild"],hoenn:["wild","wild","wild","mystery","item"],sinnoh:["trainer","trainer","mystery","mystery","item"]}[d]??[],h=[...r,...u],m=[];for(;m.length<i;){const y=a.pick(h);m.includes(y)||m.push(y)}return m}',
+     'region route node weighting')
+must('const _=vy(i,d,R,r),L=E0(r,r.int(2,3));',
+     'const _=vy(i,d,R,r),L=E0(r,r.int(2,3),i);',
+     'story route region node weighting')
+must('const b=r.pick(Il[i].defaultBiomes),v=E0(r,r.int(2,3)).map((k,A)=>$u(k,`endless-${d}-${p}-${A}`,`tower-${d}`,`Battle Tower · Karte ${d+1}`,r,b));',
+     'const b=r.pick(Il[i].defaultBiomes),v=E0(r,r.int(2,3),i).map((k,A)=>$u(k,`endless-${d}-${p}-${A}`,`tower-${d}`,`Battle Tower · Karte ${d+1}`,r,b));',
+     'endless route region node weighting')
+
 # Player-facing currency is consistently named Meta Points. Internal save keys remain metaPoints.
 s=s.replace("Rogue-Punkte","Meta Points").replace("Rogue-Punkt","Meta Point")
 out=ROOT/'public/recovered/v1.0.0-alpha.1-r7.js'
