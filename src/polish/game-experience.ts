@@ -408,6 +408,14 @@ const classifyRouteRisk = (node: HTMLElement) => {
   else if (node.classList.contains("node-unknown")) node.dataset.prNodeState = "unknown";
   else node.dataset.prNodeState = "future";
 
+  if (kind === "shop") {
+    const name = node.querySelector<HTMLElement>(".node-copy strong");
+    const detail = node.querySelector<HTMLElement>(".node-copy small");
+    if (name) name.textContent = "Versorgungsdepot";
+    if (detail) detail.textContent = "Kurzer Versorgungsstopp · 1 Paket wählen";
+    node.setAttribute("aria-label", "Versorgungsdepot");
+  }
+
   const icon = node.querySelector<HTMLElement>(".node-icon-shell");
   if (icon && !icon.querySelector(".pr-node-kind-symbol")) {
     const symbol = document.createElement("span");
