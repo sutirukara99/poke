@@ -26,6 +26,7 @@
 
 ### Journey & profile depth
 - Added biome-specific route flavor lines and compact encounter-type hints for grassland, forest, cave, coast, sea, city, ruins, mountain, volcano, marsh, snow and night routes.
+- Normal route-node weighting now reinforces regional identity: Kanto favors trainers/cities, Johto favors Mystery Events, Hoenn favors wild/nature nodes and Sinnoh favors trainer/event risk.
 - Added a compact route-risk legend that preserves hidden outcomes while making Safe/Balanced/Variable/Dangerous path intent easier to read.
 - Upgraded the Trainer Card with account prestige: completed regions, Hall of Fame entries, Endless best, Pokédex completion, Shinies and achievements.
 - Alpha `First Wave` ownership now appears as an exclusive Trainer Card prestige stamp.
