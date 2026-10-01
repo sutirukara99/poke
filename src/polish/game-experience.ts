@@ -49,6 +49,120 @@ const REGIONS: Record<
   },
 };
 
+const BIOMES: Record<
+  string,
+  { label: string; effect: string; flavor: string[] }
+> = {
+  grassland: {
+    label: "ROUTE",
+    effect: "NORMAL · FLUG · PFLANZE",
+    flavor: [
+      "Der Wind bewegt das hohe Gras.",
+      "In der Ferne ruft ein wildes Pokémon.",
+      "Der offene Weg teilt sich vor dir.",
+    ],
+  },
+  forest: {
+    label: "WALD",
+    effect: "PFLANZE · KÄFER · GIFT",
+    flavor: [
+      "Blätter rascheln über dem Pfad.",
+      "Zwischen den Bäumen bewegt sich etwas.",
+      "Feuchte Erde dämpft deine Schritte.",
+    ],
+  },
+  cave: {
+    label: "HÖHLE",
+    effect: "GESTEIN · BODEN · STAHL",
+    flavor: [
+      "Wasser tropft von der Decke.",
+      "Deine Schritte hallen durch den Tunnel.",
+      "Ein Schatten verschwindet hinter einem Felsen.",
+    ],
+  },
+  coast: {
+    label: "KÜSTE",
+    effect: "WASSER · FLUG · REGEN",
+    flavor: [
+      "Salzige Luft zieht über den Weg.",
+      "Wellen schlagen gegen die Felsen.",
+      "Über dem Wasser ziehen dunkle Wolken.",
+    ],
+  },
+  sea: {
+    label: "MEER",
+    effect: "WASSER · EIS · REGEN",
+    flavor: [
+      "Die Strömung verändert den Weg.",
+      "Am Horizont verschwimmt Wasser mit Himmel.",
+      "Unter der Oberfläche zieht ein großer Schatten vorbei.",
+    ],
+  },
+  city: {
+    label: "STADT",
+    effect: "TRAINER · SERVICE · HANDEL",
+    flavor: [
+      "Zwischen den Häusern wird es geschäftiger.",
+      "Trainer sammeln sich entlang der Straße.",
+      "Leuchtreklamen spiegeln sich auf dem Pflaster.",
+    ],
+  },
+  ruins: {
+    label: "RUINEN",
+    effect: "PSYCHO · GEIST · UNLICHT",
+    flavor: [
+      "Verwitterte Zeichen bedecken den Stein.",
+      "Die Luft zwischen den Ruinen wirkt ungewöhnlich still.",
+      "Etwas Altes scheint diesen Ort zu beobachten.",
+    ],
+  },
+  mountain: {
+    label: "GEBIRGE",
+    effect: "GESTEIN · KAMPF · DRACHE",
+    flavor: [
+      "Der Pfad wird steiler und schmaler.",
+      "Kalter Wind zieht über den Grat.",
+      "Lose Steine rollen in die Tiefe.",
+    ],
+  },
+  volcano: {
+    label: "VULKAN",
+    effect: "FEUER · BODEN · SONNE",
+    flavor: [
+      "Hitze flimmert über dem Gestein.",
+      "Schwefel liegt schwer in der Luft.",
+      "Unter deinen Füßen vibriert der Boden.",
+    ],
+  },
+  marsh: {
+    label: "SUMPF",
+    effect: "GIFT · WASSER · BODEN",
+    flavor: [
+      "Der Boden gibt bei jedem Schritt nach.",
+      "Dichter Nebel hängt über dem Wasser.",
+      "Zwischen den Schilfen blubbert es.",
+    ],
+  },
+  snow: {
+    label: "SCHNEE",
+    effect: "EIS · STAHL · HAGEL",
+    flavor: [
+      "Schnee verschluckt fast jedes Geräusch.",
+      "Eisiger Wind fegt über die Route.",
+      "Frische Spuren kreuzen deinen Weg.",
+    ],
+  },
+  night: {
+    label: "NACHTPFAD",
+    effect: "GEIST · UNLICHT · PSYCHO",
+    flavor: [
+      "Der Weg liegt fast vollständig im Schatten.",
+      "Ein Ruf hallt durch die Dunkelheit.",
+      "Zwischen den Bäumen glimmt ein Augenpaar.",
+    ],
+  },
+};
+
 const SCREEN_SELECTORS: Array<[ScreenKey, string]> = [
   ["battle", ".retro-battle-shell, .gba-battlefield"],
   ["loot", ".alpha-loot, .loot-choice-screen"],
@@ -261,21 +375,49 @@ const enhanceRoute = (shell: HTMLElement, run: RecordLike | null) => {
 
   const info = REGIONS[region];
   const biome = currentRouteBiome(run);
+  const biomeInfo = biome ? BIOMES[biome] : null;
   const step =
     typeof run?.mapIndex === "number"
       ? Number(run.mapIndex) + 1
       : typeof run?.step === "number"
         ? Number(run.step) + 1
         : null;
+  const flavorIndex = Math.max(0, (step ?? 1) - 1);
+  const flavor = biomeInfo
+    ? biomeInfo.flavor[flavorIndex % biomeInfo.flavor.length]
+    : info.flavor;
+
+  if (biome) {
+    shell.dataset.prBiome = biome;
+    document.body.dataset.prBiome = biome;
+  } else {
+    delete shell.dataset.prBiome;
+    delete document.body.dataset.prBiome;
+  }
 
   context.innerHTML = `
     <span class="pr-route-region">${info.label}</span>
     <span class="pr-route-copy">
-      <b>${step ? `ETAPPE ${step}` : "EXPEDITION"}</b>
-      <small>${biome ? `${String(biome).toUpperCase()} · ` : ""}${info.flavor}</small>
+      <b>${step ? `ETAPPE ${step}` : "EXPEDITION"}${biomeInfo ? ` · ${biomeInfo.label}` : ""}</b>
+      <small>${flavor}</small>
     </span>
-    <span class="pr-route-identity">${info.identity}</span>
+    <span class="pr-route-identity">${biomeInfo?.effect ?? info.identity}</span>
   `;
+
+  let legend = map.parentElement?.querySelector<HTMLElement>(".pr-route-risk-legend");
+  if (!legend) {
+    legend = document.createElement("div");
+    legend.className = "pr-route-risk-legend";
+    legend.setAttribute("aria-label", "Routenrisiko");
+    legend.innerHTML = `
+      <span data-pr-risk="safe">SAFE</span>
+      <span data-pr-risk="balanced">BALANCED</span>
+      <span data-pr-risk="variable">VARIABLE</span>
+      <span data-pr-risk="dangerous">DANGER</span>
+      <button type="button" title="Die Farbe zeigt nur das ungefähre Risiko. Der genaue Inhalt bleibt verborgen." aria-label="Routenrisiko erklären">?</button>
+    `;
+    context.insertAdjacentElement("afterend", legend);
+  }
 };
 
 const enhanceEvent = (shell: HTMLElement) => {
@@ -296,6 +438,66 @@ const enhanceCollections = (shell: HTMLElement) => {
     .forEach((grid) => {
       grid.dataset.prCollection = "true";
     });
+};
+
+const enhanceTrainerCard = (shell: HTMLElement) => {
+  const card = shell.querySelector<HTMLElement>(".trainer-card");
+  if (!card || card.querySelector(".pr-trainer-prestige")) return;
+
+  const save = getSave();
+  if (!save) return;
+
+  const history = Array.isArray(save.history) ? save.history : [];
+  const championRuns = history
+    .map(asRecord)
+    .filter(
+      (run): run is RecordLike =>
+        Boolean(run && run.mode === "story" && run.result === "win"),
+    );
+  const championRegions = new Set(
+    championRuns
+      .map((run) => getRegionFromValue(run.region))
+      .filter((region): region is RegionKey => Boolean(region)),
+  );
+  const caught = Array.isArray(save.caught) ? save.caught.length : 0;
+  const shiny = Array.isArray(save.shinyCaught) ? save.shinyCaught.length : 0;
+  const achievements = Array.isArray(save.achievements)
+    ? save.achievements.map(String)
+    : [];
+  const endlessBest =
+    typeof save.endlessHighScore === "number" ? save.endlessHighScore : 0;
+  const profile = asRecord(save.profile);
+  const level = typeof profile?.level === "number" ? profile.level : 1;
+  const totalRuns =
+    typeof profile?.totalRuns === "number" ? profile.totalRuns : history.length;
+  const dexPercent = Math.min(100, Math.round((caught / 493) * 100));
+  const firstWave = achievements.includes("first-wave");
+
+  const prestige = document.createElement("section");
+  prestige.className = "pr-trainer-prestige";
+  prestige.innerHTML = `
+    <div class="pr-prestige-head">
+      <span>ACCOUNT PRESTIGE</span>
+      <small>TRAINER LV. ${level} · ${totalRuns} RUNS</small>
+    </div>
+    <div class="pr-prestige-grid">
+      <span><b>${championRegions.size}/4</b><small>REGIONEN</small></span>
+      <span><b>${championRuns.length}</b><small>HALL OF FAME</small></span>
+      <span><b>${endlessBest}</b><small>ENDLESS</small></span>
+      <span><b>${dexPercent}%</b><small>POKÉDEX</small></span>
+      <span><b>${shiny}</b><small>SHINIES</small></span>
+      <span><b>${achievements.length}</b><small>ERFOLGE</small></span>
+    </div>
+    <div class="pr-prestige-stamp ${firstWave ? "is-exclusive" : ""}">
+      ${firstWave ? "✦ FIRST WAVE · EXCLUSIVE" : "POKÉREGIONS TRAINER RECORD"}
+    </div>
+  `;
+
+  const stats = card.querySelector(".trainer-card-stats");
+  (stats ?? card.querySelector(".trainer-card-top"))?.insertAdjacentElement(
+    "afterend",
+    prestige,
+  );
 };
 
 const enhanceShop = (shell: HTMLElement) => {
@@ -460,6 +662,7 @@ const applyExperience = () => {
   enhanceEvent(shell);
   enhanceCollections(shell);
   enhanceShop(shell);
+  enhanceTrainerCard(shell);
   enhanceEmptyStates(shell);
   enhanceBattle(shell, run);
   showScreenTransition(screen, region, run);
