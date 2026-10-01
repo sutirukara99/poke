@@ -557,6 +557,18 @@ must('Tasten 1/2 = Attacken · B = Pokéball · U = Hyperball · M = Meisterball
      '1/2 Attacke · B Ball-Menü · F Flucht · H Trank · Shift+1–6 Wechsel',
      'battle keyboard help matches current controls')
 
+
+# Route keyboard navigation existed already; make the currently selected node visible.
+must('function x4({route:a,step:i,path:d=[],revealed:r,region:u,dispatch:h,arena:m=!1})',
+     'function x4({route:a,step:i,path:d=[],revealed:r,region:u,dispatch:h,arena:m=!1,keyboardNodeId:QalphaKeyboardNodeId=null})',
+     'route keyboard focus prop')
+must('R.eliteTrainer?"elite-trainer":"",R.secret?"secret-route":"",v&&(!R.secret||r)?"":"node-unknown"]',
+     'R.eliteTrainer?"elite-trainer":"",R.secret?"secret-route":"",R.id===QalphaKeyboardNodeId?"keyboard-focus":"",v&&(!R.secret||r)?"":"node-unknown"]',
+     'route keyboard focus class')
+must('revealed:a.fogRevealed||a.activeRelics.includes("cracked-compass"),region:a.region,dispatch:r,arena:!!a.arena',
+     'revealed:a.fogRevealed||a.activeRelics.includes("cracked-compass"),region:a.region,dispatch:r,arena:!!a.arena,keyboardNodeId:(J[oe]?.filter(O=>qu(J,oe,x,Iy(O,!!a.arena))&&(!O.secret||a.fogRevealed||a.activeRelics.includes("cracked-compass")))[QalphaLane]?.id??null)',
+     'route keyboard selection wiring')
+
 # Player-facing currency is consistently named Meta Points. Internal save keys remain metaPoints.
 s=s.replace("Rogue-Punkte","Meta Points").replace("Rogue-Punkt","Meta Point")
 out=ROOT/'public/recovered/v1.0.0-alpha.1-r7.js'
