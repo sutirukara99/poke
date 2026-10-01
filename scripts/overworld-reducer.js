@@ -50,7 +50,7 @@ if(i.type==="overworldInteract"&&r.phase==="map"){
   const Qf=QowFront(Qs),Qpickup=Qm.pickups.find(Q=>(Q.x===Qf.x&&Q.y===Qf.y||Q.x===Qs.x&&Q.y===Qs.y)&&!(Qs.picked??[]).includes(Q.id));
   if(Qpickup){
     Qs.picked??=[],Qs.picked.push(Qpickup.id);
-    const Qroll=u.next();
+    const Qroll=Qpickup.secret?u.next()*.55:u.next();Qpickup.secret&&(r.secretsFound=(r.secretsFound??0)+1);
     if(Qroll<.16){
       const Qdisc=QjourneyFindDiscovery(r.region,d.worldDiscoveries??[],u);
       if(Qdisc){d.worldDiscoveries??=[],d.worldDiscoveries.includes(Qdisc.id)||d.worldDiscoveries.push(Qdisc.id),r.secretsFound=(r.secretsFound??0)+1,Qs.lastMessage="✦ "+Qdisc.name+" entdeckt! "+QjourneyApplyDiscovery(r,Qdisc)}
@@ -58,7 +58,7 @@ if(i.type==="overworldInteract"&&r.phase==="map"){
     }else if(Qroll<.42)r.balls++,Qs.lastMessage="Du findest einen Pokéball.";
     else if(Qroll<.68)r.potions++,Qs.lastMessage="Du findest einen Trank.";
     else if(Qroll<.85)r.superPotions++,Qs.lastMessage="Du findest einen Supertrank.";
-    else{const Qmoney=u.int(90,220);r.money+=Qmoney,Qs.lastMessage="Du findest "+Qmoney+" ₽."}
+    else{const Qmoney=u.int(90,220);r.money+=Qmoney,Qs.lastMessage="Du findest "+Qmoney+" ₽."}Qpickup.secret&&(Qs.lastMessage="Geheimfund! "+Qs.lastMessage)
     r.rng=u.state;
     return d
   }
