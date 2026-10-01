@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 
 const js = await readFile(new URL("../public/recovered/v1.0.0-alpha.1-r7.js", import.meta.url), "utf8");
+const gameplayCss = await readFile(new URL("../src/styles/gameplay-overhaul.css", import.meta.url), "utf8");
 const required = [
   "1.0.0-alpha.1",
   "QalphaAscensionMax",
@@ -69,6 +70,17 @@ if (missing.length) {
   throw new Error(`Alpha smoke check failed; missing markers: ${missing.join(", ")}`);
 }
 if (js.length < 700_000) throw new Error(`Alpha bundle unexpectedly small: ${js.length}`);
+
+if (gameplayCss.includes('background-image:url("/ui/overworld/frlg/general-tiles.png")')) {
+  throw new Error("Raw FireRed decomp tile sheet is still being used as a CSS atlas.");
+}
+if (!gameplayCss.includes(".ow-tile.ow-unseen")) throw new Error("Fog-of-war CSS is missing.");
+if (!gameplayCss.includes(".ow-wall")) throw new Error("Roguelike wall tiles are missing.");
+if (!gameplayCss.includes(".ow-floor-meta")) throw new Error("Roguelike floor HUD styling is missing.");
+if (!gameplayCss.includes(".alpha-shell:has(.free-roam-overworld)>.pr-game-chrome")) {
+  throw new Error("Legacy website chrome is not hidden during free-roam.");
+}
+
 
 console.log(`Alpha smoke check passed (${js.length} chars, ${required.length} system markers).`);
 const forbidden = [
@@ -139,9 +151,13 @@ if (!js.includes('QjourneyDiscoveryPools')) throw new Error("Regional Journey di
 if (!js.includes('d.worldDiscoveries??=[]')) throw new Error("Persistent world discovery migration is missing.");
 if (!js.includes('QjourneyFindDiscovery(r.region,d.worldDiscoveries??[],u)')) throw new Error("Overworld discoveries are not checked against account-wide finds.");
 if (!js.includes('free-roam-overworld')) throw new Error("Free-roam overworld presentation is missing.");
+if (!js.includes('const QowW=31,QowH=21')) throw new Error("Roguelike floor dimensions are missing.");
+if (!js.includes('const QowVisible=')) throw new Error("Fog-of-war visibility helper is missing.");
+if (!js.includes('seen:QowVisible(QowSpawn.x,QowSpawn.y)')) throw new Error("Persisted fog-of-war state is missing.");
+if (!js.includes('rooms:[...L].map')) throw new Error("Room-based floor generation is missing.");
 if (!js.includes('className:"ow-map"')) throw new Error("Free-roam tile map is missing.");
 if (!js.includes('className:"ow-player"')) throw new Error("Overworld player sprite is missing.");
-if (!js.includes('className:"ow-dialogue"')) throw new Error("Overworld dialogue UI is missing.");
+if (!js.includes('className:"ow-floor-meta"')) throw new Error("Roguelike floor prompt is missing.");
 if (!js.includes('/ui/overworld/frlg/red-normal.png') && !js.includes('ow-player')) throw new Error("FireRed overworld player integration is missing.");
 if (js.includes('className:`route-map mini-map pixel-map-crawler')) throw new Error("Legacy visible node-map renderer still exists.");
 if (js.includes("Knoten")) throw new Error("Player-facing node terminology remains in Journey build.");
