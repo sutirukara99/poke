@@ -411,9 +411,15 @@ const classifyRouteRisk = (node: HTMLElement) => {
   if (kind === "shop") {
     const name = node.querySelector<HTMLElement>(".node-copy strong");
     const detail = node.querySelector<HTMLElement>(".node-copy small");
-    if (name) name.textContent = "Versorgungsdepot";
-    if (detail) detail.textContent = "Kurzer Versorgungsstopp · 1 Paket wählen";
-    node.setAttribute("aria-label", "Versorgungsdepot");
+    if (name?.textContent !== "Versorgungsdepot") {
+      if (name) name.textContent = "Versorgungsdepot";
+    }
+    if (detail?.textContent !== "Kurzer Versorgungsstopp · 1 Paket wählen") {
+      if (detail) detail.textContent = "Kurzer Versorgungsstopp · 1 Paket wählen";
+    }
+    if (node.getAttribute("aria-label") !== "Versorgungsdepot") {
+      node.setAttribute("aria-label", "Versorgungsdepot");
+    }
   }
 
   const icon = node.querySelector<HTMLElement>(".node-icon-shell");
@@ -708,15 +714,28 @@ const enhanceRoute = (shell: HTMLElement, run: RecordLike | null) => {
 
   renderRouteBoardPanels(shell, map, run, region, biome);
 
-  context.innerHTML = `
-    <span class="pr-route-region">${info.label}</span>
-    <span class="pr-route-copy">
-      <b>${step ? `ETAPPE ${step}` : "EXPEDITION"}${biomeInfo ? ` · ${biomeInfo.label}` : ""}</b>
-      <small>${flavor}</small>
-    </span>
-    <span class="pr-route-progress-chip"><b>${String(currentRouteStep).padStart(2, "0")}</b><small>/${String(Math.max(routeRows, currentRouteStep)).padStart(2, "0")}</small></span>
-    <span class="pr-route-identity">${biomeInfo?.effect ?? info.identity}</span>
-  `;
+  const contextSignature = [
+    region,
+    biome ?? "",
+    step ?? "",
+    currentRouteStep,
+    routeRows,
+    flavor,
+    biomeInfo?.effect ?? info.identity,
+  ].join("|");
+
+  if (context.dataset.prRouteContextSignature !== contextSignature) {
+    context.dataset.prRouteContextSignature = contextSignature;
+    context.innerHTML = `
+      <span class="pr-route-region">${info.label}</span>
+      <span class="pr-route-copy">
+        <b>${step ? `ETAPPE ${step}` : "EXPEDITION"}${biomeInfo ? ` · ${biomeInfo.label}` : ""}</b>
+        <small>${flavor}</small>
+      </span>
+      <span class="pr-route-progress-chip"><b>${String(currentRouteStep).padStart(2, "0")}</b><small>/${String(Math.max(routeRows, currentRouteStep)).padStart(2, "0")}</small></span>
+      <span class="pr-route-identity">${biomeInfo?.effect ?? info.identity}</span>
+    `;
+  }
 
   let legend = map.parentElement?.querySelector<HTMLElement>(".pr-route-risk-legend");
   if (!legend) {
@@ -1534,7 +1553,19 @@ export const mountGameExperience = () => {
   applyExperience();
 
   const root = document.getElementById("root") ?? document.body;
-  const observer = new MutationObserver(queueExperience);
+  const observer = new MutationObserver((mutations) => {
+    const relevant = mutations.some((mutation) => {
+      const target =
+        mutation.target instanceof Element
+          ? mutation.target
+          : mutation.target.parentElement;
+      if (!target) return true;
+      return !target.closest(
+        ".pr-route-context, .pr-route-board-side, .pr-route-scenery, .pr-city-summary, .pr-screen-transition, .pr-battle-intro, .pr-shiny-burst",
+      );
+    });
+    if (relevant) queueExperience();
+  });
   observer.observe(root, { childList: true, subtree: true });
 
   window.addEventListener("storage", queueExperience);
