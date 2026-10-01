@@ -4048,3 +4048,90 @@ body.pr-game-ui .alpha-shell .ow-city-service-title button{
   .ow-city-status{align-items:flex-start;flex-direction:column;gap:5px}
   .ow-city-service-panel{inset:48px 6px 6px}
 }
+
+
+/* Mobile controls stay out of the desktop reference layout. */
+.ow-touch-controls{
+  display:none;
+}
+
+@media (max-width:900px) and (pointer:coarse){
+  .ow-touch-controls{
+    position:absolute;
+    z-index:68;
+    left:10px;
+    right:10px;
+    bottom:46px;
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:16px;
+    pointer-events:none;
+  }
+
+  .ow-touch-dpad{
+    position:relative;
+    width:126px;
+    height:126px;
+    pointer-events:auto;
+  }
+
+  .ow-touch-dpad button,
+  .ow-touch-actions button{
+    position:absolute;
+    display:grid!important;
+    place-items:center!important;
+    width:42px!important;
+    min-width:42px!important;
+    height:42px!important;
+    min-height:42px!important;
+    padding:0!important;
+    border:1px solid rgba(175,203,208,.42)!important;
+    border-radius:9px!important;
+    background:rgba(8,24,29,.80)!important;
+    color:#e1ecee!important;
+    box-shadow:0 3px 10px rgba(0,0,0,.26)!important;
+    backdrop-filter:blur(4px);
+    font:700 14px/1 "Pixelify Sans",system-ui,sans-serif!important;
+    -webkit-user-select:none;
+    user-select:none;
+    touch-action:none;
+  }
+
+  .ow-touch-dpad .up{left:42px;top:0}
+  .ow-touch-dpad .left{left:0;top:42px}
+  .ow-touch-dpad .right{right:0;top:42px}
+  .ow-touch-dpad .down{left:42px;bottom:0}
+
+  .ow-touch-actions{
+    position:relative;
+    width:118px;
+    height:100px;
+    pointer-events:auto;
+  }
+
+  .ow-touch-actions .a{
+    right:0;
+    bottom:8px;
+    width:58px!important;
+    min-width:58px!important;
+    height:58px!important;
+    min-height:58px!important;
+    border-radius:50%!important;
+    color:#f1e884!important;
+    font-size:20px!important;
+  }
+
+  .ow-touch-actions .menu{
+    left:0;
+    top:4px;
+    width:38px!important;
+    min-width:38px!important;
+    height:32px!important;
+    min-height:32px!important;
+  }
+
+  .ow-city-hub .ow-touch-controls{
+    bottom:72px;
+  }
+}
