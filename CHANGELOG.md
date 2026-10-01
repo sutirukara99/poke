@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.0.0-alpha.1 Canvas Overworld Engine Rebuild — 2026-10-02
+
+### Kein DOM-Floor mehr
+- Der bisherige React-/DOM-Tile-Prototyp wurde als eigentliche Overworld ersetzt. Die Spielwelt läuft jetzt über einen isolierten **Canvas-2D-Renderer**; React bleibt für HUD, Menüs und Dialoge zuständig.
+- Die Welt nutzt eine feste interne Pixel-Auflösung, lokale Overworld-Assets und einen eigenen Render-/Kamera-Loop statt hunderter Tile-Elemente.
+
+### Neuer prozeduraler Kern
+- Floors sind jetzt **45×31 Tiles** groß und entstehen aus einem logischen Raumgraphen mit Räumen, Korridoren, Schleifen, Nebenbereichen, Loot-Räumen und physischen Rogue-Zielen.
+- Der Generator trennt Layout und Biom-Painting. Kanto, Johto, Hoenn und Sinnoh besitzen eigene Biases; zusätzlich sind Wald, Höhle, Küste, Stadt, Ruinen, Berge, Vulkan, Moor, Schnee und Nacht als Profile vorbereitet.
+- Jeder Floor wird vor Nutzung per BFS auf Spawn, Ziele und Pickups validiert. Nach deterministischen Regenerationsversuchen greift eine sichere Fallback-Map.
+
+### Pokémon-Spielgefühl
+- Held-Key-Bewegung mit WASD/Pfeiltasten und visuellem Tweening.
+- Hohes Gras verwendet einen steigenden **Gefahr-Meter** statt eines starren Zufallswurfs pro Schritt.
+- Wilde Gras-Begegnungen kehren nach dem Kampf auf denselben Floor und dieselbe Position zurück.
+- Trainer besitzen gerichtete Sichtlinien; Wände und Hindernisse blockieren ihre Sicht.
+- Item-Bälle, Partner-Pokémon, Trainer-/NPC-Sprites und Arena-Schilder bleiben physisch in der Welt.
+
+### Engine & QA
+- Overworld-Code wurde aus dem großen Alpha-Patcher in eigene Runtime-, Reducer- und Component-Fragmente ausgelagert.
+- **F2** öffnet ein Developer-Overlay mit Position, Seed, Floor-Key, Biom, Generator-Versuch, Raumanzahl, Gefahr und Fog-Status.
+- Neuer CI-Test validiert 120 deterministische Floors über alle vier Regionen auf Reproduzierbarkeit, Connectivity, gültige Pickups, Fog und Trainer-Sicht.
+- Die Architektur und Integrationsregeln sind in `OVERWORLD.md` dokumentiert.
+- Wartungsmodus bleibt bis zum internen Playtest aktiv.
+
 ## 1.0.0-alpha.1 Roguelike Overworld Cleanup — 2026-10-02
 
 ### Floor statt Webseiten-Panel
