@@ -311,7 +311,7 @@ begin
       trainer_name,
       score,
       updated_at,
-      count(*) over ()::bigint as player_count
+      (count(*) over ())::bigint as player_count
     from scores
   )
   select
