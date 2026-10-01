@@ -674,6 +674,10 @@ s=s[:city0]+city_component+s[city1:]
 # Disable legacy A/D node-lane navigation while the free-roam world owns keyboard input.
 s=s.replace('if(a.phase!=="map")return;const O=J[oe]?.filter(', 'if(a.phase!=="map"||document.querySelector(".free-roam-overworld"))return;const O=J[oe]?.filter(',1)
 
+# Movement is continuous gameplay, not a menu click. Keep the existing audio mixer
+# for interactions/battles without creating an AudioContext on every walked tile.
+s=s.replace('Z||xs(Te,!i.settings.sfxMuted),d(S=>Ry(S,N))','(Z||N.type==="overworldMove"||N.type==="overworldDebug")||xs(Te,!i.settings.sfxMuted),d(S=>Ry(S,N))',1)
+
 # Pass live run state into Journey and make keyboard confirm use Journey travel.
 s=s.replace('l.jsx(x4,{route:J,step:oe,','l.jsx(x4,{run:a,route:J,step:oe,',1)
 s=s.replace('Ut&&r({type:"node",id:Ut.id})','Ut&&r({type:"journeyTravel",id:Ut.id})',1)
