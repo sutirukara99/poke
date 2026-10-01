@@ -93,6 +93,13 @@ if (!js.includes('kanto:["trainer","trainer","trainer","city","shop"]')) throw n
 if (!js.includes('johto:["mystery","mystery","mystery","heal","wild"]')) throw new Error("Johto route-node identity weighting missing");
 if (!js.includes('hoenn:["wild","wild","wild","mystery","item"]')) throw new Error("Hoenn route-node identity weighting missing");
 if (!js.includes('sinnoh:["trainer","trainer","mystery","mystery","item"]')) throw new Error("Sinnoh route-node identity weighting missing");
+if (!js.includes('scavenger:["item","item"]')) throw new Error("Trainer class route identity missing");
+if (!js.includes('scientist:["item","tutor"]')) throw new Error("Researcher route identity missing");
+if (!js.includes('breeder:["wild","heal"]')) throw new Error("Breeder route identity missing");
+if (!js.includes('a.route=ph(yh(a.seed,a.region,a.mapIndex),a.region,a.mapIndex,a.trainerClass)')) throw new Error("Story class identity is not persisted between maps");
+if (!js.includes('a.route=gh(bh(a.seed,a.endlessMap),a.region,a.endlessMap,a.trainerClass)')) throw new Error("Endless class identity is not persisted between maps");
+if (!js.includes('p.types.length&&p.types.some(b=>Ls[h]?.types.includes(b))')) throw new Error("Biome trainer archetype weighting missing");
+if (!js.includes("mehr Wild- und Fundpfade")) throw new Error("Player-facing class route identity copy missing");
 
 if (!js.includes('kanto:["rocket-scout","lost-backpack","lost-trainer","traveling-nurse"]')) throw new Error("Kanto event identity weighting missing");
 if (!js.includes('hoenn:["berry-bush","fisher-jetty","weather-station","pokemon-nest"]')) throw new Error("Hoenn event identity weighting missing");
