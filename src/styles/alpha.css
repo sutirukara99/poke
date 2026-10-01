@@ -2961,3 +2961,621 @@ body{
     text-align:left;
   }
 }
+
+
+/* ==========================================================================
+   1.0 ALPHA · BATTLE VISUAL POLISH
+   Region-authentic battle backdrops, animated Pokémon and stronger move VFX.
+   ========================================================================== */
+
+.alpha-shell .retro-battle-shell{
+  position:relative;
+  overflow:visible;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.03),transparent 28%),
+    linear-gradient(180deg,#172a36,#10202a)!important;
+  border-color:#526a78!important;
+  box-shadow:
+    inset 0 1px 0 #ffffff12,
+    0 4px 0 #071019,
+    0 14px 36px #0005!important;
+}
+
+.alpha-shell .retro-battle-title{
+  min-height:36px;
+  margin:0 0 10px!important;
+  padding:8px 10px;
+  border:2px solid #526a78;
+  background:linear-gradient(180deg,#1e3442,#132630);
+  color:#eef6f7!important;
+  box-shadow:inset 0 0 0 2px #ffffff08,0 3px 0 #071019;
+}
+
+.alpha-shell .retro-battle-title>b{
+  color:#f3d674;
+}
+
+.alpha-shell .battle-roster{
+  margin:0 0 10px;
+  border-color:#4f6877!important;
+  background:linear-gradient(180deg,#182d39,#10212a)!important;
+  color:#eef5f8!important;
+  box-shadow:inset 0 1px #ffffff0a;
+}
+
+.alpha-shell .battle-context-pills{
+  gap:6px;
+  margin-bottom:8px;
+}
+
+.alpha-shell .battle-context-pills>span{
+  border:1px solid #5a7381!important;
+  background:#132833!important;
+  color:#d8e7ed!important;
+  box-shadow:inset 0 1px #ffffff0c;
+}
+
+.alpha-shell .gba-battlefield{
+  --pr-battle-bg:none;
+  position:relative;
+  height:clamp(350px,48vw,440px)!important;
+  min-height:350px;
+  overflow:hidden;
+  border:4px solid #0d1720!important;
+  background-image:
+    linear-gradient(180deg,rgba(255,255,255,.05),rgba(5,12,18,.12)),
+    var(--pr-battle-bg)!important;
+  background-position:center!important;
+  background-size:cover!important;
+  background-repeat:no-repeat!important;
+  image-rendering:pixelated;
+  box-shadow:
+    inset 0 0 0 3px #ffffff45,
+    inset 0 -80px 90px #06101b33,
+    0 5px 0 #071019,
+    0 14px 34px #0005!important;
+  isolation:isolate;
+  animation:prBattleSceneIn .32s ease-out both;
+}
+
+.alpha-shell .gba-battlefield[data-pr-region="kanto"]{
+  --pr-battle-bg:url("https://play.pokemonshowdown.com/fx/bg-gen1.png");
+}
+
+.alpha-shell .gba-battlefield[data-pr-region="johto"]{
+  --pr-battle-bg:url("https://play.pokemonshowdown.com/fx/bg-gen2.png");
+}
+
+.alpha-shell .gba-battlefield[data-pr-region="hoenn"]{
+  --pr-battle-bg:url("https://play.pokemonshowdown.com/fx/bg-gen3.png");
+}
+
+.alpha-shell .gba-battlefield[data-pr-region="hoenn"][data-pr-terrain="water"]{
+  --pr-battle-bg:url("https://play.pokemonshowdown.com/fx/bg-gen3-ocean.png");
+}
+
+.alpha-shell .gba-battlefield[data-pr-region="hoenn"][data-pr-terrain="cave"]{
+  --pr-battle-bg:url("https://play.pokemonshowdown.com/fx/bg-gen3-cave.png");
+}
+
+.alpha-shell .gba-battlefield[data-pr-region="hoenn"][data-pr-terrain="arena"]{
+  --pr-battle-bg:url("https://play.pokemonshowdown.com/fx/bg-gen3-arena.png");
+}
+
+.alpha-shell .gba-battlefield[data-pr-region="sinnoh"]{
+  --pr-battle-bg:url("https://play.pokemonshowdown.com/fx/bg-gen4.png");
+}
+
+.alpha-shell .gba-battlefield[data-pr-region="sinnoh"][data-pr-terrain="water"]{
+  --pr-battle-bg:url("https://play.pokemonshowdown.com/fx/bg-gen4-water.png");
+}
+
+.alpha-shell .gba-battlefield[data-pr-region="sinnoh"][data-pr-terrain="cave"]{
+  --pr-battle-bg:url("https://play.pokemonshowdown.com/fx/bg-gen4-cave.png");
+}
+
+.alpha-shell .gba-battlefield[data-pr-region="sinnoh"][data-pr-terrain="arena"]{
+  --pr-battle-bg:url("https://play.pokemonshowdown.com/fx/bg-gen4-indoors.png");
+}
+
+.alpha-shell .gba-battlefield[data-pr-region="sinnoh"][data-pr-terrain="snow"]{
+  --pr-battle-bg:url("https://play.pokemonshowdown.com/fx/bg-gen4-snow.png");
+}
+
+.alpha-shell .gba-battlefield:before{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:0!important;
+  opacity:1!important;
+  pointer-events:none!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.03),transparent 38%),
+    radial-gradient(circle at 50% 48%,transparent 0 42%,rgba(4,10,15,.22) 100%),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.022) 0 1px,transparent 1px 4px)!important;
+}
+
+.alpha-shell .gba-battlefield[data-pr-region]:after{
+  content:attr(data-pr-region-label);
+  position:absolute;
+  right:8px;
+  top:8px;
+  z-index:9;
+  padding:5px 7px;
+  border:1px solid #ffffff8a;
+  background:#08121bbd;
+  color:#f7f4d7;
+  font:700 6px/1 "Press Start 2P",monospace;
+  letter-spacing:.04em;
+  text-shadow:1px 1px #000;
+  box-shadow:2px 2px #0007;
+  pointer-events:none;
+}
+
+.alpha-shell .gba-battlefield .battle-platform{
+  z-index:1!important;
+  opacity:.82;
+  border-width:3px!important;
+  box-shadow:
+    inset 0 0 0 4px rgba(255,255,255,.25),
+    0 5px 10px #0003!important;
+  filter:saturate(.85);
+}
+
+.alpha-shell .gba-battlefield[data-pr-region] .battle-platform{
+  background:rgba(224,231,214,.58)!important;
+  border-color:#13202a!important;
+}
+
+.alpha-shell .gba-battlefield[data-pr-terrain="water"] .battle-platform{
+  background:rgba(208,235,244,.68)!important;
+}
+
+.alpha-shell .gba-battlefield[data-pr-terrain="cave"] .battle-platform{
+  background:rgba(153,138,114,.7)!important;
+}
+
+.alpha-shell .gba-battlefield[data-pr-terrain="arena"] .battle-platform{
+  background:rgba(230,218,177,.7)!important;
+}
+
+.alpha-shell .gba-battlefield .enemy-sprite,
+.alpha-shell .gba-battlefield .player-sprite{
+  z-index:4!important;
+  object-fit:contain;
+  image-rendering:pixelated;
+  transform-origin:center bottom;
+  filter:
+    drop-shadow(0 3px 0 #0008)
+    drop-shadow(0 10px 11px #0005)!important;
+  will-change:transform,filter;
+}
+
+.alpha-shell .gba-battlefield .enemy-sprite{
+  width:158px!important;
+  height:158px!important;
+  right:50px!important;
+  top:72px!important;
+  animation:prEnemyIdle 2.4s ease-in-out infinite;
+}
+
+.alpha-shell .gba-battlefield .player-sprite{
+  width:204px!important;
+  height:204px!important;
+  left:38px!important;
+  bottom:42px!important;
+  animation:prPlayerIdle 2.6s ease-in-out infinite;
+}
+
+.alpha-shell .gba-battlefield.player-acting .player-sprite{
+  animation:prPlayerAttack .48s cubic-bezier(.18,.75,.25,1) both!important;
+}
+
+.alpha-shell .gba-battlefield.enemy-acting .enemy-sprite{
+  animation:prEnemyAttack .48s cubic-bezier(.18,.75,.25,1) both!important;
+}
+
+.alpha-shell .gba-battlefield .enemy-sprite.sprite-hit{
+  animation:prEnemyHit .34s steps(4) both!important;
+}
+
+.alpha-shell .gba-battlefield .player-sprite.sprite-hit{
+  animation:prPlayerHit .34s steps(4) both!important;
+}
+
+.alpha-shell .gba-battlefield.critical-impact{
+  animation:prCriticalShake .28s steps(5)!important;
+}
+
+.alpha-shell .gba-hp-box{
+  z-index:7!important;
+  border:3px solid #13202a!important;
+  background:linear-gradient(180deg,#ffffed,#e6e1bc)!important;
+  box-shadow:
+    inset 0 0 0 2px #fffef2,
+    inset 0 0 0 5px #c0ba91,
+    4px 5px 0 #0007,
+    0 9px 18px #0003!important;
+}
+
+.alpha-shell .gba-hp-box .health-track{
+  overflow:hidden;
+  height:13px!important;
+  border-radius:2px!important;
+  box-shadow:inset 0 0 0 1px #0008;
+}
+
+.alpha-shell .gba-hp-box .health-track span{
+  transition:width .28s steps(8)!important;
+  box-shadow:inset 0 2px #ffffff45;
+}
+
+.alpha-shell .type-attack-fx{
+  z-index:12!important;
+  mix-blend-mode:normal!important;
+}
+
+.alpha-shell .type-attack-fx .attack-fx-core{
+  opacity:.32;
+  filter:blur(.2px);
+}
+
+.alpha-shell .type-attack-fx .pr-attack-asset{
+  position:absolute;
+  z-index:5;
+  width:72px;
+  height:72px;
+  object-fit:contain;
+  image-rendering:pixelated;
+  pointer-events:none;
+  filter:
+    drop-shadow(0 0 5px var(--fx))
+    drop-shadow(0 0 12px var(--fx2));
+}
+
+.alpha-shell .type-attack-fx.fx-player .pr-attack-asset{
+  left:22%;
+  top:61%;
+  animation:prAttackAssetPlayer .64s cubic-bezier(.18,.74,.18,1) both;
+}
+
+.alpha-shell .type-attack-fx.fx-enemy .pr-attack-asset{
+  right:21%;
+  top:34%;
+  animation:prAttackAssetEnemy .64s cubic-bezier(.18,.74,.18,1) both;
+}
+
+.alpha-shell .type-attack-fx .pr-attack-impact{
+  position:absolute;
+  z-index:4;
+  width:92px;
+  height:92px;
+  border-radius:50%;
+  opacity:0;
+  background:
+    radial-gradient(circle,#fff 0 8%,var(--fx) 9% 22%,transparent 23% 40%,var(--fx2) 41% 44%,transparent 45%);
+  filter:drop-shadow(0 0 12px var(--fx));
+  pointer-events:none;
+}
+
+.alpha-shell .type-attack-fx.fx-player .pr-attack-impact{
+  right:11%;
+  top:25%;
+  animation:prImpactBurst .44s .29s ease-out both;
+}
+
+.alpha-shell .type-attack-fx.fx-enemy .pr-attack-impact{
+  left:11%;
+  bottom:14%;
+  animation:prImpactBurst .44s .29s ease-out both;
+}
+
+.alpha-shell .type-attack-fx.fx-electric .pr-attack-asset{
+  width:98px;
+  height:98px;
+}
+
+.alpha-shell .type-attack-fx.fx-water .pr-attack-asset,
+.alpha-shell .type-attack-fx.fx-fire .pr-attack-asset,
+.alpha-shell .type-attack-fx.fx-psychic .pr-attack-asset,
+.alpha-shell .type-attack-fx.fx-ghost .pr-attack-asset{
+  width:82px;
+  height:82px;
+}
+
+.alpha-shell .weather-particles{
+  z-index:10!important;
+}
+
+.alpha-shell .shiny-reveal{
+  z-index:13!important;
+  background:radial-gradient(circle at 75% 35%,#ffffff2b,#10101891 45%,#101018b8)!important;
+}
+
+.alpha-shell .damage-pop{
+  z-index:15!important;
+  min-width:58px;
+  padding:5px 8px!important;
+  border:2px solid #1b2028!important;
+  background:#fff8da!important;
+  color:#a62f3f!important;
+  box-shadow:3px 3px #0008!important;
+  text-shadow:none!important;
+  animation:prDamagePop .72s cubic-bezier(.18,.8,.22,1) both!important;
+}
+
+.alpha-shell .damage-pop.critical{
+  background:#ffe38a!important;
+  color:#7a1a28!important;
+}
+
+.alpha-shell .gba-attack-button{
+  position:relative;
+  overflow:hidden;
+  transition:
+    transform .12s ease,
+    filter .12s ease,
+    box-shadow .12s ease!important;
+}
+
+.alpha-shell .gba-attack-button:before{
+  content:"";
+  position:absolute;
+  inset:2px;
+  border-top:2px solid #ffffff45;
+  border-left:2px solid #ffffff20;
+  pointer-events:none;
+}
+
+.alpha-shell .gba-attack-button:hover:not(:disabled){
+  transform:translateY(-2px);
+  filter:brightness(1.08) saturate(1.06);
+  box-shadow:inset 0 0 0 2px #fff7,0 8px #181818!important;
+}
+
+.alpha-shell .gba-attack-button:focus-visible,
+.alpha-shell button:focus-visible,
+.alpha-shell select:focus-visible,
+.alpha-shell input:focus-visible{
+  outline:3px solid #f3d674!important;
+  outline-offset:3px!important;
+}
+
+.alpha-shell .battle-log{
+  border-color:#4f6572!important;
+  background:
+    linear-gradient(180deg,#f9f7df,#e8e1ba)!important;
+  box-shadow:
+    inset 0 0 0 3px #fffde9,
+    0 4px 0 #08131d!important;
+}
+
+.alpha-shell .battle-log p:last-child{
+  font-weight:700;
+}
+
+.alpha-shell .battle-tip{
+  margin-top:10px!important;
+  color:#9fb1ba!important;
+}
+
+/* Overall interface polish */
+.alpha-shell .panel{
+  border-color:#48606e;
+  box-shadow:
+    inset 0 1px #ffffff0a,
+    0 4px 0 #071019,
+    0 12px 28px #0003;
+}
+
+.alpha-shell .menu-grid button,
+.alpha-shell .passport-actions button,
+.alpha-shell .city-services button,
+.alpha-shell .node-options button,
+.alpha-shell .shop-grid button,
+.alpha-shell .item-chip-grid button{
+  transition:
+    transform .12s ease,
+    filter .12s ease,
+    border-color .12s ease,
+    box-shadow .12s ease!important;
+}
+
+@media (hover:hover) and (pointer:fine){
+  .alpha-shell .menu-grid button:hover:not(:disabled),
+  .alpha-shell .passport-actions button:hover:not(:disabled),
+  .alpha-shell .city-services button:hover:not(:disabled),
+  .alpha-shell .shop-grid button:hover:not(:disabled),
+  .alpha-shell .item-chip-grid button:hover:not(:disabled){
+    transform:translateY(-2px);
+    filter:brightness(1.06);
+  }
+}
+
+.alpha-shell .trainer-passport,
+.alpha-shell .menu-library,
+.alpha-shell .party,
+.alpha-shell .shop,
+.alpha-shell .pokedex-head{
+  box-shadow:
+    inset 0 1px #ffffff0b,
+    0 5px 0 #071019,
+    0 16px 34px #0003!important;
+}
+
+.alpha-shell .menu-grid button{
+  border-color:#58707e!important;
+  background:linear-gradient(180deg,#1d3441,#142731)!important;
+}
+
+.alpha-shell .menu-grid button .menu-copy strong{
+  color:#eef6f7!important;
+}
+
+.alpha-shell .menu-grid button .menu-copy small{
+  color:#9fb4bf!important;
+}
+
+.alpha-shell .health-track span,
+.alpha-shell .trainer-xp-bar span{
+  box-shadow:inset 0 2px #ffffff35;
+}
+
+.alpha-shell ::-webkit-scrollbar{
+  width:10px;
+  height:10px;
+}
+
+.alpha-shell ::-webkit-scrollbar-track{
+  background:#0d1a22;
+}
+
+.alpha-shell ::-webkit-scrollbar-thumb{
+  border:2px solid #0d1a22;
+  background:#4f6977;
+}
+
+.alpha-shell ::-webkit-scrollbar-thumb:hover{
+  background:#718b99;
+}
+
+@keyframes prBattleSceneIn{
+  from{opacity:.7;transform:translateY(6px);filter:brightness(.82)}
+  to{opacity:1;transform:translateY(0);filter:brightness(1)}
+}
+
+@keyframes prPlayerIdle{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-4px) scale(1.01)}
+}
+
+@keyframes prEnemyIdle{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-3px) scale(1.012)}
+}
+
+@keyframes prPlayerAttack{
+  0%{transform:translate(0,0) scale(1)}
+  26%{transform:translate(16px,-9px) scale(1.035)}
+  48%{transform:translate(48px,-28px) scale(1.055)}
+  70%{transform:translate(28px,-14px) scale(.99)}
+  100%{transform:translate(0,0) scale(1)}
+}
+
+@keyframes prEnemyAttack{
+  0%{transform:translate(0,0) scale(1)}
+  26%{transform:translate(-14px,8px) scale(1.035)}
+  48%{transform:translate(-42px,25px) scale(1.055)}
+  70%{transform:translate(-23px,13px) scale(.99)}
+  100%{transform:translate(0,0) scale(1)}
+}
+
+@keyframes prEnemyHit{
+  0%,100%{transform:translateX(0);filter:drop-shadow(0 3px 0 #0008) brightness(1)}
+  18%{transform:translateX(7px);filter:brightness(2.2) saturate(.3)}
+  40%{transform:translateX(-8px);filter:brightness(.6) saturate(1.5)}
+  66%{transform:translateX(5px);filter:brightness(1.8)}
+}
+
+@keyframes prPlayerHit{
+  0%,100%{transform:translateX(0);filter:drop-shadow(0 3px 0 #0008) brightness(1)}
+  18%{transform:translateX(-7px);filter:brightness(2.2) saturate(.3)}
+  40%{transform:translateX(8px);filter:brightness(.6) saturate(1.5)}
+  66%{transform:translateX(-5px);filter:brightness(1.8)}
+}
+
+@keyframes prCriticalShake{
+  0%,100%{transform:translate(0)}
+  16%{transform:translate(-6px,2px)}
+  32%{transform:translate(6px,-2px)}
+  48%{transform:translate(-5px,-1px)}
+  64%{transform:translate(5px,1px)}
+  82%{transform:translate(-2px,1px)}
+}
+
+@keyframes prAttackAssetPlayer{
+  0%{opacity:0;transform:translate(0,0) scale(.42) rotate(-16deg)}
+  12%{opacity:1}
+  66%{opacity:1;transform:translate(295px,-126px) scale(1.04) rotate(7deg)}
+  100%{opacity:0;transform:translate(336px,-143px) scale(.8) rotate(18deg)}
+}
+
+@keyframes prAttackAssetEnemy{
+  0%{opacity:0;transform:translate(0,0) scale(.42) rotate(12deg)}
+  12%{opacity:1}
+  66%{opacity:1;transform:translate(-286px,122px) scale(1.04) rotate(-7deg)}
+  100%{opacity:0;transform:translate(-328px,140px) scale(.8) rotate(-18deg)}
+}
+
+@keyframes prImpactBurst{
+  0%{opacity:0;transform:scale(.15) rotate(0)}
+  34%{opacity:1;transform:scale(.85) rotate(28deg)}
+  100%{opacity:0;transform:scale(1.55) rotate(80deg)}
+}
+
+@keyframes prDamagePop{
+  0%{opacity:0;transform:translateY(10px) scale(.75)}
+  25%{opacity:1;transform:translateY(-5px) scale(1.12)}
+  70%{opacity:1;transform:translateY(-16px) scale(1)}
+  100%{opacity:0;transform:translateY(-27px) scale(.9)}
+}
+
+@media(max-width:760px){
+  .alpha-shell .gba-battlefield{
+    height:360px!important;
+    min-height:330px;
+  }
+
+  .alpha-shell .gba-battlefield .enemy-sprite{
+    width:132px!important;
+    height:132px!important;
+    right:24px!important;
+    top:88px!important;
+  }
+
+  .alpha-shell .gba-battlefield .player-sprite{
+    width:168px!important;
+    height:168px!important;
+    left:20px!important;
+    bottom:44px!important;
+  }
+
+  .alpha-shell .gba-battlefield[data-pr-region]:after{
+    right:6px;
+    top:6px;
+    font-size:5px;
+  }
+
+  .alpha-shell .type-attack-fx .pr-attack-asset{
+    width:58px;
+    height:58px;
+  }
+
+  @keyframes prAttackAssetPlayer{
+    0%{opacity:0;transform:translate(0,0) scale(.4)}
+    12%{opacity:1}
+    68%{opacity:1;transform:translate(175px,-100px) scale(1)}
+    100%{opacity:0;transform:translate(205px,-118px) scale(.75)}
+  }
+
+  @keyframes prAttackAssetEnemy{
+    0%{opacity:0;transform:translate(0,0) scale(.4)}
+    12%{opacity:1}
+    68%{opacity:1;transform:translate(-170px,98px) scale(1)}
+    100%{opacity:0;transform:translate(-202px,116px) scale(.75)}
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .alpha-shell .gba-battlefield,
+  .alpha-shell .gba-battlefield .enemy-sprite,
+  .alpha-shell .gba-battlefield .player-sprite,
+  .alpha-shell .gba-battlefield.player-acting .player-sprite,
+  .alpha-shell .gba-battlefield.enemy-acting .enemy-sprite,
+  .alpha-shell .type-attack-fx .pr-attack-asset,
+  .alpha-shell .type-attack-fx .pr-attack-impact,
+  .alpha-shell .damage-pop{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+  }
+}
