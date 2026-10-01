@@ -1,4 +1,27 @@
 if(i.type==="discardHeld"&&r.phase!=="battle"&&(r.heldItems[i.item]??0)>0){r.heldItems[i.item]--,r.message=Ge[i.item].name+" wurde weggeworfen.";return d}
+if(i.type==="overworldDebug"&&r.phase==="map"){
+  const Qs=QowEnsure(r),Qm=QowBuild(r);
+  if(i.action==="reveal"){
+    const Qall=[];for(let Qy=0;Qy<Qm.h;Qy++)for(let Qx=0;Qx<Qm.w;Qx++)Qall.push(Qx+","+Qy);
+    Qs.seen=Qall,Qs.lastMessage="Debug: kompletter Floor aufgedeckt.";
+    return d
+  }
+  if(i.action==="wild"){
+    const Qwild=Qm.destinations.find(Q=>Q.kind==="wild");
+    if(Qwild){Qs.pendingNode=Qwild.id,Qs.encounterOnly=!0,Qs.danger=0,Qs.lastMessage="Debug: Wildbegegnung ausgelöst."}
+    else Qs.lastMessage="Debug: Auf diesem Floor ist kein Wild-Ziel verfügbar.";
+    return d
+  }
+  if(i.action==="exit"){
+    const Qtarget=Qm.destinations.find(Q=>["city","gym","league","boss"].includes(Q.kind))??Qm.destinations.at(-1);
+    if(Qtarget){
+      const Qspots=[[Qtarget.x,Qtarget.y+1,"up"],[Qtarget.x,Qtarget.y-1,"down"],[Qtarget.x+1,Qtarget.y,"left"],[Qtarget.x-1,Qtarget.y,"right"]].filter(Q=>!QowBlocking(QowTile(Qm,Q[0],Q[1])));
+      const Qspot=Qspots[0]??[Qtarget.x,Qtarget.y,"up"];
+      Qs.x=Qspot[0],Qs.y=Qspot[1],Qs.facing=Qspot[2],QowReveal(Qs,Qs.x,Qs.y,Qm.w,Qm.h),Qs.lastMessage="Debug: zum nächsten Hauptziel teleportiert.";
+    }
+    return d
+  }
+}
 if(i.type==="overworldMove"&&r.phase==="map"){
   const Qs=QowEnsure(r),Qm=QowBuild(r);
   if(Qs.pendingNode)return d;
