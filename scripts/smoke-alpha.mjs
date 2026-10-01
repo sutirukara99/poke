@@ -161,6 +161,7 @@ if (!js.includes('metatilesB64:')) throw new Error("FRLG metatile source data is
 if (!js.includes('const QowEnsureFrlgAtlas=')) throw new Error("FRLG metatile reconstruction pipeline is missing.");
 if (!js.includes('const QowCityCanvas=')) throw new Error("Walkable city Canvas is missing.");
 if (!js.includes('className:"ow-city-hub"')) throw new Error("Walkable city hub is missing.");
+if (!js.includes('QowCenterStatic')) throw new Error("Walkable Pokémon Center interior is missing.");
 if (!js.includes('className:"ow-canvas"')) throw new Error("Canvas overworld surface is missing.");
 if (!js.includes('className:"ow-floor-meta"')) throw new Error("Roguelike floor prompt is missing.");
 if (!js.includes('className:"ow-debug"')) throw new Error("F2 debug overlay is missing.");
