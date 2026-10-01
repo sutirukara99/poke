@@ -672,12 +672,80 @@ const renderLauncherHome = (shell: HTMLElement) => {
   openMenu.addEventListener("click", openDrawer);
 
   statusbar.replaceChildren(statusCopy, statusMeta, openMenu);
+
+  let news = shell.querySelector<HTMLElement>(":scope > .pr-launcher-news");
+  if (!news) {
+    news = make("section", "pr-launcher-news");
+    news.setAttribute("aria-label", "Aktuelle Alpha Highlights");
+    hero.insertAdjacentElement("afterend", news);
+  }
+
+  const newsHead = make("header", "pr-launcher-news-head");
+  const newsTitle = make("span");
+  newsTitle.append(
+    make("small", "", "LATEST UPDATE"),
+    make("strong", "", "ALPHA BUILD HIGHLIGHTS"),
+  );
+  const newsBuild = make("span", "pr-launcher-news-build", version.replace(/\s+/g, " "));
+  newsHead.append(newsTitle, newsBuild);
+
+  const newsGrid = make("div", "pr-launcher-news-grid");
+  const stories = [
+    {
+      kicker: "GAMEPLAY",
+      title: "Runs lesen sich schneller",
+      copy: "Klarere Battles, kompakter Kampf-Log, sichtbare Keyboard-Navigation und weniger unnötige Unterbrechungen.",
+      icon: "▶",
+    },
+    {
+      kicker: "REGIONS",
+      title: "Mehr Mystery-Varianz",
+      copy: "Kanto, Johto, Hoenn und Sinnoh besitzen zusätzliche regionale Events mit eigenen Risiko- und Reward-Pfaden.",
+      icon: "?",
+    },
+    {
+      kicker: "OPEN ALPHA",
+      title: "Dein Feedback baut das Spiel",
+      copy: "PokéRegions wird weiter aktiv poliert. Bugs, Balance und UX-Feedback fließen direkt in kommende Builds.",
+      icon: "●",
+    },
+  ];
+
+  stories.forEach((story, index) => {
+    const article = make("article", "pr-launcher-news-card");
+    article.dataset.story = String(index + 1);
+    const icon = make("span", "pr-launcher-news-icon", story.icon);
+    const copy = make("span", "pr-launcher-news-copy");
+    copy.append(
+      make("small", "", story.kicker),
+      make("strong", "", story.title),
+      make("p", "", story.copy),
+    );
+    article.append(icon, copy);
+
+    if (index === stories.length - 1) {
+      const discord = shell.querySelector<HTMLAnchorElement>(".discord-community-link");
+      if (discord?.href) {
+        const community = make("button", "pr-launcher-news-action", "COMMUNITY →");
+        community.type = "button";
+        community.addEventListener("click", () =>
+          window.open(discord.href, "_blank", "noopener,noreferrer"),
+        );
+        article.append(community);
+      }
+    }
+
+    newsGrid.append(article);
+  });
+
+  news.replaceChildren(newsHead, newsGrid);
 };
 
 const clearLauncherHome = (shell: HTMLElement) => {
   launcherSignature = "";
   shell.querySelector(":scope > .pr-launcher-sidebar")?.remove();
   shell.querySelector(":scope > .pr-launcher-statusbar")?.remove();
+  shell.querySelector(":scope > .pr-launcher-news")?.remove();
 };
 
 const enhanceHome = (shell: HTMLElement) => {
