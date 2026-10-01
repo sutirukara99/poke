@@ -14,7 +14,7 @@ values
     'common',
     true,
     true,
-    '{"currency":"rogue_points"}'::jsonb,
+    '{"currency":"rogue_points","game_grant_type":"meta_points"}'::jsonb,
     10
   ),
   (
@@ -25,7 +25,7 @@ values
     'legendary',
     true,
     true,
-    '{"permanent":true}'::jsonb,
+    '{"permanent":true,"game_grant_type":"gold_bottle_caps"}'::jsonb,
     20
   ),
   (
@@ -36,7 +36,7 @@ values
     'exclusive',
     false,
     true,
-    '{"species":"riolu","shiny":true,"exclusive":"alpha","permanent":true}'::jsonb,
+    '{"species":"riolu","shiny":true,"exclusive":"alpha","permanent":true,"game_grant_type":"starter_unlock","game_grant_key":"riolu"}'::jsonb,
     30
   ),
   (
