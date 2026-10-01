@@ -519,7 +519,170 @@ const renderDrawer = (shell: HTMLElement) => {
   drawer.replaceChildren(header, context, body, footer);
 };
 
+let launcherSignature = "";
+
+const renderLauncherHome = (shell: HTMLElement) => {
+  const groups = collectMenuGroups(shell);
+  const hero = shell.querySelector<HTMLElement>(".hero, .menu-hero");
+  if (!hero) return;
+
+  const account = document.querySelector<HTMLButtonElement>(".cloud-account-pill");
+  const admin = document.querySelector<HTMLButtonElement>(".pr-admin-trigger");
+  const version =
+    textOf(hero.querySelector(".art-label")) ||
+    textOf(shell.querySelector(".version")) ||
+    "1.0 ALPHA";
+  const heroSummary =
+    textOf(hero.querySelector(".hero-copy > p:not(.eyebrow)")) ||
+    "Baue deinen Run, entwickle deinen Trainer und erobere vier Regionen.";
+  const tags = Array.from(hero.querySelectorAll<HTMLElement>(".hero-tags span"))
+    .map((node) => textOf(node))
+    .filter(Boolean)
+    .slice(0, 3);
+
+  const signature = JSON.stringify({
+    groups: groups.map((group) => ({
+      key: group.key,
+      entries: group.entries.map((entry) => [
+        entry.key,
+        entry.label,
+        entry.meta,
+        entry.disabled,
+      ]),
+    })),
+    version,
+    heroSummary,
+    tags,
+    account: textOf(account),
+    admin: Boolean(admin),
+  });
+
+  let sidebar = shell.querySelector<HTMLElement>(":scope > .pr-launcher-sidebar");
+  let statusbar = shell.querySelector<HTMLElement>(":scope > .pr-launcher-statusbar");
+
+  if (signature === launcherSignature && sidebar && statusbar) return;
+  launcherSignature = signature;
+
+  if (!sidebar) {
+    sidebar = make("aside", "pr-launcher-sidebar");
+    sidebar.setAttribute("aria-label", "PokéRegions Launcher Navigation");
+    shell.querySelector(":scope > .pr-game-chrome")?.insertAdjacentElement("afterend", sidebar);
+  }
+
+  const sidebarHead = make("div", "pr-launcher-side-head");
+  const sideMark = make("span", "pr-launcher-side-mark");
+  sideMark.setAttribute("aria-hidden", "true");
+  const sideCopy = make("span", "pr-launcher-side-copy");
+  sideCopy.append(
+    make("strong", "", "POKÉREGIONS"),
+    make("small", "", "GAME LIBRARY"),
+  );
+  sidebarHead.append(sideMark, sideCopy);
+
+  const sidebarBody = make("div", "pr-launcher-side-body");
+  for (const group of groups) {
+    const section = make("section", "pr-launcher-group");
+    section.dataset.group = group.key;
+    section.append(make("small", "pr-launcher-group-title", group.label));
+
+    group.entries.forEach((entry, index) => {
+      const button = make("button", "pr-launcher-entry");
+      button.type = "button";
+      button.disabled = Boolean(entry.disabled);
+      button.dataset.group = group.key;
+      if (group.key === "play" && index === 0) button.dataset.launcherPrimary = "true";
+
+      const icon = make("span", "pr-launcher-entry-icon", entry.icon);
+      const copy = make("span", "pr-launcher-entry-copy");
+      copy.append(
+        make("strong", "", entry.label),
+        entry.meta ? make("small", "", entry.meta) : make("small", "", ""),
+      );
+      const arrow = make("span", "pr-launcher-entry-arrow", "›");
+      button.append(icon, copy, arrow);
+      button.addEventListener("click", entry.activate);
+      section.append(button);
+    });
+
+    sidebarBody.append(section);
+  }
+
+  const sidebarFoot = make("footer", "pr-launcher-side-foot");
+  const build = make("div", "pr-launcher-build");
+  build.append(
+    make("span", "pr-launcher-live-dot"),
+    make("span", "", "OPEN ALPHA"),
+    make("small", "", version.replace(/\s+/g, " ")),
+  );
+  sidebarFoot.append(build);
+
+  if (account) {
+    const accountButton = make("button", "pr-launcher-account");
+    accountButton.type = "button";
+    accountButton.innerHTML =
+      '<span aria-hidden="true">☁</span><span><b>ACCOUNT & CLOUD</b><small></small></span><i aria-hidden="true">›</i>';
+    const detail = accountButton.querySelector("small");
+    if (detail) detail.textContent = textOf(account) || "Cloud-Spielstand";
+    accountButton.addEventListener("click", () => account.click());
+    sidebarFoot.append(accountButton);
+  }
+
+  if (admin) {
+    const adminButton = make("button", "pr-launcher-admin", "◆ ADMIN CONTROL");
+    adminButton.type = "button";
+    adminButton.addEventListener("click", () => admin.click());
+    sidebarFoot.append(adminButton);
+  }
+
+  sidebar.replaceChildren(sidebarHead, sidebarBody, sidebarFoot);
+
+  if (!statusbar) {
+    statusbar = make("div", "pr-launcher-statusbar");
+    sidebar.insertAdjacentElement("afterend", statusbar);
+  }
+
+  const statusCopy = make("div", "pr-launcher-status-copy");
+  statusCopy.append(
+    make("small", "", "READY TO PLAY"),
+    make("strong", "", heroSummary),
+  );
+
+  const statusMeta = make("div", "pr-launcher-status-meta");
+  const buildChip = make("span", "pr-launcher-status-chip");
+  buildChip.innerHTML = '<small>BUILD</small><b></b>';
+  const buildValue = buildChip.querySelector("b");
+  if (buildValue) buildValue.textContent = version.replace(/\s+/g, " ");
+
+  const saveChip = make("span", "pr-launcher-status-chip");
+  saveChip.innerHTML = '<small>SAVE</small><b></b>';
+  const saveValue = saveChip.querySelector("b");
+  if (saveValue) saveValue.textContent = account ? "CLOUD READY" : "LOCAL";
+
+  statusMeta.append(buildChip, saveChip);
+  if (tags[0]) {
+    const progressChip = make("span", "pr-launcher-status-chip");
+    progressChip.innerHTML = '<small>STATUS</small><b></b>';
+    const progressValue = progressChip.querySelector("b");
+    if (progressValue) progressValue.textContent = tags[0];
+    statusMeta.append(progressChip);
+  }
+
+  const openMenu = make("button", "pr-launcher-more", "LIBRARY +");
+  openMenu.type = "button";
+  openMenu.addEventListener("click", openDrawer);
+
+  statusbar.replaceChildren(statusCopy, statusMeta, openMenu);
+};
+
+const clearLauncherHome = (shell: HTMLElement) => {
+  launcherSignature = "";
+  shell.querySelector(":scope > .pr-launcher-sidebar")?.remove();
+  shell.querySelector(":scope > .pr-launcher-statusbar")?.remove();
+};
+
 const enhanceHome = (shell: HTMLElement) => {
+  renderLauncherHome(shell);
+
   const library = shell.querySelector<HTMLElement>(".menu-library");
   if (library) library.dataset.prCollapsedLibrary = "true";
 
@@ -652,6 +815,7 @@ const applyDesign = () => {
   markGameScreens(shell);
 
   if (screen === "menu") enhanceHome(shell);
+  else clearLauncherHome(shell);
   if (screen === "setup") enhanceSetup(shell);
 
   renderDrawer(shell);
