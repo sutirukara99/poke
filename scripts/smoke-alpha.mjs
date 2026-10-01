@@ -74,8 +74,8 @@ if (js.length < 700_000) throw new Error(`Alpha bundle unexpectedly small: ${js.
 if (gameplayCss.includes('background-image:url("/ui/overworld/frlg/general-tiles.png")')) {
   throw new Error("Raw FireRed decomp tile sheet is still being used as a CSS atlas.");
 }
-if (!gameplayCss.includes(".ow-tile.ow-unseen")) throw new Error("Fog-of-war CSS is missing.");
-if (!gameplayCss.includes(".ow-wall")) throw new Error("Roguelike wall tiles are missing.");
+if (!gameplayCss.includes(".canvas-overworld .ow-canvas")) throw new Error("Canvas overworld styling is missing.");
+if (!gameplayCss.includes(".canvas-overworld .ow-debug")) throw new Error("Overworld debug styling is missing.");
 if (!gameplayCss.includes(".ow-floor-meta")) throw new Error("Roguelike floor HUD styling is missing.");
 if (!gameplayCss.includes(".alpha-shell:has(.free-roam-overworld)>.pr-game-chrome")) {
   throw new Error("Legacy website chrome is not hidden during free-roam.");
@@ -151,14 +151,17 @@ if (!js.includes('QjourneyDiscoveryPools')) throw new Error("Regional Journey di
 if (!js.includes('d.worldDiscoveries??=[]')) throw new Error("Persistent world discovery migration is missing.");
 if (!js.includes('QjourneyFindDiscovery(r.region,d.worldDiscoveries??[],u)')) throw new Error("Overworld discoveries are not checked against account-wide finds.");
 if (!js.includes('free-roam-overworld')) throw new Error("Free-roam overworld presentation is missing.");
-if (!js.includes('const QowW=31,QowH=21')) throw new Error("Roguelike floor dimensions are missing.");
+if (!js.includes('const QowTileSize=16,QowW=45,QowH=31')) throw new Error("Canvas overworld dimensions are missing.");
 if (!js.includes('const QowVisible=')) throw new Error("Fog-of-war visibility helper is missing.");
-if (!js.includes('seen:QowVisible(QowSpawn.x,QowSpawn.y)')) throw new Error("Persisted fog-of-war state is missing.");
-if (!js.includes('rooms:[...L].map')) throw new Error("Room-based floor generation is missing.");
-if (!js.includes('className:"ow-map"')) throw new Error("Free-roam tile map is missing.");
-if (!js.includes('className:"ow-player"')) throw new Error("Overworld player sprite is missing.");
+if (!js.includes('const QowValidate=')) throw new Error("Generator validation is missing.");
+if (!js.includes('const QowBuildAttempt=')) throw new Error("Procedural room generator is missing.");
+if (!js.includes('const QowCanvas=')) throw new Error("Canvas renderer host is missing.");
+if (!js.includes('className:"ow-canvas"')) throw new Error("Canvas overworld surface is missing.");
 if (!js.includes('className:"ow-floor-meta"')) throw new Error("Roguelike floor prompt is missing.");
-if (!js.includes('/ui/overworld/frlg/red-normal.png') && !js.includes('ow-player')) throw new Error("FireRed overworld player integration is missing.");
+if (!js.includes('className:"ow-debug"')) throw new Error("F2 debug overlay is missing.");
+if (!js.includes('encounterOnly')) throw new Error("Return-to-overworld encounter state is missing.");
+if (!js.includes('/ui/overworld/frlg/red-normal.png')) throw new Error("Local FRLG player sprite integration is missing.");
+if (js.includes('className:"ow-map"')) throw new Error("Legacy DOM tile-map renderer still exists.");
 if (js.includes('className:`route-map mini-map pixel-map-crawler')) throw new Error("Legacy visible node-map renderer still exists.");
 if (js.includes("Knoten")) throw new Error("Player-facing node terminology remains in Journey build.");
 
@@ -214,7 +217,7 @@ if (js.includes('return Math.min(100,Math.max(5,Math.floor(m*h)+(i==="boss"?4:0)
   throw new Error("Legacy Endless enemy Level 100 cap is still present.");
 }
 
-if (!js.includes('dirs={w:"up",arrowup:"up",s:"down",arrowdown:"down",a:"left",arrowleft:"left",d:"right",arrowright:"right"}')) throw new Error("WASD/arrow overworld controls are missing.");
+if (!js.includes('Qdirs={w:"up",arrowup:"up",s:"down",arrowdown:"down",a:"left",arrowleft:"left",d:"right",arrowright:"right"}')) throw new Error("WASD/arrow held-key overworld controls are missing.");
 if (!js.includes('document.querySelector(".free-roam-overworld")')) throw new Error("Legacy route hotkeys are not disabled during free-roam.");
 
 if (!js.includes('type:"reorderTeam"')) {
