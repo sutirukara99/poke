@@ -243,7 +243,10 @@ const ensureChrome = (shell: HTMLElement) => {
   const back = chrome.querySelector<HTMLButtonElement>(".pr-game-back");
 
   if (screenNode) screenNode.textContent = SCREEN_LABELS[screen];
-  if (regionNode) regionNode.textContent = REGION_LABELS[region] ?? "REGION NETWORK";
+  if (regionNode) {
+    regionNode.textContent =
+      screen === "menu" ? "GAME LIBRARY" : REGION_LABELS[region] ?? "REGION NETWORK";
+  }
 
   if (region) chrome.dataset.region = region;
   else delete chrome.dataset.region;
@@ -282,15 +285,19 @@ const collectMenuGroups = (shell: HTMLElement): DrawerGroup[] => {
   ]);
 
   const seen = new Set<HTMLButtonElement>();
+  const seenLabels = new Set<string>();
   const sources = [
-    ...shell.querySelectorAll<HTMLButtonElement>(".hero .actions button, .menu-hero .actions button"),
     ...shell.querySelectorAll<HTMLButtonElement>(".menu-library .menu-grid button"),
+    ...shell.querySelectorAll<HTMLButtonElement>(".hero .actions button, .menu-hero .actions button"),
   ];
 
   for (const button of sources) {
     if (seen.has(button)) continue;
     seen.add(button);
     const label = getButtonLabel(button);
+    const labelKey = normalize(label).toLowerCase();
+    if (seenLabels.has(labelKey)) continue;
+    seenLabels.add(labelKey);
     const upper = label.toUpperCase();
     let group = "trainer";
 
