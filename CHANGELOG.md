@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.0.0-alpha.1 final friendly polish — 2026-10-01
+
+### Launcher / active run
+- Rebuilt **Run fortsetzen** as the main Adventure Save entry instead of a third generic launcher tile.
+- The active run now shows region, mode, current route state, visual progress and up to three real party sprites.
+- **Neuer Run** and **Sammlung & Fortschritt** are deliberately smaller secondary actions so the home remains minimal.
+
+### Zwischenstopp
+- Reduced the city stop to four clear actions: PokéCenter, Vorräte, Team verwalten and Move-Tutor.
+- Added one compact summary row for money, balls, healing items and active relics.
+- The Move-Tutor workbench stays hidden until explicitly opened, removing the previous wall of controls.
+
+### Final presentation
+- Softened route-board surfaces, node cards, team cards, shop/inventory cards and battle controls without changing the dark PokéRegions identity.
+- Kept responsive/mobile fallbacks and reduced the heavy border/dashboard feeling.
+- Maintenance gating was removed only after the UI branch passed CI.
+
 ## 1.0.0-alpha.1 route board pass — 2026-10-01
 
 ### Expedition board

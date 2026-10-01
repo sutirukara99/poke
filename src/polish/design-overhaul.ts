@@ -1,3 +1,5 @@
+import { readLocalSaveObject } from "../cloud/supabase";
+
 type ScreenKey =
   | "menu"
   | "setup"
@@ -33,6 +35,144 @@ type DrawerGroup = {
   label: string;
   entries: DrawerEntry[];
   openByDefault?: boolean;
+};
+
+type HomeRecord = Record<string, unknown>;
+
+type HomeRunPreview = {
+  region: "kanto" | "johto" | "hoenn" | "sinnoh";
+  regionLabel: string;
+  modeLabel: string;
+  routeLabel: string;
+  stateLabel: string;
+  progress: number;
+  progressLabel: string;
+  party: Array<{
+    species: string;
+    label: string;
+    level: number;
+    shiny: boolean;
+  }>;
+};
+
+const asHomeRecord = (value: unknown): HomeRecord | null =>
+  value && typeof value === "object" && !Array.isArray(value)
+    ? (value as HomeRecord)
+    : null;
+
+const homeNumber = (value: unknown, fallback = 0) =>
+  typeof value === "number" && Number.isFinite(value) ? value : fallback;
+
+const HOME_REGION_LABELS: Record<HomeRunPreview["region"], string> = {
+  kanto: "KANTO",
+  johto: "JOHTO",
+  hoenn: "HOENN",
+  sinnoh: "SINNOH",
+};
+
+const SHOWDOWN_SPRITE_ALIASES: Record<string, string> = {
+  "nidoran-m": "nidoranm",
+  "nidoran-f": "nidoranf",
+  "mr-mime": "mrmime",
+  "mime-jr": "mimejr",
+  "ho-oh": "hooh",
+  "porygon-z": "porygonz",
+  "deoxys-normal": "deoxys",
+  "giratina-altered": "giratina",
+  "wormadam-plant": "wormadam",
+  "shaymin-land": "shaymin",
+};
+
+const spriteSlug = (species: string) =>
+  SHOWDOWN_SPRITE_ALIASES[species] ??
+  species.replace(/[^a-z0-9]/gi, "").toLowerCase();
+
+const homePokemonSprite = (species: string, shiny: boolean) =>
+  `https://play.pokemonshowdown.com/sprites/${shiny ? "gen5-shiny" : "gen5"}/${spriteSlug(species)}.png`;
+
+const displaySpecies = (species: string) =>
+  species
+    .split("-")
+    .map((part) => part ? part[0].toUpperCase() + part.slice(1) : part)
+    .join(" ");
+
+const readHomeRunPreview = (): HomeRunPreview | null => {
+  const save = asHomeRecord(readLocalSaveObject());
+  const run = asHomeRecord(save?.run);
+  if (!run) return null;
+
+  const rawRegion =
+    typeof run.region === "string" ? run.region.toLowerCase() : "kanto";
+  const region: HomeRunPreview["region"] =
+    rawRegion === "johto" ||
+    rawRegion === "hoenn" ||
+    rawRegion === "sinnoh"
+      ? rawRegion
+      : "kanto";
+
+  const team = Array.isArray(run.team)
+    ? run.team.map(asHomeRecord).filter(Boolean)
+    : [];
+  const party = team.slice(0, 3).flatMap((member) => {
+    const species =
+      typeof member?.species === "string" ? member.species : "";
+    if (!species) return [];
+    return [{
+      species,
+      label: displaySpecies(species),
+      level: Math.max(1, Math.round(homeNumber(member?.level, 1))),
+      shiny: member?.shiny === true,
+    }];
+  });
+
+  const mode = typeof run.mode === "string" ? run.mode : "story";
+  const badges = Array.isArray(run.badges) ? run.badges.length : 0;
+  const endlessStage = Math.max(0, Math.round(homeNumber(run.endlessStage)));
+  const arena = asHomeRecord(run.arena);
+  const node = asHomeRecord(run.node);
+  const phase = typeof run.phase === "string" ? run.phase : "map";
+  const mapIndex = Math.max(0, Math.round(homeNumber(run.mapIndex)));
+  const step = Math.max(
+    0,
+    Math.round(homeNumber(arena?.step, homeNumber(run.step))),
+  );
+
+  const routeLabel =
+    mode === "endless"
+      ? `Etappe ${Math.max(1, endlessStage || step + 1)}`
+      : `Etappe ${mapIndex + 1}`;
+
+  let stateLabel = `Route ${step + 1}`;
+  const nodeKind = typeof node?.kind === "string" ? node.kind : "";
+  if (arena) stateLabel = "Arena vor dir";
+  else if (nodeKind === "city") stateLabel = "Zwischenstopp";
+  else if (phase === "battle") stateLabel = "Kampf läuft";
+  else if (phase === "loot") stateLabel = "Beute wartet";
+  else if (phase === "starter") stateLabel = "Starter wählen";
+  else if (nodeKind === "gym") stateLabel = "Arenakampf";
+  else if (nodeKind === "legendary") stateLabel = "Legendäre Begegnung";
+
+  const progress =
+    mode === "endless"
+      ? ((endlessStage % 10) / 10) * 100
+      : Math.min(100, (badges / 8) * 100);
+
+  const modeLabel =
+    run.dailyChallenge ? "DAILY" : mode === "endless" ? "ENDLESS" : "STORY";
+
+  return {
+    region,
+    regionLabel: HOME_REGION_LABELS[region],
+    modeLabel,
+    routeLabel,
+    stateLabel,
+    progress,
+    progressLabel:
+      mode === "endless"
+        ? `Nächster Boss · ${endlessStage % 10}/10`
+        : `${badges}/8 Orden`,
+    party,
+  };
 };
 
 const SCREEN_LABELS: Record<ScreenKey, string> = {
@@ -545,11 +685,13 @@ const renderMinimalHome = (shell: HTMLElement) => {
     textOf(hero.querySelector(".art-label")) ||
     textOf(shell.querySelector(".version")) ||
     "1.0 ALPHA";
+  const preview = continueEntry ? readHomeRunPreview() : null;
 
   const signature = JSON.stringify({
     continue: continueEntry
       ? [continueEntry.label, continueEntry.meta, continueEntry.disabled]
       : null,
+    preview,
     fresh: newEntry ? [newEntry.label, newEntry.meta, newEntry.disabled] : null,
     account: textOf(account),
     version,
@@ -579,28 +721,122 @@ const renderMinimalHome = (shell: HTMLElement) => {
 
   const modes = make("div", "pr-minimal-modes");
 
+  if (continueEntry) {
+    const adventure = make("article", "pr-adventure-entry");
+    adventure.dataset.region = preview?.region ?? "kanto";
+
+    const art = make("div", "pr-adventure-art");
+    art.setAttribute("aria-hidden", "true");
+    art.append(
+      make("span", "pr-adventure-sky"),
+      make("span", "pr-adventure-ridge"),
+      make("span", "pr-adventure-ground"),
+      make("span", "pr-adventure-path"),
+    );
+
+    const artBadge = make(
+      "span",
+      "pr-adventure-art-badge",
+      preview ? `${preview.regionLabel} · ${preview.modeLabel}` : "AKTIVER SAVE",
+    );
+    art.append(artBadge);
+
+    const partyArt = make("div", "pr-adventure-party-art");
+    if (preview?.party.length) {
+      preview.party.forEach((member, index) => {
+        const image = document.createElement("img");
+        image.src = homePokemonSprite(member.species, member.shiny);
+        image.alt = "";
+        image.loading = index === 0 ? "eager" : "lazy";
+        image.draggable = false;
+        image.referrerPolicy = "no-referrer";
+        image.dataset.partyIndex = String(index);
+        image.addEventListener("error", () => image.remove(), { once: true });
+        partyArt.append(image);
+      });
+    } else {
+      partyArt.append(make("span", "pr-adventure-party-placeholder", "◉"));
+    }
+    art.append(partyArt);
+
+    const content = make("div", "pr-adventure-copy");
+    const kicker = make("small", "pr-adventure-kicker", "AKTIVE EXPEDITION");
+    const title = make("h2", "", "Dein Abenteuer wartet");
+    const route = make(
+      "p",
+      "pr-adventure-route",
+      preview
+        ? `${preview.regionLabel} · ${preview.routeLabel} · ${preview.stateLabel}`
+        : continueEntry.meta || "Setze deine aktuelle Reise fort.",
+    );
+
+    const progress = make("div", "pr-adventure-progress");
+    const progressHead = make("span", "pr-adventure-progress-head");
+    progressHead.append(
+      make("small", "", preview?.progressLabel ?? "AKTIVER RUN"),
+      make("b", "", preview ? `${Math.round(preview.progress)}%` : "READY"),
+    );
+    const progressTrack = make("span", "pr-adventure-progress-track");
+    const progressFill = make("i");
+    progressFill.style.width = `${Math.max(8, preview?.progress ?? 18)}%`;
+    progressTrack.append(progressFill);
+    progress.append(progressHead, progressTrack);
+
+    const party = make("div", "pr-adventure-party");
+    if (preview?.party.length) {
+      preview.party.forEach((member) => {
+        const chip = make("span", "pr-adventure-party-chip");
+        const image = document.createElement("img");
+        image.src = homePokemonSprite(member.species, member.shiny);
+        image.alt = "";
+        image.loading = "lazy";
+        image.draggable = false;
+        image.referrerPolicy = "no-referrer";
+        image.addEventListener("error", () => image.remove(), { once: true });
+        const copy = make("span");
+        copy.append(
+          make("b", "", member.shiny ? `✦ ${member.label}` : member.label),
+          make("small", "", `Lv. ${member.level}`),
+        );
+        chip.append(image, copy);
+        party.append(chip);
+      });
+    } else {
+      party.append(make("span", "pr-adventure-party-empty", "Team wird beim Fortsetzen geladen"));
+    }
+
+    const cta = make("button", "pr-adventure-continue", "Run fortsetzen →");
+    cta.type = "button";
+    cta.disabled = Boolean(continueEntry.disabled);
+    cta.addEventListener("click", continueEntry.activate);
+
+    content.append(kicker, title, route, progress, party, cta);
+    adventure.append(art, content);
+    modes.append(adventure);
+  }
+
+  const secondary = make("div", "pr-secondary-modes");
+
   const addMode = (
     kicker: string,
     title: string,
     detail: string,
-    art: "continue" | "new" | "trainer",
+    art: "new" | "trainer",
     activate: () => void,
     disabled = false,
   ) => {
-    const button = make("button", "pr-minimal-mode");
+    const button = make("button", "pr-minimal-mode pr-secondary-mode");
     button.type = "button";
     button.disabled = disabled;
     button.dataset.modeArt = art;
     button.setAttribute("aria-label", title);
 
-    const scene = make("span", "pr-minimal-mode-scene");
-    scene.setAttribute("aria-hidden", "true");
-    scene.append(
-      make("span", "pr-minimal-scene-sun"),
-      make("span", "pr-minimal-scene-back"),
-      make("span", "pr-minimal-scene-front"),
-      make("span", "pr-minimal-scene-path"),
+    const icon = make(
+      "span",
+      "pr-secondary-mode-icon",
+      art === "new" ? "＋" : "♙",
     );
+    icon.setAttribute("aria-hidden", "true");
 
     const copy = make("span", "pr-minimal-mode-copy");
     copy.append(
@@ -609,22 +845,15 @@ const renderMinimalHome = (shell: HTMLElement) => {
       make("span", "", detail),
     );
 
-    const action = make("b", "pr-minimal-mode-action", disabled ? "GESPERRT" : "START →");
-    button.append(scene, copy, action);
-    button.addEventListener("click", activate);
-    modes.append(button);
-  };
-
-  if (continueEntry) {
-    addMode(
-      "AKTIVE EXPEDITION",
-      "Run fortsetzen",
-      continueEntry.meta || "Setze deine aktuelle Reise fort.",
-      "continue",
-      continueEntry.activate,
-      Boolean(continueEntry.disabled),
+    const action = make(
+      "b",
+      "pr-minimal-mode-action",
+      disabled ? "GESPERRT" : "ÖFFNEN →",
     );
-  }
+    button.append(icon, copy, action);
+    button.addEventListener("click", activate);
+    secondary.append(button);
+  };
 
   if (newEntry) {
     addMode(
@@ -644,6 +873,8 @@ const renderMinimalHome = (shell: HTMLElement) => {
     "trainer",
     openDrawer,
   );
+
+  modes.append(secondary);
 
   const footer = make("footer", "pr-minimal-footer");
   const status = make("span", "pr-minimal-status");

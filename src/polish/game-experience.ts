@@ -1030,6 +1030,156 @@ const enhanceShop = (shell: HTMLElement) => {
   });
 };
 
+let cityTutorOpen = false;
+
+const enhanceCityHub = (shell: HTMLElement, run: RecordLike | null) => {
+  const hub = shell.querySelector<HTMLElement>(".city-hub");
+  if (!hub || !run) return;
+
+  const node = asRecord(run.node);
+  if (node?.kind !== "city") return;
+
+  hub.dataset.prCityHub = "friendly";
+  hub.dataset.prTutorOpen = String(cityTutorOpen);
+
+  const region = getRegionFromValue(run.region);
+  const banner = hub.querySelector<HTMLElement>(".city-banner");
+  if (banner) {
+    const eyebrow = banner.querySelector<HTMLElement>(".eyebrow");
+    const heading = banner.querySelector<HTMLElement>("h2");
+    const copy = banner.querySelector<HTMLElement>("p:not(.eyebrow)");
+
+    if (eyebrow) eyebrow.textContent = "ZWISCHENSTOPP";
+    if (heading) heading.textContent = "Zwischenstopp";
+    if (copy) {
+      copy.textContent =
+        "Heilen, einkaufen und dein Team vorbereiten – dann geht die Expedition weiter.";
+    }
+
+    let location = banner.querySelector<HTMLElement>(".pr-city-location");
+    if (!location) {
+      location = document.createElement("small");
+      location.className = "pr-city-location";
+      banner.querySelector(":scope > div > div")?.append(location);
+    }
+    location.textContent =
+      region ? `${REGIONS[region].label} · SICHERER HALT` : "SICHERER HALT";
+
+    const visit = banner.querySelector<HTMLElement>(":scope > strong");
+    if (visit) {
+      const visits = Math.max(1, Math.round(numericValue(run.cityVisits) ?? 1));
+      visit.textContent = `STOPP ${String(visits).padStart(2, "0")}`;
+    }
+  }
+
+  const services = hub.querySelector<HTMLElement>(".city-services");
+  if (services) {
+    const buttons = Array.from(
+      services.querySelectorAll<HTMLButtonElement>(":scope > button"),
+    );
+
+    const heal = buttons.find((button) =>
+      /CENTER|HEIL/.test(textOf(button).toUpperCase()),
+    );
+    if (heal) {
+      heal.dataset.prCityAction = "heal";
+      const title = heal.querySelector<HTMLElement>("b");
+      const detail = heal.querySelector<HTMLElement>("small");
+      if (title) title.textContent = "✚ PokéCenter";
+      if (detail) detail.textContent = "Team vollständig heilen";
+    }
+
+    const supplies = buttons.find((button) =>
+      /MARKT|VORRAT/.test(textOf(button).toUpperCase()),
+    );
+    if (supplies) {
+      supplies.dataset.prCityAction = "supplies";
+      const title = supplies.querySelector<HTMLElement>("b");
+      const detail = supplies.querySelector<HTMLElement>("small");
+      if (title) title.textContent = "◉ Vorräte · 180 ₽";
+      if (detail) detail.textContent = "2 Pokébälle + 1 Trank";
+    }
+
+    const team = buttons.find((button) =>
+      /PC-TERMINAL|TEAM/.test(textOf(button).toUpperCase()),
+    );
+    if (team) {
+      team.dataset.prCityAction = "team";
+      const title = team.querySelector<HTMLElement>("b");
+      const detail = team.querySelector<HTMLElement>("small");
+      if (title) title.textContent = "▣ Team verwalten";
+      if (detail) detail.textContent = "Party und PC-Box ordnen";
+    }
+
+    let tutor = buttons.find((button) =>
+      /QUESTBOARD|QUEST-BRETT|MOVE-TUTOR|TUTOR/.test(
+        textOf(button).toUpperCase(),
+      ),
+    );
+    if (tutor) {
+      tutor.dataset.prCityAction = "tutor";
+      tutor.disabled = false;
+      const title = tutor.querySelector<HTMLElement>("b");
+      const detail = tutor.querySelector<HTMLElement>("small");
+      if (title) title.textContent = cityTutorOpen ? "TM Move-Tutor schließen" : "TM Move-Tutor";
+      if (detail) {
+        detail.textContent = cityTutorOpen
+          ? "Moveset-Werkbank wieder einklappen"
+          : "Moveset bewusst anpassen";
+      }
+
+      if (tutor.dataset.prTutorBound !== "true") {
+        tutor.dataset.prTutorBound = "true";
+        tutor.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          cityTutorOpen = !cityTutorOpen;
+          hub.dataset.prTutorOpen = String(cityTutorOpen);
+          queueExperience();
+        });
+      }
+    }
+  }
+
+  let summary = hub.querySelector<HTMLElement>(".pr-city-summary");
+  if (!summary) {
+    summary = document.createElement("div");
+    summary.className = "pr-city-summary";
+    services?.insertAdjacentElement("afterend", summary);
+  }
+
+  const specialBalls = asRecord(run.specialBalls);
+  const totalBalls =
+    (numericValue(run.balls) ?? 0) +
+    (numericValue(run.ultraBalls) ?? 0) +
+    (numericValue(run.masterBalls) ?? 0) +
+    Object.values(specialBalls ?? {}).reduce<number>(
+      (sum, value) => sum + (numericValue(value) ?? 0),
+      0,
+    );
+  const healing =
+    (numericValue(run.potions) ?? 0) +
+    (numericValue(run.superPotions) ?? 0) +
+    (numericValue(run.hyperPotions) ?? 0);
+  const relics = Array.isArray(run.activeRelics) ? run.activeRelics.length : 0;
+  const money = Math.max(0, Math.round(numericValue(run.money) ?? 0));
+
+  summary.innerHTML = `
+    <span><i aria-hidden="true">₽</i><b>${money.toLocaleString("de-DE")}</b><small>Geld</small></span>
+    <span><i aria-hidden="true">◉</i><b>${totalBalls}</b><small>Bälle</small></span>
+    <span><i aria-hidden="true">✚</i><b>${healing}</b><small>Heilung</small></span>
+    <span><i aria-hidden="true">◇</i><b>${relics}/3</b><small>Relikte</small></span>
+  `;
+
+  const tutorWorkbench = hub.querySelector<HTMLElement>(
+    ".tutor-workbench.city-tutor",
+  );
+  if (tutorWorkbench) {
+    tutorWorkbench.dataset.prCityTutorDetails = "true";
+    tutorWorkbench.setAttribute("aria-hidden", String(!cityTutorOpen));
+  }
+};
+
 const HUD_COLLAPSE_KEY = "pokeregions:run-hud-collapsed";
 
 const readHudCollapsed = () => {
@@ -1361,6 +1511,7 @@ const applyExperience = () => {
   enhanceHyperTraining(shell);
   enhanceCollections(shell);
   enhanceShop(shell);
+  enhanceCityHub(shell, run);
   enhanceRunHud(shell, run);
   enhanceTrainerCard(shell);
   enhanceRunResult(shell, run);
