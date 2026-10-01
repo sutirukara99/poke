@@ -23,7 +23,8 @@ l.jsxs("span",{children:["DANGER ",Math.round(Qp.danger??0)," · SEEN ",(Qp.seen
 l.jsxs("div",{className:"ow-debug-actions",children:[
 l.jsx("button",{type:"button",onClick:()=>h({type:"overworldDebug",action:"reveal"}),children:"MAP"}),
 l.jsx("button",{type:"button",onClick:()=>h({type:"overworldDebug",action:"wild"}),children:"WILD"}),
-l.jsx("button",{type:"button",onClick:()=>h({type:"overworldDebug",action:"exit"}),children:"EXIT"})
+l.jsx("button",{type:"button",onClick:()=>h({type:"overworldDebug",action:"exit"}),children:"EXIT"}),
+l.jsx("button",{type:"button",onClick:()=>h({type:"overworldDebug",action:"regen"}),children:"REGEN"})
 ]})
 ]})
 ]}),
