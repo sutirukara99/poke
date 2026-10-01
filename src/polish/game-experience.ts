@@ -269,7 +269,7 @@ const NODE_TYPES: Record<
   wild: { label: "WILD", symbol: "◉", tone: "encounter" },
   trainer: { label: "TRAINER", symbol: "⚔", tone: "combat" },
   mystery: { label: "EVENT", symbol: "?", tone: "event" },
-  shop: { label: "SHOP", symbol: "₽", tone: "utility" },
+  shop: { label: "VERSORGUNG", symbol: "▣", tone: "reward" },
   heal: { label: "RAST", symbol: "+", tone: "safe" },
   item: { label: "FUND", symbol: "◆", tone: "reward" },
   city: { label: "STADT", symbol: "▦", tone: "utility" },
@@ -407,6 +407,14 @@ const classifyRouteRisk = (node: HTMLElement) => {
   else if (node.classList.contains("node-accessible")) node.dataset.prNodeState = "available";
   else if (node.classList.contains("node-unknown")) node.dataset.prNodeState = "unknown";
   else node.dataset.prNodeState = "future";
+
+  if (kind === "shop") {
+    const name = node.querySelector<HTMLElement>(".node-copy strong");
+    const detail = node.querySelector<HTMLElement>(".node-copy small");
+    if (name) name.textContent = "Versorgungsdepot";
+    if (detail) detail.textContent = "Kurzer Versorgungsstopp · 1 Paket wählen";
+    node.setAttribute("aria-label", "Versorgungsdepot");
+  }
 
   const icon = node.querySelector<HTMLElement>(".node-icon-shell");
   if (icon && !icon.querySelector(".pr-node-kind-symbol")) {
@@ -804,6 +812,77 @@ const enhanceShop = (shell: HTMLElement) => {
   });
 };
 
+const HUD_COLLAPSE_KEY = "pokeregions:run-hud-collapsed";
+
+const readHudCollapsed = () => {
+  try {
+    return window.localStorage.getItem(HUD_COLLAPSE_KEY) === "1";
+  } catch {
+    return false;
+  }
+};
+
+const writeHudCollapsed = (collapsed: boolean) => {
+  try {
+    window.localStorage.setItem(HUD_COLLAPSE_KEY, collapsed ? "1" : "0");
+  } catch {
+    // Local storage can be unavailable in privacy modes. The current DOM state still works.
+  }
+};
+
+const enhanceRunHud = (shell: HTMLElement, run: RecordLike | null) => {
+  const hud = shell.querySelector<HTMLElement>(".game-hud");
+  if (!hud || !run) return;
+
+  let toggle = hud.parentElement?.querySelector<HTMLButtonElement>(
+    ":scope > .pr-hud-toggle",
+  );
+
+  if (!toggle) {
+    toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "pr-hud-toggle";
+    hud.insertAdjacentElement("beforebegin", toggle);
+
+    toggle.addEventListener("click", () => {
+      const collapsed = hud.dataset.prCollapsed !== "true";
+      hud.dataset.prCollapsed = String(collapsed);
+      toggle?.classList.toggle("is-collapsed", collapsed);
+      toggle?.setAttribute("aria-expanded", String(!collapsed));
+      writeHudCollapsed(collapsed);
+      queueExperience();
+    });
+  }
+
+  const collapsed = readHudCollapsed();
+  hud.dataset.prCollapsed = String(collapsed);
+  toggle.classList.toggle("is-collapsed", collapsed);
+  toggle.setAttribute("aria-expanded", String(!collapsed));
+  toggle.setAttribute("aria-controls", "pr-run-resource-hud");
+  hud.id = "pr-run-resource-hud";
+
+  const specialBalls = asRecord(run.specialBalls);
+  const specialBallCount = ["great", "net", "dusk", "quick"].reduce(
+    (total, key) => total + (numericValue(specialBalls?.[key]) ?? 0),
+    0,
+  );
+  const totalBalls =
+    (numericValue(run.balls) ?? 0) +
+    (numericValue(run.ultraBalls) ?? 0) +
+    (numericValue(run.masterBalls) ?? 0) +
+    specialBallCount;
+  const money = numericValue(run.money) ?? 0;
+
+  toggle.innerHTML = `
+    <span class="pr-hud-toggle-icon" aria-hidden="true">▤</span>
+    <span class="pr-hud-toggle-copy">
+      <b>RUN HUD</b>
+      <small>${money.toLocaleString("de-DE")} ₽ · ${totalBalls} Bälle · ${collapsed ? "eingeklappt" : "Ressourcen"}</small>
+    </span>
+    <span class="pr-hud-toggle-state" aria-hidden="true">${collapsed ? "▾" : "▴"}</span>
+  `;
+};
+
 const enhanceEmptyStates = (shell: HTMLElement) => {
   shell
     .querySelectorAll<HTMLElement>("p, small, .empty-state")
@@ -861,8 +940,12 @@ const enhanceBattle = (shell: HTMLElement, run: RecordLike | null) => {
   const intro = getBattleIntro(run);
   field.dataset.prBattleKind = intro.kind || "wild";
   const nativeTrainerIntro = ["gym", "league", "boss"].includes(intro.kind);
+  if (intro.kind === "trainer") {
+    field.querySelector(".pr-battle-intro")?.remove();
+  }
 
   if (
+    intro.kind !== "trainer" &&
     !nativeTrainerIntro &&
     !field.classList.contains("trainer-intro-field") &&
     field.dataset.prIntroSignature !== intro.signature &&
@@ -975,6 +1058,7 @@ const applyExperience = () => {
   enhanceHyperTraining(shell);
   enhanceCollections(shell);
   enhanceShop(shell);
+  enhanceRunHud(shell, run);
   enhanceTrainerCard(shell);
   enhanceRunResult(shell, run);
   enhanceEmptyStates(shell);

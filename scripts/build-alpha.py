@@ -425,6 +425,92 @@ for old,new in [
         raise SystemExit(f'class description anchor missing: {old}')
     s=s.replace(old,new)
 
+
+# -----------------------------------------------------------------------------
+# 2026-10-01 compact HUD / catch menu / supply-node pass
+# -----------------------------------------------------------------------------
+
+ball_helpers = r'''const QalphaBallDefs=[
+{id:"poke",action:"catch",field:"balls",name:"Pokéball",asset:"poke-ball",detail:"Solider Standardball."},
+{id:"great",action:"catchGreat",name:"Superball",asset:"great-ball",detail:"1,35× Fangchance."},
+{id:"ultra",action:"catchUltra",field:"ultraBalls",name:"Hyperball",asset:"ultra-ball",detail:"1,8× Fangchance."},
+{id:"net",action:"catchNet",name:"Netzball",asset:"net-ball",detail:"1,65× gegen Wasser oder Käfer."},
+{id:"dusk",action:"catchDusk",name:"Finsterball",asset:"dusk-ball",detail:"1,75× in Höhlen und auf Nachtpfaden."},
+{id:"quick",action:"catchQuick",name:"Flottball",asset:"quick-ball",detail:"2,2× in Runde 1."},
+{id:"master",action:"catchMaster",field:"masterBalls",name:"Meisterball",asset:"master-ball",detail:"Garantierter Fang."}
+],QalphaBallDefByAction=a=>QalphaBallDefs.find(i=>i.action===a),QalphaBallCount=(a,i)=>i.field?(a[i.field]??0):(a.specialBalls?.[i.id]??0),QalphaBallTotal=a=>QalphaBallDefs.reduce((i,d)=>i+QalphaBallCount(a,d),0);function QalphaTakeBall(a,i){if(QalphaBallCount(a,i)<=0)return!1;if(i.field)a[i.field]--;else a.specialBalls??={},a.specialBalls[i.id]=Math.max(0,(a.specialBalls[i.id]??0)-1);return!0}function QalphaGiveSpecialBall(a,i,d=null,r=1){a.specialBalls??={great:0,net:0,dusk:0,quick:0};const u=d??i.pick(["great","great","net","dusk","quick"]);a.specialBalls[u]=(a.specialBalls[u]??0)+r;return u}function QalphaCatchChance(a,i,d,r,u){if(!a)return 0;if(a.id==="master")return 1;let h=1;if(a.id==="great")h=1.35;else if(a.id==="ultra")h=1.8;else if(a.id==="net")h=K[u.species].types.some(m=>m==="water"||m==="bug")?1.65:1;else if(a.id==="dusk")h=d.node?.biome==="cave"||d.node?.biome==="night"?1.75:1;else if(a.id==="quick")h=r.turn<=1?2.2:1;return Math.min(.98,i*h)}'''
+must('const Dc=()=>({',ball_helpers+'const Dc=()=>({','ball definitions and catch helpers')
+
+must('balls:Ve.startBalls,ultraBalls:0,masterBalls:0,potions:',
+     'balls:Ve.startBalls,ultraBalls:0,masterBalls:0,specialBalls:{great:0,net:0,dusk:0,quick:0},potions:',
+     'new run special balls')
+must('balls:Y(a.balls)?Number(a.balls):8,ultraBalls:Y(a.ultraBalls)?Number(a.ultraBalls):0,masterBalls:Y(a.masterBalls)?Number(a.masterBalls):0,potions:',
+     'balls:Y(a.balls)?Number(a.balls):8,ultraBalls:Y(a.ultraBalls)?Number(a.ultraBalls):0,masterBalls:Y(a.masterBalls)?Number(a.masterBalls):0,specialBalls:fe(a.specialBalls)?{great:Y(a.specialBalls.great)?Number(a.specialBalls.great):0,net:Y(a.specialBalls.net)?Number(a.specialBalls.net):0,dusk:Y(a.specialBalls.dusk)?Number(a.specialBalls.dusk):0,quick:Y(a.specialBalls.quick)?Number(a.specialBalls.quick):0}:{great:0,net:0,dusk:0,quick:0},potions:',
+     'migrated run special balls')
+
+# The old route-shop becomes a compact one-choice supply depot. Internally the legacy
+# kind stays "shop" so old saves remain valid; all player-facing copy is replaced.
+must('shop:["PokéMart","Vorräte, Heil- und Held Items"]',
+     'shop:["Versorgungsdepot","Wähle ein Versorgungspaket und zieh weiter"]',
+     'supply depot route label')
+must('shop:{src:tt("ultra-ball"),name:"PokéMart"}',
+     'shop:{src:tt("great-ball"),name:"Versorgungsdepot"}',
+     'supply depot node icon')
+must('const v4={wild:"WILD",trainer:"TRAINER",shop:"SHOP",mystery:',
+     'const v4={wild:"WILD",trainer:"TRAINER",shop:"VERSORGUNG",mystery:',
+     'supply depot route kicker')
+must('shop:["MARKT","Items, Heilung und Build-Werkzeuge kaufen"]',
+     'shop:["VERSORGUNG","Wähle genau ein kompaktes Versorgungspaket"]',
+     'supply depot node help')
+
+supply_reducer = r'''if(i.type==="supplyChoice"&&r.phase==="node"&&r.node?.kind==="shop"){r.specialBalls??={great:0,net:0,dusk:0,quick:0};if(i.choice==="catch"){r.balls+=2,QalphaGiveSpecialBall(r,u,"great"),r.message="Fangset genommen: +2 Pokébälle und +1 Superball."}else if(i.choice==="special"){QalphaGiveSpecialBall(r,u,"quick"),QalphaGiveSpecialBall(r,u,"dusk"),QalphaGiveSpecialBall(r,u,"net"),r.message="Spezialset genommen: +1 Flottball, +1 Finsterball und +1 Netzball."}else if(i.choice==="medic"){r.potions++,r.superPotions=(r.superPotions??0)+1,r.rareCandies++,r.message="Medizinset genommen: +1 Trank, +1 Supertrank und +1 Sonderbonbon."}else return a;Ke(r,u);return r.rng=u.state,d}'''
+must('if(i.type==="emergencyLeave"&&r.phase==="node")return Ke(r,u),r.rng=u.state,d;if(i.type==="leave"',
+     supply_reducer+'if(i.type==="emergencyLeave"&&r.phase==="node")return Ke(r,u),r.rng=u.state,d;if(i.type==="leave"',
+     'supply depot choice reducer')
+
+must('r.node=Z,r.phase="node",r.message="",r.mysteryEvent=',
+     'r.node=Z.kind==="shop"?{...Z,title:"Versorgungsdepot",detail:"Wähle ein Versorgungspaket und zieh weiter"}:Z,r.phase="node",r.message="",r.mysteryEvent=',
+     'normalize legacy shop node title on entry')
+
+old_shop_ui = r'''((C=a.node)==null?void 0:C.kind)==="shop"?l.jsxs(l.Fragment,{children:[l.jsx("p",{children:"Stelle deinen Build zusammen. Held Items können einen Bosskampf komplett drehen."}),l.jsx("div",{className:"shop-items shop-grid",children:S4.map(O=>l.jsxs("button",{disabled:a.money<Yu(a,O.id)||O.id==="evolutionItem"&&!he,onClick:()=>r({type:"buy",item:O.id}),children:[l.jsx(xe,{src:tt(O.asset),name:O.label}),l.jsx("strong",{children:O.label}),l.jsxs("small",{children:[Yu(a,O.id)," ₽ · ",O.id==="evolutionItem"&&!he?"Kein passendes Pokémon im Team":O.detail]})]},O.id))}),l.jsx("h3",{children:"Held Items"}),l.jsx("div",{className:"item-chip-grid",children:Object.keys(Ge).map(O=>l.jsx(Rs,{label:Ge[O].name,description:Ge[O].description,children:l.jsxs("button",{disabled:a.money<Fu(a,O),onClick:()=>r({type:"buyHeld",item:O}),children:[l.jsx(xe,{src:tt(Ge[O].asset??O),name:Ge[O].name}),l.jsx("strong",{children:Ge[O].name}),l.jsxs("small",{children:[Fu(a,O)," ₽"]})]})},O))}),l.jsx("h3",{children:"Statusheiler"}),l.jsx("div",{className:"item-chip-grid",children:Object.keys(It).map(O=>l.jsxs("button",{disabled:a.money<Xu(a,O),onClick:()=>r({type:"buyStatus",item:O}),children:[l.jsx(xe,{src:tt(It[O].asset??O),name:It[O].name}),l.jsx("strong",{children:It[O].name}),l.jsxs("small",{children:[Xu(a,O)," ₽"]})]},O))}),a.shopTransactions.length>0&&l.jsxs("div",{className:"shop-buyback",children:[l.jsxs("div",{className:"section-heading",children:[l.jsxs("div",{children:[l.jsx("p",{className:"eyebrow",children:"BUYBACK"}),l.jsx("h3",{children:"Letzte Käufe zurückgeben"})]}),l.jsx("small",{children:"100 % Preis · nur in diesem Shop"})]}),a.shopTransactions.map(O=>{const ae=O.kind==="basic"?(O.item==="balls"?a.balls:O.item==="ultraBalls"?a.ultraBalls:O.item==="potions"?a.potions:O.item==="superPotions"?a.superPotions??0:O.item==="hyperPotions"?a.hyperPotions??0:a.rareCandies)>0:O.kind==="held"?(a.heldItems[O.item]??0)>0:O.kind==="status"?(a.statusItems[O.item]??0)>0:(a.evolutionItems[O.item]??0)>0;return l.jsxs("button",{className:"buyback-row",disabled:!ae,onClick:()=>r({type:"refundShop",transactionId:O.id}),children:[l.jsxs("span",{children:[l.jsx("strong",{children:O.label}),l.jsx("small",{children:ae?"Voller Kaufpreis":"Bereits verbraucht / ausgerüstet"})]}),l.jsxs("b",{children:["↩ ",O.price," ₽"]})]},O.id)})]}),l.jsx("button",{onClick:()=>b(!0),children:"🖥️ PC öffnen"})]})'''
+new_shop_ui = r'''((C=a.node)==null?void 0:C.kind)==="shop"?l.jsxs("div",{className:"supply-depot",children:[l.jsx("p",{children:"Kein Shop-Menü mehr: Nimm genau ein Paket. Danach geht die Route sofort weiter."}),l.jsx("div",{className:"supply-pack-grid",children:[l.jsxs("button",{onClick:()=>r({type:"supplyChoice",choice:"catch"}),children:[l.jsx(xe,{src:tt("great-ball"),name:"Fangset"}),l.jsx("strong",{children:"FANGSET"}),l.jsx("small",{children:"+2 Pokébälle · +1 Superball"})]}),l.jsxs("button",{onClick:()=>r({type:"supplyChoice",choice:"special"}),children:[l.jsx(xe,{src:tt("quick-ball"),name:"Spezialset"}),l.jsx("strong",{children:"SPEZIALSET"}),l.jsx("small",{children:"+1 Flottball · +1 Finsterball · +1 Netzball"})]}),l.jsxs("button",{onClick:()=>r({type:"supplyChoice",choice:"medic"}),children:[l.jsx(xe,{src:tt("super-potion"),name:"Medizinset"}),l.jsx("strong",{children:"MEDIZINSET"}),l.jsx("small",{children:"+1 Trank · +1 Supertrank · +1 Sonderbonbon"})]})]})]})'''
+must(old_shop_ui,new_shop_ui,'replace overloaded shop with supply depot')
+
+# Catch actions become a single "Fangen" command that opens a ball chooser.
+must('[J,oe]=X.useState(null),x=X.useRef(null)',
+     '[J,oe]=X.useState(null),[QalphaBallsOpen,QalphaSetBallsOpen]=X.useState(!1),x=X.useRef(null)',
+     'battle ball chooser state')
+must('X.useEffect(()=>{_(!k),U(!1)},[A,k]);',
+     'X.useEffect(()=>{_(!k),U(!1),QalphaSetBallsOpen(!1)},[A,k]);',
+     'close ball chooser on battle change')
+
+must('if((me.type==="catch"||me.type==="catchUltra"||me.type==="catchMaster")&&r.vfxEnabled){const Kt=r.gameSpeed===1?1050:r.gameSpeed===1.5?900:780;oe(me.type==="catchMaster"?"master":me.type==="catchUltra"?"ultra":"poke"),window.setTimeout(()=>i(me),Kt),window.setTimeout(()=>{oe(null),V(!1)},Kt+340);return}',
+     'if(QalphaBallDefByAction(me.type)&&r.vfxEnabled){const Kt=r.gameSpeed===1?1050:r.gameSpeed===1.5?900:780;oe(QalphaBallDefByAction(me.type)?.id??"poke"),QalphaSetBallsOpen(!1),window.setTimeout(()=>i(me),Kt),window.setTimeout(()=>{oe(null),V(!1)},Kt+340);return}',
+     'all ball types use catch animation')
+
+must('function m4({kind:a,breaking:i}){const d=a==="master"?"master-ball":a==="ultra"?"ultra-ball":"poke-ball";',
+     'function m4({kind:a,breaking:i}){const d=QalphaBallDefs.find(r=>r.id===a)?.asset??"poke-ball";',
+     'catch animation ball sprite')
+
+old_catch_logic = r'''const N=h.kind==="wild"||h.kind==="legendary",Z=i.type==="catch"||i.type==="catchUltra"||i.type==="catchMaster",Te=i.type==="catch"?r.balls>0:i.type==="catchUltra"?r.ultraBalls>0:i.type==="catchMaster"?r.masterBalls>0:!1;if(Z&&N&&ct(w)&&Te)if(h.kind==="legendary"&&C.hp>C.maxHp*.5)h.log.push("Die legendäre Aura stößt den Ball ab. Schwäche den Mini-Boss zuerst unter 50 % KP!");else{i.type==="catch"?r.balls--:i.type==="catchUltra"?r.ultraBalls--:r.masterBalls--;const S=Py(r.trainerClass,d.classUpgrades[r.trainerClass]??0),G=w0(C,S,r.difficulty)*O0(r)*H0((ie=r.node)==null?void 0:ie.special)*n0(w),ne=i.type==="catchMaster"?1:i.type==="catchUltra"?Math.min(.98,G*1.8):Math.min(.98,G);if(u.chance(ne)){const se=ya(r.trainerClass).perk==="breeder"?lk(C,3):null;C.caughtAt=new Date().toISOString(),r.caught++,jy(d,C.species,C.shiny,El(r)),vi(d,C),Sh(d,r,1),Tt(d,"first-catch"),C.shiny&&Tt(d,"shiny-hunter"),d.shinyCaught.length>=10&&Tt(d,"shiny-10"),d.caught.length>=100&&Tt(d,"dex-100"),Dl(d,r,"catch",1,u);for(const ke of K[C.species].types)Dl(d,r,"type-catch",1,u,ke);r.team.length<Ve.partyLimit?(r.team.push(C),r.team.length===Ve.partyLimit&&Tt(d,"full-team"),r.message=`${K[C.species].name} gefangen!${i.type==="catchMaster"?" Meisterball: garantiert.":""}${se?` Züchter: ${se.stat} IV ${se.before}→${se.after}.`:""}`,Ke(r,u)):(r.pendingCatch=C,r.battle=null,r.phase="catchSwap",r.message=`${K[C.species].name} wurde gefangen. Dein Team ist voll.${se?` Züchter: ${se.stat} IV ${se.before}→${se.after}.`:""}`)}else h.log.push("Das Pokémon bricht aus!"),jc(d,r,u)}'''
+new_catch_logic = r'''const N=h.kind==="wild"||h.kind==="legendary",Z=QalphaBallDefByAction(i.type),Te=!!Z&&QalphaBallCount(r,Z)>0;if(Z&&N&&ct(w)&&Te)if(h.kind==="legendary"&&C.hp>C.maxHp*.5)h.log.push("Die legendäre Aura stößt den Ball ab. Schwäche den Mini-Boss zuerst unter 50 % KP!");else{if(!QalphaTakeBall(r,Z))return d;const S=Py(r.trainerClass,d.classUpgrades[r.trainerClass]??0),G=w0(C,S,r.difficulty)*O0(r)*H0((ie=r.node)==null?void 0:ie.special)*n0(w),ne=QalphaCatchChance(Z,G,r,h,C);if(u.chance(ne)){const se=ya(r.trainerClass).perk==="breeder"?lk(C,3):null;C.caughtAt=new Date().toISOString(),r.caught++,jy(d,C.species,C.shiny,El(r)),vi(d,C),Sh(d,r,1),Tt(d,"first-catch"),C.shiny&&Tt(d,"shiny-hunter"),d.shinyCaught.length>=10&&Tt(d,"shiny-10"),d.caught.length>=100&&Tt(d,"dex-100"),Dl(d,r,"catch",1,u);for(const ke of K[C.species].types)Dl(d,r,"type-catch",1,u,ke);r.team.length<Ve.partyLimit?(r.team.push(C),r.team.length===Ve.partyLimit&&Tt(d,"full-team"),r.message=`${K[C.species].name} gefangen! ${Z.name}.${Z.id==="master"?" Garantiert.":""}${se?` Züchter: ${se.stat} IV ${se.before}→${se.after}.`:""}`,Ke(r,u)):(r.pendingCatch=C,r.battle=null,r.phase="catchSwap",r.message=`${K[C.species].name} wurde mit ${Z.name} gefangen. Dein Team ist voll.${se?` Züchter: ${se.stat} IV ${se.before}→${se.after}.`:""}`)}else h.log.push(`${Z.name}: Das Pokémon bricht aus!`),jc(d,r,u)}'''
+must(old_catch_logic,new_catch_logic,'generic ball catch reducer')
+
+old_ball_actions = r'''l.jsxs("div",{className:"battle-actions gba-battle-actions",children:[l.jsxs("button",{disabled:q||!b||!a.balls||Ae,onClick:()=>G({type:"catch"}),children:[l.jsx(xe,{src:tt("poke-ball"),name:"Pokéball"}),l.jsx("strong",{children:"POKÉBALL"}),l.jsx("small",{children:Ae?"Aura: erst < 50 % KP":b?`${Math.round(Le*100)}% · ${a.balls}`:"Nicht fangbar"})]}),l.jsxs("button",{disabled:q||!b||!a.ultraBalls||Ae,onClick:()=>G({type:"catchUltra"}),children:[l.jsx(xe,{src:tt("ultra-ball"),name:"Hyperball"}),l.jsx("strong",{children:"HYPERBALL"}),l.jsx("small",{children:Ae?"Aura: erst < 50 % KP":b?`${Math.round(Math.min(.98,Le*1.8)*100)}% · ${a.ultraBalls}`:"Nicht fangbar"})]}),l.jsxs("button",{disabled:q||!b||!a.masterBalls||Ae,onClick:()=>G({type:"catchMaster"}),children:[l.jsx(xe,{src:tt("master-ball"),name:"Meisterball"}),l.jsx("strong",{children:"MEISTERBALL"}),l.jsx("small",{children:Ae?"Aura: erst < 50 % KP":b?`100% · ${a.masterBalls}`:"Nicht fangbar"})]}),l.jsxs("button",{disabled:q||!b,onClick:()=>G({type:"flee"}),children:[l.jsx("strong",{children:"↩ FLUCHT"}),l.jsx("small",{children:"Nur wilde Kämpfe"})]})]})'''
+new_ball_actions = r'''l.jsxs(l.Fragment,{children:[l.jsxs("div",{className:"battle-actions gba-battle-actions compact-battle-actions",children:[l.jsxs("button",{className:"catch-command",disabled:q||!b||QalphaBallTotal(a)<=0||Ae,onClick:()=>QalphaSetBallsOpen(O=>!O),children:[l.jsx(xe,{src:tt("poke-ball"),name:"Fangen"}),l.jsx("strong",{children:"FANGEN"}),l.jsx("small",{children:Ae?"Aura: erst < 50 % KP":b?`${QalphaBallTotal(a)} Bälle · auswählen`:"Nicht fangbar"})]}),l.jsxs("button",{disabled:q||!b,onClick:()=>G({type:"flee"}),children:[l.jsx("strong",{children:"↩ FLUCHT"}),l.jsx("small",{children:"Nur wilde Kämpfe"})]})]}),QalphaBallsOpen&&b&&l.jsxs("div",{className:"ball-chooser gba-textbox",children:[l.jsxs("div",{className:"ball-chooser-head",children:[l.jsxs("span",{children:[l.jsx("strong",{children:"BALL AUSWÄHLEN"}),l.jsx("small",{children:"Fangchance berücksichtigt Pokémon, Ort und Kampfrunde."})]}),l.jsx("button",{"aria-label":"Ball-Auswahl schließen",onClick:()=>QalphaSetBallsOpen(!1),children:"×"})]}),l.jsx("div",{className:"ball-chooser-grid",children:QalphaBallDefs.map(O=>{const ae=QalphaBallCount(a,O),pt=QalphaCatchChance(O,Le,a,u,m);return l.jsxs("button",{disabled:q||ae<=0||Ae,onClick:()=>{QalphaSetBallsOpen(!1),G({type:O.action})},children:[l.jsx(xe,{src:tt(O.asset),name:O.name}),l.jsxs("span",{children:[l.jsx("strong",{children:O.name.toUpperCase()}),l.jsx("small",{children:O.detail})]}),l.jsxs("b",{children:[ae," × · ",Math.round(pt*100),"%"]})]},O.id)})})]})]})'''
+must(old_ball_actions,new_ball_actions,'single catch command and ball chooser')
+
+must('Te=N.type==="catch"||N.type==="catchUltra"||N.type==="catchMaster"||N.type==="catchDecision"?"catch":',
+     'Te=QalphaBallDefByAction(N.type)||N.type==="catchDecision"?"catch":',
+     'sound routing for all ball types')
+
+# The route footer remains compact but now acknowledges special balls.
+must('" · Autosave · Pokéball ",a.balls," · Hyperball ",a.ultraBalls," · PC "',
+     '" · Autosave · Bälle ",QalphaBallTotal(a)," · PC "',
+     'compact route footer ball count')
+
+# Replace remaining player-facing "shop" language tied to route nodes/classes.
+s=s.replace("mehr Shop/Stadt-Pfade","mehr Versorgungs-/Stadtpfade").replace("mehr Shop- und Fund-Pfade","mehr Versorgungs- und Fund-Pfade")
 # Player-facing currency is consistently named Meta Points. Internal save keys remain metaPoints.
 s=s.replace("Rogue-Punkte","Meta Points").replace("Rogue-Punkt","Meta Point")
 out=ROOT/'public/recovered/v1.0.0-alpha.1-r7.js'

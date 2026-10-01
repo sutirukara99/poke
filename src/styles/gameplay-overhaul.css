@@ -986,17 +986,17 @@ body.pr-game-ui .alpha-shell[data-pr-game-screen="battle"] .player-sprite{
 }
 
 body.pr-game-ui .alpha-shell[data-pr-game-screen="battle"] .enemy-sprite{
-  right:45px!important;
-  top:16%!important;
-  width:clamp(130px,18vw,210px)!important;
-  height:clamp(130px,18vw,210px)!important;
+  right:70px!important;
+  top:22%!important;
+  width:clamp(96px,13vw,150px)!important;
+  height:clamp(96px,13vw,150px)!important;
 }
 
 body.pr-game-ui .alpha-shell[data-pr-game-screen="battle"] .player-sprite{
-  left:36px!important;
-  bottom:8%!important;
-  width:clamp(165px,23vw,260px)!important;
-  height:clamp(165px,23vw,260px)!important;
+  left:64px!important;
+  bottom:11%!important;
+  width:clamp(118px,16vw,185px)!important;
+  height:clamp(118px,16vw,185px)!important;
 }
 
 body.pr-game-ui .alpha-shell[data-pr-game-screen="battle"] .pr-hit-react{
@@ -1518,16 +1518,16 @@ body.pr-game-ui .type-attack-fx>i{
     height:420px!important;
   }
   body.pr-game-ui .alpha-shell[data-pr-game-screen="battle"] .enemy-sprite{
-    right:18px!important;
-    top:20%!important;
-    width:135px!important;
-    height:135px!important;
+    right:28px!important;
+    top:24%!important;
+    width:104px!important;
+    height:104px!important;
   }
   body.pr-game-ui .alpha-shell[data-pr-game-screen="battle"] .player-sprite{
-    left:10px!important;
-    bottom:10%!important;
-    width:165px!important;
-    height:165px!important;
+    left:25px!important;
+    bottom:12%!important;
+    width:128px!important;
+    height:128px!important;
   }
   body.pr-game-ui .alpha-shell[data-pr-game-screen="battle"] .enemy-platform{
     width:155px!important;
@@ -1551,5 +1551,279 @@ body.pr-game-ui .type-attack-fx>i{
   .gba-battlefield.pr-light-impact,
   .pr-fx-system *{
     animation:none!important;
+  }
+}
+
+
+/* ========================================================================== */
+/* COMPACT RUN HUD / CATCH MENU / SUPPLY DEPOT                               */
+/* ========================================================================== */
+
+body.pr-game-ui .alpha-shell .pr-hud-toggle{
+  width:100%!important;
+  min-height:40px!important;
+  display:grid!important;
+  grid-template-columns:26px minmax(0,1fr) 24px!important;
+  align-items:center!important;
+  gap:8px!important;
+  margin:6px 0 5px!important;
+  padding:6px 9px!important;
+  border:1px solid #294650!important;
+  border-left:3px solid var(--ui-region)!important;
+  border-radius:0!important;
+  background:
+    linear-gradient(90deg,var(--ui-region-soft),transparent 54%),
+    #071920!important;
+  box-shadow:none!important;
+  color:#dce7eb!important;
+  text-align:left!important;
+}
+
+body.pr-game-ui .alpha-shell .pr-hud-toggle:hover{
+  transform:none!important;
+  border-color:#55717d!important;
+  background:
+    linear-gradient(90deg,var(--ui-region-soft),transparent 62%),
+    #0a2029!important;
+}
+
+.pr-hud-toggle-icon{
+  display:grid;
+  place-items:center;
+  width:24px;height:24px;
+  border:1px solid #35535f;
+  color:var(--ui-region);
+  font:700 11px/1 "Pixelify Sans",system-ui,sans-serif;
+}
+.pr-hud-toggle-copy{
+  min-width:0;
+  display:flex;
+  align-items:baseline;
+  gap:9px;
+}
+.pr-hud-toggle-copy b{
+  flex:none;
+  color:#edf3f5;
+  font:700 6px/1 "Press Start 2P",monospace;
+  letter-spacing:.08em;
+}
+.pr-hud-toggle-copy small{
+  overflow:hidden;
+  color:#718892!important;
+  font-size:9px!important;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.pr-hud-toggle-state{
+  color:#6f8791;
+  text-align:center;
+  font-size:11px;
+}
+body.pr-game-ui .alpha-shell .game-hud[data-pr-collapsed="true"]{
+  display:none!important;
+}
+body.pr-game-ui .alpha-shell .pr-hud-toggle.is-collapsed{
+  margin-bottom:10px!important;
+}
+
+/* One catch command instead of one permanent button per ball. */
+body.pr-game-ui .alpha-shell[data-pr-game-screen="battle"] .compact-battle-actions{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.45fr) minmax(150px,.55fr)!important;
+  gap:7px!important;
+}
+body.pr-game-ui .alpha-shell[data-pr-game-screen="battle"] .compact-battle-actions>button{
+  min-height:62px!important;
+  padding:8px 11px!important;
+}
+body.pr-game-ui .alpha-shell[data-pr-game-screen="battle"] .catch-command{
+  display:grid!important;
+  grid-template-columns:38px minmax(0,1fr)!important;
+  grid-template-rows:auto auto!important;
+  align-items:center!important;
+  column-gap:10px!important;
+  text-align:left!important;
+  border-color:#55786b!important;
+  background:
+    linear-gradient(90deg,rgba(78,139,103,.14),transparent 60%),
+    #10252b!important;
+}
+body.pr-game-ui .alpha-shell[data-pr-game-screen="battle"] .catch-command>img{
+  grid-row:1/3;
+  width:34px!important;height:34px!important;
+  object-fit:contain!important;
+  image-rendering:pixelated!important;
+}
+body.pr-game-ui .alpha-shell[data-pr-game-screen="battle"] .catch-command strong{
+  color:#e8f4ec!important;
+}
+body.pr-game-ui .alpha-shell[data-pr-game-screen="battle"] .catch-command small{
+  color:#8fa99a!important;
+}
+
+body.pr-game-ui .alpha-shell .ball-chooser{
+  margin-top:7px!important;
+  padding:10px!important;
+  border:1px solid #3b5964!important;
+  border-left:3px solid #75a289!important;
+  background:#06171e!important;
+  box-shadow:0 10px 24px rgba(0,0,0,.28)!important;
+}
+.ball-chooser-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:8px;
+  padding-bottom:7px;
+  border-bottom:1px solid #203b46;
+}
+.ball-chooser-head>span{
+  display:grid;
+  gap:2px;
+}
+.ball-chooser-head strong{
+  color:#eef4f6;
+  font:700 7px/1 "Press Start 2P",monospace;
+  letter-spacing:.07em;
+}
+.ball-chooser-head small{
+  color:#748b95!important;
+  font-size:9px!important;
+}
+body.pr-game-ui .alpha-shell .ball-chooser-head>button{
+  min-width:30px!important;width:30px!important;
+  min-height:30px!important;height:30px!important;
+  padding:0!important;
+  border:1px solid #314e59!important;
+  background:#0c2028!important;
+  box-shadow:none!important;
+}
+.ball-chooser-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:5px;
+}
+body.pr-game-ui .alpha-shell .ball-chooser-grid>button{
+  display:grid!important;
+  grid-template-columns:34px minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:8px!important;
+  min-height:58px!important;
+  padding:7px 9px!important;
+  border:1px solid #294650!important;
+  background:#0b2028!important;
+  text-align:left!important;
+}
+body.pr-game-ui .alpha-shell .ball-chooser-grid>button:hover:not(:disabled){
+  transform:none!important;
+  border-color:#5e7c88!important;
+  background:#102932!important;
+}
+.ball-chooser-grid>button>img{
+  width:30px!important;height:30px!important;
+  object-fit:contain!important;
+  image-rendering:pixelated!important;
+}
+.ball-chooser-grid>button>span{
+  min-width:0;
+  display:grid;
+  gap:2px;
+}
+.ball-chooser-grid>button strong{
+  color:#e7eef1!important;
+  font:700 6px/1.15 "Press Start 2P",monospace!important;
+}
+.ball-chooser-grid>button small{
+  overflow:hidden;
+  color:#778d96!important;
+  font-size:8px!important;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.ball-chooser-grid>button>b{
+  color:#a8c8b8;
+  font:700 8px/1 "Pixelify Sans",system-ui,sans-serif!important;
+  white-space:nowrap;
+}
+
+/* The old route shop is now a fast one-choice supply stop. */
+body.pr-game-ui .alpha-shell .supply-depot{
+  display:grid;
+  gap:10px;
+}
+body.pr-game-ui .alpha-shell .supply-depot>p{
+  margin:0!important;
+  padding:8px 10px;
+  border-left:3px solid #6792a1;
+  background:#0b2028;
+  color:#9cb0b8!important;
+}
+.supply-pack-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:7px;
+}
+body.pr-game-ui .alpha-shell .supply-pack-grid>button{
+  display:grid!important;
+  grid-template-columns:44px minmax(0,1fr)!important;
+  grid-template-rows:auto auto!important;
+  align-items:center!important;
+  gap:3px 9px!important;
+  min-height:76px!important;
+  padding:9px!important;
+  border:1px solid #355560!important;
+  border-top:2px solid #5f8b9b!important;
+  background:
+    linear-gradient(135deg,rgba(75,134,153,.1),transparent 55%),
+    #0a1d25!important;
+  text-align:left!important;
+}
+body.pr-game-ui .alpha-shell .supply-pack-grid>button:hover{
+  transform:translateY(-1px)!important;
+  border-color:#6e96a4!important;
+}
+.supply-pack-grid>button>img{
+  grid-row:1/3;
+  width:40px!important;height:40px!important;
+  object-fit:contain!important;
+  image-rendering:pixelated!important;
+}
+.supply-pack-grid strong{
+  color:#e9f0f2!important;
+  font:700 6px/1.2 "Press Start 2P",monospace!important;
+}
+.supply-pack-grid small{
+  color:#7f969f!important;
+  font-size:8px!important;
+  line-height:1.3!important;
+}
+
+/* Trainer encounters should begin immediately. Gym/rival/league dialogue stays special. */
+.pr-battle-intro-trainer{
+  display:none!important;
+}
+
+@media(max-width:760px){
+  .pr-hud-toggle-copy{
+    display:grid;
+    gap:2px;
+  }
+  body.pr-game-ui .alpha-shell[data-pr-game-screen="battle"] .compact-battle-actions{
+    grid-template-columns:1fr 1fr!important;
+  }
+  .ball-chooser-grid,
+  .supply-pack-grid{
+    grid-template-columns:1fr!important;
+  }
+}
+
+@media(max-width:520px){
+  .pr-hud-toggle-copy small{font-size:8px!important}
+  body.pr-game-ui .alpha-shell .ball-chooser-grid>button{
+    grid-template-columns:30px minmax(0,1fr) auto!important;
+  }
+  .ball-chooser-grid>button>img{
+    width:26px!important;height:26px!important;
   }
 }
