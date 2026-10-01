@@ -663,6 +663,16 @@ s=s[:x0]+journey_component+s[x1:]
 s=s.replace('l.jsx(x4,{route:J,step:oe,','l.jsx(x4,{run:a,route:J,step:oe,',1)
 s=s.replace('Ut&&r({type:"node",id:Ut.id})','Ut&&r({type:"journeyTravel",id:Ut.id})',1)
 
+# Journey terminology: no player-facing "node" vocabulary remains.
+s=s.replace("Service-Knoten mit PC, Shop oder weiteren Optionen","Reisestopp mit PC, Shop oder weiteren Optionen")
+s=s.replace("deckt alle restlichen Knoten dieser Reise auf","enthüllt Hinweise auf die kommenden Wege")
+s=s.replace("Fund-Knoten enthalten zusätzlich ein seltenes Item","Fundorte enthalten zusätzlich ein seltenes Item")
+s=s.replace("Fund-Knoten geben Bonusbeute","Fundorte geben Bonusbeute")
+s=s.replace("Unbekannter Knoten","Unbekannter Weg")
+s=s.replace('["KNOTEN","Unbekannter Routentyp"]','["WEG","Unbekannter Weg"]')
+s=s.replace('["KNOTEN",R.detail]','["WEG",R.detail]')
+s=s.replace('["KNOTEN"]','["WEG"]')
+
 # Player-facing currency is consistently named Meta Points. Internal save keys remain metaPoints.
 s=s.replace("Rogue-Punkte","Meta Points").replace("Rogue-Punkt","Meta Point")
 out=ROOT/'public/recovered/v1.0.0-alpha.1-r7.js'
