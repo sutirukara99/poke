@@ -664,6 +664,13 @@ if x0<0 or x1<0: raise RuntimeError('missing route component boundaries')
 journey_component=(ROOT/'scripts/overworld-component.js').read_text()
 s=s[:x0]+journey_component+s[x1:]
 
+# Replace the old city dashboard with a small walkable tile hub.
+city0=s.index('function c4(')
+city1=s.index('function o4(',city0)
+if city0<0 or city1<0: raise RuntimeError('missing city hub component boundaries')
+city_component=(ROOT/'scripts/overworld-city.js').read_text()
+s=s[:city0]+city_component+s[city1:]
+
 # Disable legacy A/D node-lane navigation while the free-roam world owns keyboard input.
 s=s.replace('if(a.phase!=="map")return;const O=J[oe]?.filter(', 'if(a.phase!=="map"||document.querySelector(".free-roam-overworld"))return;const O=J[oe]?.filter(',1)
 
