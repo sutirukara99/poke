@@ -29,7 +29,7 @@ if(i.type==="overworldMove"&&r.phase==="map"){
   Qs.facing=Qdir;
   const Qx=Qs.x+Qdx,Qy=Qs.y+Qdy;
   if(Qx<0||Qy<0||Qx>=Qm.w||Qy>=Qm.h||QowBlocking(QowTile(Qm,Qx,Qy))){Qs.lastMessage="Der Weg ist blockiert.";return d}
-  Qs.x=Qx,Qs.y=Qy,Qs.steps=(Qs.steps??0)+1,QowReveal(Qs,Qx,Qy,Qm.w,Qm.h);
+  Qs.prevX=Qs.x,Qs.prevY=Qs.y,Qs.x=Qx,Qs.y=Qy,Qs.steps=(Qs.steps??0)+1,QowReveal(Qs,Qx,Qy,Qm.w,Qm.h);
   const Qtile=QowTile(Qm,Qx,Qy),Qgain=QowDangerGain(r,Qtile);
   Qs.danger=Math.max(0,Math.min(100,(Qs.danger??0)+Qgain));
   const Qpickup=Qm.pickups.find(Q=>Q.x===Qx&&Q.y===Qy&&!(Qs.picked??[]).includes(Q.id));
