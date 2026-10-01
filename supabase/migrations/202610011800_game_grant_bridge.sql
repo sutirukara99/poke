@@ -260,6 +260,146 @@ update public.catalog_items
 set metadata = metadata || '{"game_grant_type":"starter_unlock","game_grant_key":"riolu"}'::jsonb
 where item_key = 'pokemon.alpha_shiny_riolu';
 
+-- Reward bundles (promo codes, events, admin bundles) also need to bridge
+-- mapped catalog rewards into the actual game save.
+create or replace function public.grant_reward_bundle_internal(
+  p_user_id uuid,
+  p_bundle_id uuid,
+  p_source_type text,
+  p_source_ref text default null,
+  p_granted_by uuid default null,
+  p_metadata jsonb default '{}'::jsonb
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $
+declare
+  v_entry record;
+  v_grant_id uuid;
+  v_item_metadata jsonb;
+  v_game_grant_type text;
+  v_game_grant_key text;
+begin
+  if not exists (
+    select 1 from public.reward_bundles where id = p_bundle_id
+  ) then
+    raise exception 'Unknown reward bundle';
+  end if;
+
+  for v_entry in
+    select reward_type, reward_key, quantity, metadata
+    from public.reward_bundle_entries
+    where bundle_id = p_bundle_id
+    order by sort_order, id
+  loop
+    if v_entry.reward_type = 'item' then
+      perform public.grant_catalog_item_internal(
+        p_user_id,
+        v_entry.reward_key,
+        v_entry.quantity,
+        v_entry.metadata
+      );
+
+      select metadata
+      into v_item_metadata
+      from public.catalog_items
+      where item_key = v_entry.reward_key;
+
+      v_game_grant_type := nullif(v_item_metadata ->> 'game_grant_type', '');
+      v_game_grant_key := coalesce(
+        nullif(v_item_metadata ->> 'game_grant_key', ''),
+        nullif(v_item_metadata ->> 'species', ''),
+        nullif(v_item_metadata ->> 'relic_id', '')
+      );
+
+      if v_game_grant_type is not null then
+        perform public.queue_game_grant_internal(
+          p_user_id,
+          v_game_grant_type,
+          v_game_grant_key,
+          v_entry.quantity,
+          v_item_metadata || coalesce(v_entry.metadata, '{}'::jsonb),
+          p_source_type,
+          p_source_ref,
+          p_granted_by
+        );
+      end if;
+
+    elsif v_entry.reward_type = 'entitlement' then
+      insert into public.entitlements (
+        user_id,
+        code,
+        reward,
+        source_type,
+        source_ref,
+        metadata
+      )
+      values (
+        p_user_id,
+        v_entry.reward_key,
+        v_entry.metadata,
+        p_source_type,
+        p_source_ref,
+        v_entry.metadata
+      )
+      on conflict (user_id, code)
+      do update set
+        reward = public.entitlements.reward || excluded.reward,
+        source_type = excluded.source_type,
+        source_ref = excluded.source_ref,
+        metadata = public.entitlements.metadata || excluded.metadata;
+
+    elsif v_entry.reward_type = 'achievement' then
+      insert into public.user_achievements (
+        user_id,
+        achievement_key,
+        progress_value,
+        progress_data,
+        source
+      )
+      values (
+        p_user_id,
+        v_entry.reward_key,
+        0,
+        v_entry.metadata,
+        p_source_type
+      )
+      on conflict (user_id, achievement_key) do nothing;
+    end if;
+  end loop;
+
+  insert into public.reward_grants (
+    user_id,
+    bundle_id,
+    source_type,
+    source_ref,
+    granted_by,
+    metadata
+  )
+  values (
+    p_user_id,
+    p_bundle_id,
+    p_source_type,
+    p_source_ref,
+    p_granted_by,
+    coalesce(p_metadata, '{}'::jsonb)
+  )
+  returning id into v_grant_id;
+
+  return v_grant_id;
+end;
+$;
+
+revoke all on function public.grant_reward_bundle_internal(
+  uuid, uuid, text, text, uuid, jsonb
+) from public, anon, authenticated;
+
+grant execute on function public.grant_reward_bundle_internal(
+  uuid, uuid, text, text, uuid, jsonb
+) to service_role;
+
 -- Replace the existing admin catalog grant RPC so mapped catalog rewards also
 -- reach the real game save instead of living only in account_inventory.
 create or replace function public.admin_grant_catalog_item(
