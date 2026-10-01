@@ -481,6 +481,11 @@ const renderRouteAtlasHud = (
   const relics = Array.isArray(run.activeRelics) ? run.activeRelics.length : 0;
   const money = countValue(run.money);
   const biomeInfo = biome ? BIOMES[biome] : null;
+  const routeMode = asRecord(run.arena)
+    ? "ARENA-PFAD"
+    : run.mode === "endless"
+      ? "BATTLE TOWER"
+      : "EXPEDITION";
   const progress = Math.max(
     0,
     Math.min(100, ((currentRouteStep - 1) / Math.max(1, routeRows - 1)) * 100),
@@ -524,7 +529,7 @@ const renderRouteAtlasHud = (
   const headCopy = document.createElement("div");
   headCopy.className = "pr-route-atlas-copy";
   headCopy.innerHTML = `
-    <span class="pr-route-atlas-kicker">${REGIONS[region].label} · REISE ${String(currentRouteStep).padStart(2, "0")}</span>
+    <span class="pr-route-atlas-kicker">${REGIONS[region].label} · ${routeMode} · ${String(currentRouteStep).padStart(2, "0")}</span>
     <h2>${biomeInfo?.label ?? "REGIONALE ROUTE"}</h2>
     <p>${flavor}</p>
   `;
@@ -533,7 +538,7 @@ const renderRouteAtlasHud = (
   destination.className = "pr-route-atlas-destination";
   destination.innerHTML = `
     <small>NÄCHSTER SCHRITT</small>
-    <strong>${currentRouteStep >= routeRows ? "ZIEL ERREICHT" : "WEG WÄHLEN"}</strong>
+    <strong>${currentRouteStep >= routeRows ? "ZIEL ERREICHT" : asRecord(run.arena) ? "VORTRAINER WÄHLEN" : "WEG WÄHLEN"}</strong>
     <span>${String(currentRouteStep).padStart(2, "0")} / ${String(Math.max(routeRows, currentRouteStep)).padStart(2, "0")}</span>
   `;
 
