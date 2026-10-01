@@ -10,6 +10,7 @@ import {
 
 const MAINTENANCE_FLAG = "maintenance_mode";
 const BYPASS_KEY = "pokeregions-maintenance-admin-bypass";
+const FORCE_MAINTENANCE = true;
 
 type MaintenanceConfig = {
   eyebrow: string;
@@ -314,7 +315,8 @@ const renderMaintenance = (
 };
 
 export const waitForMaintenanceAccess = async () => {
-  const state = await loadMaintenanceState();
+  const loaded = await loadMaintenanceState();
+  const state = FORCE_MAINTENANCE ? { ...loaded, active: true } : loaded;
   if (!state.active) {
     sessionStorage.removeItem(BYPASS_KEY);
     return;
