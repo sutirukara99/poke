@@ -624,6 +624,35 @@ const renderRouteAtlasHud = (
 };
 
 const enhanceRoute = (shell: HTMLElement, run: RecordLike | null) => {
+  const journey = shell.querySelector<HTMLElement>(".journey-world");
+  if (journey) {
+    const board =
+      journey.closest<HTMLElement>(".adventure-board") ?? journey.parentElement;
+    if (board) {
+      board.dataset.prJourneySystem = "true";
+      delete board.dataset.prRouteAtlas;
+      delete board.dataset.prBoardLayout;
+      board
+        .querySelectorAll<HTMLElement>(
+          ".pr-route-atlas-hud, .pr-route-board-side, .pr-route-risk-legend, .pr-route-context, .pr-route-scenery",
+        )
+        .forEach((node) => node.remove());
+    }
+
+    const region = getRegionFromValue(run?.region) ?? getContextRegion();
+    if (region) {
+      journey.dataset.prRegion = region;
+      shell.dataset.prRegion = region;
+    }
+    const biome = currentRouteBiome(run);
+    if (biome) {
+      journey.dataset.prBiome = biome;
+      shell.dataset.prBiome = biome;
+      document.body.dataset.prBiome = biome;
+    }
+    return;
+  }
+
   const map = shell.querySelector<HTMLElement>(".route-map");
   if (!map) return;
 
@@ -876,6 +905,9 @@ const enhanceTrainerCard = (shell: HTMLElement) => {
   );
   const caught = Array.isArray(save.caught) ? save.caught.length : 0;
   const shiny = Array.isArray(save.shinyCaught) ? save.shinyCaught.length : 0;
+  const discoveries = Array.isArray(save.worldDiscoveries)
+    ? new Set(save.worldDiscoveries.map(String)).size
+    : 0;
   const achievements = Array.isArray(save.achievements)
     ? save.achievements.map(String)
     : [];
@@ -901,6 +933,7 @@ const enhanceTrainerCard = (shell: HTMLElement) => {
       <span><b>${endlessBest}</b><small>ENDLESS</small></span>
       <span><b>${dexPercent}%</b><small>POKÉDEX</small></span>
       <span><b>${shiny}</b><small>SHINIES</small></span>
+      <span><b>${discoveries}/16</b><small>ENTDECKUNGEN</small></span>
       <span><b>${achievements.length}</b><small>ERFOLGE</small></span>
     </div>
     <div class="pr-prestige-stamp ${firstWave ? "is-exclusive" : ""}">

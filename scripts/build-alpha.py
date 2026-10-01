@@ -569,6 +569,112 @@ must('revealed:a.fogRevealed||a.activeRelics.includes("cracked-compass"),region:
      'revealed:a.fogRevealed||a.activeRelics.includes("cracked-compass"),region:a.region,dispatch:r,arena:!!a.arena,keyboardNodeId:(J[oe]?.filter(O=>qu(J,oe,x,Iy(O,!!a.arena))&&(!O.secret||a.fogRevealed||a.activeRelics.includes("cracked-compass")))[QalphaLane]?.id??null)',
      'route keyboard selection wiring')
 
+
+# ---------------------------------------------------------------------------
+# PokéRegions Journey System
+# Replaces the player-facing node map with a contextual expedition loop.
+# Existing encounter/battle/shop engines remain the content backend.
+# ---------------------------------------------------------------------------
+
+journey_helpers=r'''const QjourneyState=()=>({energy:6,maxEnergy:6,scouted:!1,camped:!1,steps:0,lastPath:null,discoveries:[],searches:0});
+const QjourneyRoadNames={
+grassland:["Feldweg","Alter Handelsweg","Pfad durchs hohe Gras"],
+forest:["Moospfad","Dichter Waldweg","Pfad unter alten Bäumen"],
+cave:["Felstunnel","Tiefe Passage","Schmaler Höhlenweg"],
+coast:["Küstenpfad","Weg über die Klippen","Salziger Strandweg"],
+sea:["Uferroute","Steg am Wasser","Weg entlang der Brandung"],
+city:["Straße zur Stadt","Laternenweg","Gepflasterte Route"],
+ruins:["Verwitterter Steinweg","Pfad zu den Ruinen","Vergessener Pilgerweg"],
+mountain:["Bergpass","Steiler Höhenweg","Pfad am Grat"],
+volcano:["Aschepfad","Schwarzer Lavasteg","Weg durch die Hitze"],
+marsh:["Schilfweg","Moorpfad","Schmaler Damm"],
+snow:["Verschneiter Pass","Eisiger Höhenweg","Spur durch den Schnee"],
+night:["Dunkler Nebenweg","Mondpfad","Stiller Nachtweg"]
+};
+const QjourneyDiscoveryPools={
+kanto:[
+{id:"kanto-old-well",name:"Alter Brunnen",detail:"Hinter einer eingestürzten Mauer liegt ein noch nutzbarer Brunnen.",reward:"heal"},
+{id:"kanto-trainer-cache",name:"Verlassenes Trainerlager",detail:"Unter einer Plane liegen zurückgelassene Reisevorräte.",reward:"money"},
+{id:"kanto-field-marker",name:"Verwitterter Routenstein",detail:"Eine alte Markierung zeigt einen längst vergessenen Nebenweg.",reward:"balls"},
+{id:"kanto-moon-shard",name:"Seltsamer Mondsplitter",detail:"Ein heller Splitter steckt zwischen dunklem Gestein.",reward:"candy"}],
+johto:[
+{id:"johto-moss-shrine",name:"Moosiger Schrein",detail:"Zwischen Wurzeln steht ein kleiner, fast vergessener Schrein.",reward:"heal"},
+{id:"johto-apricorn-grove",name:"Versteckter Aprikoko-Hain",detail:"Ein geschützter Hain trägt ungewöhnlich viele Früchte.",reward:"balls"},
+{id:"johto-old-bell",name:"Alte Glocke",detail:"Eine kleine Glocke klingt, obwohl kein Wind weht.",reward:"candy"},
+{id:"johto-watchpost",name:"Verlassener Wachtposten",detail:"In einer Holzkiste liegen alte Trainer-Münzen.",reward:"money"}],
+hoenn:[
+{id:"hoenn-tide-cave",name:"Gezeitenhöhle",detail:"Die Ebbe gibt für kurze Zeit eine kleine Höhle frei.",reward:"ultra"},
+{id:"hoenn-weather-cache",name:"Wetterstations-Kiste",detail:"Eine versiegelte Versorgungskiste liegt neben einer alten Messstation.",reward:"money"},
+{id:"hoenn-secret-base",name:"Verlassene Geheimbasis",detail:"Jemand hat hier einen erstaunlich gemütlichen Rastplatz gebaut.",reward:"heal"},
+{id:"hoenn-shell-path",name:"Muschelpfad",detail:"Zwischen den Felsen findest du seltene Spuren und brauchbare Vorräte.",reward:"balls"}],
+sinnoh:[
+{id:"sinnoh-crystal-vein",name:"Kristallader",detail:"Im Fels glitzert eine ungewöhnlich klare Mineralader.",reward:"candy"},
+{id:"sinnoh-frozen-shelter",name:"Gefrorene Schutzhütte",detail:"Eine kleine Hütte schützt noch immer vor dem Bergwind.",reward:"heal"},
+{id:"sinnoh-mountain-cache",name:"Bergsteiger-Depot",detail:"Unter einer Steinplatte liegt ein wasserdichtes Vorratsdepot.",reward:"ultra"},
+{id:"sinnoh-ruin-mark",name:"Alte Ruinenmarkierung",detail:"Ein Symbol weist auf einen sicheren Pfad durch das Gelände.",reward:"money"}]
+};
+const QjourneyBiome=a=>a?.biome??"grassland";
+const QjourneyRoadTitle=(a,i,d)=>{if(a?.kind==="gym")return"Tor zur Arena";if(a?.kind==="league")return"Weg zur Pokémon-Liga";if(a?.kind==="boss")return"Spur des Rivalen";if(a?.kind==="legendary")return"Ungewöhnliche Spur";if(a?.kind==="city")return"Straße zur nächsten Stadt";const r=QjourneyRoadNames[QjourneyBiome(a)]??QjourneyRoadNames.grassland;return r[(i+({kanto:0,johto:1,hoenn:2,sinnoh:1}[d]??0))%r.length]};
+const QjourneyDirection=(a,i)=>a===0?"LINKER WEG":a===2?"RECHTER WEG":i===1?"GERADEAUS":i===0?"LINKER WEG":"RECHTER WEG";
+const QjourneySignal=a=>({wild:"Im Gras bewegt sich etwas. Du hörst kurze, schnelle Schritte.",trainer:"Weiter vorne hörst du Stimmen und das Klicken eines Pokéballs.",shop:"Zwischen den Bäumen steigt dünner Rauch von einem kleinen Lager auf.",mystery:"Etwas abseits des Weges wirkt fehl am Platz.",heal:"Der Weg wird ruhiger. In der Nähe scheint ein geschützter Rastplatz zu liegen.",item:"Am Wegrand glitzert etwas zwischen Gras und Steinen.",city:"Dächer, Laternen und Stimmen zeichnen sich am Horizont ab.",tutor:"Ein einzelner Reisender wartet ruhig am Wegesrand.",boss:"Eine vertraute Spur kreuzt deinen Weg.",gym:"Vor dir führt der Weg direkt zum Eingang der Arena.",league:"Die Straße wird breiter. Das Ziel deiner Reise liegt vor dir.",legendary:"Die Umgebung wird plötzlich still. Selbst wilde Pokémon scheinen diesen Ort zu meiden."}[a?.kind]??"Der Weg trägt Spuren von etwas, das kurz vor dir hier entlangkam.");
+const QjourneyUnknown=a=>({forest:"Der Pfad verschwindet zwischen dichtem Laub.",cave:"Die Passage biegt hinter dunklem Fels ab.",coast:"Der Weg folgt den Klippen und verschwindet im Sprühnebel.",sea:"Hinter einer Biegung siehst du nur Wasser und Felsen.",city:"Der Weg führt in Richtung der nächsten Siedlung.",ruins:"Verwitterte Steine verdecken, was dahinter liegt.",mountain:"Der Pfad verschwindet hinter dem nächsten Grat.",volcano:"Hitze und Asche nehmen dir die Sicht.",marsh:"Nebel liegt dicht über dem Weg.",snow:"Schneeverwehungen verdecken die Spur.",night:"Dunkelheit verschluckt den weiteren Verlauf."}[QjourneyBiome(a)]??"Du kannst noch nicht erkennen, was hinter der nächsten Biegung wartet.");
+const QjourneyFindDiscovery=(a,i,d)=>{const r=QjourneyDiscoveryPools[a]??[],u=r.filter(h=>!i.includes(h.id));return u.length?d.pick(u):null};
+const QjourneyApplyDiscovery=(a,i)=>{if(!i)return"";if(i.reward==="heal"){for(const d of a.team)ct(d)&&(d.hp=Math.min(d.maxHp,d.hp+Math.ceil(d.maxHp*.2)));return"Dein Team erholt sich um 20 %."}if(i.reward==="money"){const d=160;a.money+=d;return"+160 ₽ gefunden."}if(i.reward==="balls")return a.balls+=2,"+2 Pokébälle gefunden.";if(i.reward==="ultra")return a.ultraBalls+=1,"+1 Hyperball gefunden.";return a.rareCandies+=1,"+1 Sonderbonbon gefunden."};
+'''
+s=s.replace('const Dc=()=>({',journey_helpers+'const Dc=()=>({',1)
+
+# Save/run defaults and migration.
+s=s.replace('giftStarters:{},alphaQuestClaims:[],settings:{','giftStarters:{},alphaQuestClaims:[],worldDiscoveries:[],settings:{',1)
+s=s.replace('score:null,badges:[]','score:null,journey:QjourneyState(),badges:[]',1)
+s=s.replace('d.alphaQuestClaims??=[];d.redeemedCodes.includes("ALPHA2026")','d.alphaQuestClaims??=[],d.worldDiscoveries??=[];d.redeemedCodes.includes("ALPHA2026")',1)
+s=s.replace('const u=new Pn(r.rng);if(i.type==="debugGrant"', 'r.journey??=QjourneyState(),d.worldDiscoveries??=[];const u=new Pn(r.rng);if(i.type==="debugGrant"',1)
+
+# Replace map-step advancement so Journey state is part of the actual run loop.
+rx0=s.index('function rx(a,i){')
+ke0=s.index('function Ke(a,i){',rx0)
+g00=s.index('function G0(a){',ke0)
+cx0=s.index('function cx(',g00)
+if min(rx0,ke0,g00,cx0)<0: raise RuntimeError('missing journey advance functions')
+new_rx=r'''function rx(a,i){a.endlessMap++;const d=Object.keys(we);a.region=i.pick(d),a.route=gh(bh(a.seed,a.endlessMap),a.region,a.endlessMap,a.trainerClass),a.step=0,a.path=[],a.node=null,a.battle=null,a.phase="map",a.mysteryEvent=null,a.fogRevealed=!1,a.shopTransactions=[],a.journey=QjourneyState(),a.message=`Battle Tower · Reise ${a.endlessMap+1}: ${we[a.region].name}.`}'''
+new_ke=r'''function Ke(a,i){a.shopTransactions=[],a.journey??=QjourneyState(),a.journey.scouted=!1,a.journey.steps=(a.journey.steps??0)+1,a.journey.energy=Math.min(a.journey.maxEnergy??6,(a.journey.energy??0)+1);if(a.arena){a.arena.step++,a.phase="map",a.node=null,a.battle=null,QalphaRepairRoute(a);return}if(a.mode==="endless"){a.endlessStage++,a.step+1>=a.route.length?rx(a,i):(a.step++,a.phase="map",a.node=null,a.battle=null),QalphaRepairRoute(a);return}a.step++,a.phase="map",a.node=null,a.battle=null,QalphaRepairRoute(a)}'''
+new_g0=r'''function G0(a){a.arena=void 0,a.mapIndex++,a.route=ph(yh(a.seed,a.region,a.mapIndex),a.region,a.mapIndex,a.trainerClass),a.step=0,a.path=[],a.node=null,a.battle=null,a.phase="map",a.mysteryEvent=null,a.fogRevealed=!1,a.shopTransactions=[],a.journey=QjourneyState(),a.team.forEach(i=>Gu(i))}'''
+s=s[:rx0]+new_rx+new_ke+new_g0+s[cx0:]
+
+# Journey actions are real reducer actions. Travel uses the existing encounter engine
+# only after a road has been selected.
+old_discard='''if(i.type==="discardHeld"&&r.phase!=="battle"&&(r.heldItems[i.item]??0)>0&&(r.heldItems[i.item]--,r.message=`${Ge[i.item].name} wurde weggeworfen.`),i.type==="node"&&r.phase==="map"){'''
+new_discard=r'''if(i.type==="discardHeld"&&r.phase!=="battle"&&(r.heldItems[i.item]??0)>0){r.heldItems[i.item]--,r.message=`${Ge[i.item].name} wurde weggeworfen.`;return d}if(i.type==="journeyAction"&&r.phase==="map"){const Qj=r.journey??(r.journey=QjourneyState());if(i.action==="scout"){if((Qj.energy??0)<1||Qj.scouted)return d;Qj.energy--,Qj.scouted=!0,r.message="Du nimmst dir Zeit, die Umgebung zu lesen. Geräusche, Spuren und Licht verraten mehr über die möglichen Wege."}else if(i.action==="camp"){if((Qj.energy??0)<2||Qj.camped)return d;Qj.energy-=2,Qj.camped=!0;let Qh=0;r.team.filter(ct).forEach(Qp=>{const Qb=Qp.hp,Qv=Math.max(1,Math.ceil(Qp.maxHp*.22));Qp.hp=Math.min(Qp.maxHp,Qp.hp+Qv),Qh+=Qp.hp-Qb}),r.message=`Kurzes Lager: Dein Team sammelt Kraft und regeneriert ${Qh} KP.`}else if(i.action==="search"){if((Qj.energy??0)<1)return d;Qj.energy--,Qj.searches=(Qj.searches??0)+1;const Qroll=u.next();if(Qroll<.38){const Qmoney=u.int(90,190);r.money+=Qmoney,r.message=`Du durchsuchst die Umgebung und findest ${Qmoney} ₽ zwischen zurückgelassenen Vorräten.`}else if(Qroll<.68){u.chance(.5)?(r.balls++,r.message="Du findest einen noch brauchbaren Pokéball am Rand des Weges."):(r.potions++,r.message="Unter einer Wurzel steckt ein unbeschädigter Trank.")}else{const Qdisc=QjourneyFindDiscovery(r.region,[...(Qj.discoveries??[]),...(d.worldDiscoveries??[])],u);if(Qdisc){Qj.discoveries??=[],Qj.discoveries.push(Qdisc.id),d.worldDiscoveries??=[],d.worldDiscoveries.includes(Qdisc.id)||d.worldDiscoveries.push(Qdisc.id),r.secretsFound=(r.secretsFound??0)+1;const Qreward=QjourneyApplyDiscovery(r,Qdisc);r.message=`Entdeckung: ${Qdisc.name}. ${Qdisc.detail} ${Qreward}`}else r.ultraBalls++,r.message="Du kennst diese Gegend inzwischen gut und findest einen versteckten Hyperball."}}r.rng=u.state;return d}if((i.type==="node"||i.type==="journeyTravel")&&r.phase==="map"){if(i.type==="journeyTravel"){const Qj=r.journey??(r.journey=QjourneyState());Qj.lastPath=i.id,Qj.scouted=!1}'''
+if old_discard not in s: raise RuntimeError('missing journey reducer insertion point')
+s=s.replace(old_discard,new_discard,1)
+
+# PokéCenter refreshes expedition options, making towns meaningful travel hubs.
+s=s.replace('i.service==="heal"?(r.team.forEach(w=>Gu(w)),r.message="Pokémon-Center: Team vollständig geheilt.")',
+            'i.service==="heal"?(r.team.forEach(w=>Gu(w)),r.journey??=QjourneyState(),r.journey.energy=r.journey.maxEnergy??6,r.journey.camped=!1,r.message="Pokémon-Center: Team vollständig geheilt. Deine Reiseenergie ist wieder voll.")',1)
+
+# Replace the entire visible route map component. Only the immediate landscape and
+# current road choices are shown; there is no node graph or future-node board.
+x0=s.index('function x4(')
+x1=s.index('const S4=',x0)
+if x0<0 or x1<0: raise RuntimeError('missing route component boundaries')
+journey_component=r'''function x4({run:y,route:a,step:i,path:d=[],revealed:r,region:u,dispatch:h,arena:m=!1,keyboardNodeId:k=null}){const A=a[i]??[],R=A.filter(_=>qu(a,i,d,Iy(_,m))&&(!_.secret||r)),L=y?.journey??QjourneyState(),U=we[u]?.maps[Math.min(y?.mapIndex??0,(we[u]?.maps?.length??1)-1)],q=R[0]?.biome??"grassland",V=L.scouted||r,he=L.energy??6,le=L.maxEnergy??6,re=(L.discoveries??[]).map(_=>Object.values(QjourneyDiscoveryPools).flat().find(F=>F.id===_)).filter(Boolean),F=y?.team?.[0],J=Math.min(100,Math.round((i/Math.max(1,a.length-1))*100)),oe=m?"ARENA-EXPEDITION":y?.mode==="endless"?"BATTLE TOWER":"REGIONALE EXPEDITION";return l.jsxs("section",{className:`journey-world region-${u} biome-${q}${m?" journey-arena":""}`,children:[l.jsxs("div",{className:"journey-vista","aria-hidden":"true",children:[l.jsx("span",{className:"journey-sky"}),l.jsx("span",{className:"journey-horizon far"}),l.jsx("span",{className:"journey-horizon mid"}),l.jsx("span",{className:"journey-ground"}),l.jsx("span",{className:"journey-main-road"}),l.jsx("span",{className:"journey-traveler",children:"▲"}),F&&l.jsx("span",{className:"journey-companion",children:l.jsx(xe,{src:st(F.species,F.shiny),name:""})})]}),l.jsxs("header",{className:"journey-header",children:[l.jsxs("div",{className:"journey-place",children:[l.jsx("small",{children:`${we[u].name.toUpperCase()} · ${oe}`}),l.jsx("h2",{children:m?`Arena von ${U?.bosses?.find(_=>_.kind==="gym")?.name??"deinem nächsten Gegner"}`:U?.name??we[u].name}),l.jsx("p",{children:m?"Hinter jedem Abschnitt wartet ein weiterer Vortrainer. Du siehst nur den Weg, der jetzt vor dir liegt.":U?.subtitle??"Deine Reise entsteht aus den Entscheidungen, die du unterwegs triffst."})]}),l.jsxs("div",{className:"journey-progress-card",children:[l.jsx("small",{children:"REISEFORTSCHRITT"}),l.jsxs("strong",{children:["ABSCHNITT ",String(i+1).padStart(2,"0")]}),l.jsxs("span",{children:[J,"% · ",a.length-i," Wege verbleiben"]})]})]}),l.jsx("div",{className:"journey-progress",children:l.jsx("i",{style:{width:`${Math.max(3,J)}%`}})}),l.jsxs("div",{className:"journey-body",children:[l.jsxs("section",{className:"journey-decision",children:[l.jsx("span",{className:"journey-eyebrow",children:V?"UMGEBUNG GELESEN":"DEIN NÄCHSTER SCHRITT"}),l.jsx("h3",{children:R.length>1?"Der Weg teilt sich vor dir.":"Ein Weg führt weiter."}),l.jsx("p",{children:V?"Du hast dir Zeit genommen. Kleine Hinweise verraten, was auf den Wegen liegen könnte.":"Du kennst das Ziel nicht. Landschaft, Geräusche und deine Vorbereitung entscheiden, welchen Weg du riskierst."}),l.jsx("div",{className:`journey-roads roads-${Math.max(1,R.length)}`,children:R.map((_,Qidx)=>{const Qlane=Rc(_,A),Qselected=_.id===k,Qgoal=["boss","gym","league","legendary"].includes(_.kind);return l.jsxs("button",{type:"button",className:`journey-road${Qselected?" keyboard-selected":""}${Qgoal?" journey-road-goal":""}`,"data-biome":QjourneyBiome(_),"data-direction":Qlane,"data-scouted":V?"true":"false",onClick:()=>h({type:"journeyTravel",id:_.id}),children:[l.jsx("span",{className:"journey-road-view","aria-hidden":"true",children:l.jsxs("span",{className:"journey-road-landscape",children:[l.jsx("i",{className:"land-back"}),l.jsx("i",{className:"land-mid"}),l.jsx("i",{className:"land-road"})]})}),l.jsxs("span",{className:"journey-road-copy",children:[l.jsx("small",{children:QjourneyDirection(Qlane,R.length)}),l.jsx("strong",{children:QjourneyRoadTitle(_,Qidx,u)}),l.jsx("span",{children:V?QjourneySignal(_):QjourneyUnknown(_)})]}),l.jsx("b",{className:"journey-road-action",children:Qgoal?"ZUM ZIEL →":"WEG NEHMEN →"})]},_.id)})})]}),l.jsxs("aside",{className:"journey-kit",children:[l.jsxs("div",{className:"journey-energy",children:[l.jsxs("span",{children:[l.jsx("small",{children:"REISEENERGIE"}),l.jsxs("strong",{children:[he," / ",le]})]}),l.jsx("div",{className:"journey-energy-pips","aria-label":`${he} von ${le} Reiseenergie`,children:Array.from({length:le},(_,Qe)=>l.jsx("i",{className:Qe<he?"filled":""},Qe))})]}),l.jsx("p",{children:m?"Arena-Pfad: Hier zählt nur die nächste Kampfentscheidung. Erkundungsaktionen sind während der Arena gesperrt.":"Reiseenergie ist für freiwillige Erkundung. Weiterreisen kostet nichts – du kannst dich also nie festfahren."}),l.jsxs("div",{className:"journey-actions",children:[l.jsxs("button",{type:"button",disabled:m||he<1||L.scouted,onClick:()=>h({type:"journeyAction",action:"scout"}),children:[l.jsx("span",{children:"⌖"}),l.jsxs("b",{children:["Umgebung lesen",l.jsx("small",{children:L.scouted?"Bereits erkundet":"−1 Energie · Hinweise zu den Wegen"})]})]}),l.jsxs("button",{type:"button",disabled:m||he<1,onClick:()=>h({type:"journeyAction",action:"search"}),children:[l.jsx("span",{children:"◇"}),l.jsxs("b",{children:["Abseits suchen",l.jsx("small",{children:"−1 Energie · Vorräte oder Entdeckung"})]})]}),l.jsxs("button",{type:"button",disabled:m||he<2||L.camped,onClick:()=>h({type:"journeyAction",action:"camp"}),children:[l.jsx("span",{children:"⌂"}),l.jsxs("b",{children:["Kurzes Lager",l.jsx("small",{children:L.camped?"In diesem Gebiet bereits gerastet":"−2 Energie · ca. 22 % Teamheilung"})]})]})]}),re.length>0&&l.jsxs("div",{className:"journey-discoveries",children:[l.jsx("small",{children:"ENTDECKT IN DIESEM RUN"}),l.jsx("div",{children:re.slice(-3).map(Qd=>l.jsxs("span",{children:[l.jsx("b",{children:"✦"}),Qd.name]},Qd.id))})]})]})]})]})}'''
+s=s[:x0]+journey_component+s[x1:]
+
+# Pass live run state into Journey and make keyboard confirm use Journey travel.
+s=s.replace('l.jsx(x4,{route:J,step:oe,','l.jsx(x4,{run:a,route:J,step:oe,',1)
+s=s.replace('Ut&&r({type:"node",id:Ut.id})','Ut&&r({type:"journeyTravel",id:Ut.id})',1)
+
+# Journey terminology: no player-facing "node" vocabulary remains.
+s=s.replace("Service-Knoten mit PC, Shop oder weiteren Optionen","Reisestopp mit PC, Shop oder weiteren Optionen")
+s=s.replace("deckt alle restlichen Knoten dieser Reise auf","enthüllt Hinweise auf die kommenden Wege")
+s=s.replace("Die Wahrsagerin enthüllt alle restlichen Knoten dieser Reise.","Die Wahrsagerin deutet die kommenden Wege und macht verborgene Spuren sichtbar.")
+s=s.replace("Alle Knoten werden enthüllt, und ein Schreinsegen schützt deinen nächsten Kampf.","Die kommenden Wege werden lesbar, und ein Schreinsegen schützt deinen nächsten Kampf.")
+s=s.replace("Fund-Knoten enthalten zusätzlich ein seltenes Item","Fundorte enthalten zusätzlich ein seltenes Item")
+s=s.replace("Fund-Knoten geben Bonusbeute","Fundorte geben Bonusbeute")
+s=s.replace("Unbekannter Knoten","Unbekannter Weg")
+s=s.replace('["KNOTEN","Unbekannter Routentyp"]','["WEG","Unbekannter Weg"]')
+s=s.replace('["KNOTEN",R.detail]','["WEG",R.detail]')
+s=s.replace('["KNOTEN"]','["WEG"]')
+
 # Player-facing currency is consistently named Meta Points. Internal save keys remain metaPoints.
 s=s.replace("Rogue-Punkte","Meta Points").replace("Rogue-Punkt","Meta Point")
 out=ROOT/'public/recovered/v1.0.0-alpha.1-r7.js'
