@@ -757,3 +757,37 @@ export const adminDeleteAnnouncement = async (announcementKey: string) => {
     .eq("announcement_key", announcementKey);
   assertNoError(error);
 };
+
+
+export type GameGrantType =
+  | "meta_points"
+  | "bottle_caps"
+  | "gold_bottle_caps"
+  | "ability_capsules"
+  | "ability_patches"
+  | "ancient_charms"
+  | "starter_unlock"
+  | "achievement"
+  | "relic";
+
+export const adminQueueGameGrant = async (
+  targetUserId: string,
+  grantType: GameGrantType,
+  quantity = 1,
+  grantKey: string | null = null,
+  reason = "",
+  payload: Record<string, unknown> = {},
+) => {
+  const client = requireClient();
+  const { data, error } = await client.rpc("admin_queue_game_grant", {
+    p_target_user_id: targetUserId,
+    p_grant_type: grantType,
+    p_grant_key: grantKey,
+    p_quantity: Math.max(1, quantity),
+    p_payload: payload,
+    p_reason: reason,
+  });
+
+  assertNoError(error);
+  return String(data);
+};
