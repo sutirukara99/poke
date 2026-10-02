@@ -83,7 +83,7 @@ const QowNativeSetCell=(map,x,y,set,id)=>{
 
 const QowNativeSkin=(map,setName,refName)=>{
   const pools=QowNativePools(setName,refName),pass=pools.passable.filter(id=>id!==13).slice(0,5),blocked=pools.blocked.slice(0,5);
-  map.nativeSet=setName,map.nativeTiles=Array(map.w*map.h).fill(null);
+  map.nativeSet=setName,map.nativeTiles??=Array(map.w*map.h).fill(null);
   for(let y=0;y<map.h;y++)for(let x=0;x<map.w;x++){
     const tile=map.tiles[y*map.w+x],hash=QowHash(map.key+"|native|"+x+"|"+y);let id=null;
     if(tile==="grass")id=13;
@@ -95,7 +95,7 @@ const QowNativeSkin=(map,setName,refName)=>{
       if(map.layoutStyle==="cave")id=pass[hash%Math.min(3,pass.length)];
       else id=tile==="path"?189:tile==="ground"?1:pass[hash%Math.min(3,pass.length)]
     }
-    if(Number.isInteger(id))QowNativeSetCell(map,x,y,setName,id)
+    if(Number.isInteger(id)&&map.nativeTiles[y*map.w+x]==null)QowNativeSetCell(map,x,y,setName,id)
   }
   return map
 };
@@ -105,6 +105,21 @@ const QowStampReference=(map,setName,refName,sx,sy,w,h,dx,dy)=>{
   for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){
     const rx=sx+xx,ry=sy+yy,tx=dx+xx,ty=dy+yy;if(rx<0||ry<0||rx>=ref.w||ry>=ref.h||tx<0||ty<0||tx>=map.w||ty>=map.h)continue;
     const raw=ref.blocks[ry*ref.w+rx];QowNativeSetCell(map,tx,ty,setName,raw&1023)
+  }
+};
+
+const QowStampSceneryChunks=(map,setName,refName,rng,protectedSet,style,count=3)=>{
+  const ref=QowNativeReference(setName,refName);if(!ref)return;
+  const size=5;
+  for(let n=0;n<count;n++){
+    const sx=rng.int(1,Math.max(1,ref.w-size-1)),sy=rng.int(1,Math.max(1,ref.h-size-1)),dx=rng.int(2,Math.max(2,map.w-size-2)),dy=rng.int(2,Math.max(2,map.h-size-2));
+    for(let yy=0;yy<size;yy++)for(let xx=0;xx<size;xx++){
+      const tx=dx+xx,ty=dy+yy,key=tx+","+ty;if(!QowIn(map,tx,ty)||protectedSet.has(key))continue;
+      const raw=ref.blocks[(sy+yy)*ref.w+(sx+xx)],id=raw&1023,collision=raw>>10&3;
+      let logical;
+      if(id===13)logical="grass";else if(id===299)logical="water";else if(collision)logical=style==="forest"?"tree":style==="cave"?"wall":"rock";else logical=style==="coast"?"sand":"ground";
+      map.tiles[ty*map.w+tx]=logical,QowNativeSetCell(map,tx,ty,setName,id)
+    }
   }
 };
 
@@ -193,6 +208,9 @@ const QowBuildPokemonAttempt=(run,attempt=0)=>{
 
   for(let y=QowSpawn.y-2;y<=QowSpawn.y+2;y++)for(let x=QowSpawn.x-3;x<=QowSpawn.x+3;x++)QowPut(m,x,y,style==="coast"?"sand":style==="cave"?"ground":"path");
 
+  const [nativeSet,nativeRef]=QowPokemonNativeSource(style);
+  QowStampSceneryChunks(m,nativeSet,nativeRef,rng,protectedSet,style,style==="forest"||style==="cave"?4:3);
+
   const occupied=new Set;
   choices.forEach((choice,index)=>{
     const pos=targets[Math.min(index,targets.length-1)]??spine.at(-1);QowPut(m,pos.x,pos.y,choice.node.kind==="wild"?"grass":style==="coast"?"sand":"path");
@@ -212,7 +230,7 @@ const QowBuildPokemonAttempt=(run,attempt=0)=>{
     if(secret)m.secrets.push({id:key+"-secret-0",room:"side-"+(n%2+1),x:p.x,y:p.y})
   }
 
-  const [nativeSet,nativeRef]=QowPokemonNativeSource(style);QowNativeSkin(m,nativeSet,nativeRef);
+  QowNativeSkin(m,nativeSet,nativeRef);
   return m
 };
 
