@@ -82,21 +82,17 @@ const QowNativeSetCell=(map,x,y,set,id)=>{
 };
 
 const QowNativeSkin=(map,setName,refName)=>{
-  const pools=QowNativePools(setName,refName),pass=pools.passable.filter(id=>id!==13).slice(0,5),blocked=pools.blocked.slice(0,5);
-  map.nativeSet=setName,map.nativeTiles??=Array(map.w*map.h).fill(null);
-  for(let y=0;y<map.h;y++)for(let x=0;x<map.w;x++){
-    const tile=map.tiles[y*map.w+x],hash=QowHash(map.key+"|native|"+x+"|"+y);let id=null;
-    if(tile==="grass")id=13;
-    else if(tile==="flower")id=17;
-    else if(tile==="water")id=299;
-    else if(tile==="sand")id=269;
-    else if(["wall","tree","rock"].includes(tile)&&blocked.length)id=blocked[hash%Math.min(3,blocked.length)];
-    else if(["ground","path","ruin","bossfloor"].includes(tile)&&pass.length){
-      if(map.layoutStyle==="cave")id=pass[hash%Math.min(3,pass.length)];
-      else id=tile==="path"?189:tile==="ground"?1:pass[hash%Math.min(3,pass.length)]
-    }
-    if(Number.isInteger(id)&&map.nativeTiles[y*map.w+x]==null)QowNativeSetCell(map,x,y,setName,id)
-  }
+  /*
+   * IMPORTANT: secondary metatile IDs are tileset-specific. Filling every
+   * generated cell with "popular" IDs from a reference map produced the
+   * brown/grey checkerboard seen in production because an ID that means path
+   * in one secondary set can be a cliff/roof/detail in another.
+   *
+   * Generated terrain therefore uses the original FRLG General semantic
+   * metatiles. Secondary tiles are reserved for explicit, spatially coherent
+   * stamps copied from original reference maps (buildings/scenery chunks).
+   */
+  map.nativeSet=setName,map.nativeRef=refName,map.nativeTiles??=Array(map.w*map.h).fill(null);
   return map
 };
 
