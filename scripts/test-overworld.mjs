@@ -196,10 +196,10 @@ const signature = (map) =>
   });
 
 const regions = [
-  ["kanto", "grassland"],
-  ["johto", "forest"],
-  ["hoenn", "coast"],
-  ["sinnoh", "snow"],
+  ["kanto", "grassland", 0],
+  ["johto", "forest", 1],
+  ["hoenn", "coast", 1],
+  ["sinnoh", "snow", 4],
 ];
 
 let checked = 0;
@@ -208,10 +208,11 @@ let sawRain = false;
 let sawSnow = false;
 const signatures = new Set();
 
-for (const [region, biome] of regions) {
+for (const [region, biome, mapIndex] of regions) {
   for (let n = 0; n < 30; n += 1) {
     const seed = "CI-" + region + "-" + n;
     const runA = makeRun(seed, region, biome, n % 4 === 0 ? "hard" : "normal");
+    runA.mapIndex = mapIndex;
     const runB = structuredClone(runA);
     const mapA = ow.QowBuild(runA);
     const mapB = ow.QowBuild(runB);
