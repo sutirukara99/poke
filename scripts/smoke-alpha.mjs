@@ -160,7 +160,7 @@ if (!js.includes('const QowNativeFrlgCatalog=')) throw new Error("Native FRLG se
 if (!js.includes('const QowNativeEnsureAtlas=')) throw new Error("Native FRLG primary+secondary reconstruction is missing.");
 if (!js.includes('const QowBuildTownMap=')) throw new Error("Procedural FRLG town generator is missing.");
 if (!js.includes('layoutStyle:"town"')) throw new Error("Generated town archetype is missing.");
-if (!js.includes('sourceDoor:{x:26,y:26}')) throw new Error("Original Viridian City Pokémon Center stamp is missing.");
+if (!js.includes('center:{x:26,y:26}') || !js.includes('sourceDoor:variant.center')) throw new Error("Original Viridian City Pokémon Center stamp is missing.");
 if (!js.includes('const QowCanvas=')) throw new Error("Canvas renderer host is missing.");
 if (!js.includes('const QowTilesetCatalog=')) throw new Error("Semantic overworld tileset catalog is missing.");
 if (!js.includes('metatilesB64:')) throw new Error("FRLG metatile source data is missing.");
