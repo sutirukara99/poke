@@ -31,7 +31,7 @@ const context = {
 
 vm.createContext(context);
 vm.runInContext(
-  tilesets + "\n" + source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowSolidEntityAt,QowHasApproach,QowW,QowH,QowActiveTileset};",
+  tilesets + "\n" + source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowSolidEntityAt,QowHasApproach,QowCurrentFlavor,QowEncounterWeight,QowBattleWeather,QowW,QowH,QowActiveTileset};",
   context,
   { filename: "overworld-runtime.js" },
 );
@@ -103,6 +103,9 @@ const regions = [
 ];
 
 let checked = 0;
+let sawMigration = false;
+let sawRain = false;
+let sawSnow = false;
 const signatures = new Set();
 
 for (const [region, biome] of regions) {
@@ -168,6 +171,33 @@ for (const [region, biome] of regions) {
       throw new Error("Unknown time-of-day for " + seed + ": " + mapA.timeOfDay);
     }
 
+    const flavor = ow.QowCurrentFlavor(runA);
+    if (flavor.weather !== mapA.weather || flavor.timeOfDay !== mapA.timeOfDay || flavor.condition !== mapA.condition || flavor.biome !== mapA.biome) {
+      throw new Error("Encounter flavor diverges from rendered floor for " + seed);
+    }
+    const expectedBattleWeather = mapA.weather === "rain" ? "rain" : mapA.weather === "snow" ? "hail" : null;
+    if (ow.QowBattleWeather(runA) !== expectedBattleWeather) {
+      throw new Error("Battle weather diverges from overworld weather for " + seed);
+    }
+    if (mapA.condition === "migration") {
+      sawMigration = true;
+      const rare = ow.QowEncounterWeight(runA, { rarity: "rare", types: ["normal"] });
+      const common = ow.QowEncounterWeight(runA, { rarity: "common", types: ["normal"] });
+      if (!(rare > common)) throw new Error("Migration does not favor rare encounters for " + seed);
+    }
+    if (mapA.weather === "rain") {
+      sawRain = true;
+      if (!(ow.QowEncounterWeight(runA, { rarity: "common", types: ["water"] }) > ow.QowEncounterWeight(runA, { rarity: "common", types: ["normal"] }))) {
+        throw new Error("Rain does not favor Water encounters for " + seed);
+      }
+    }
+    if (mapA.weather === "snow") {
+      sawSnow = true;
+      if (!(ow.QowEncounterWeight(runA, { rarity: "common", types: ["ice"] }) > ow.QowEncounterWeight(runA, { rarity: "common", types: ["normal"] }))) {
+        throw new Error("Snow does not favor Ice encounters for " + seed);
+      }
+    }
+
     const visible = ow.QowVisible(mapA.spawn.x, mapA.spawn.y, 5, mapA.w, mapA.h);
     if (!visible.includes(mapA.spawn.x + "," + mapA.spawn.y)) {
       throw new Error("Fog visibility excludes spawn for " + seed);
@@ -181,6 +211,10 @@ for (const [region, biome] of regions) {
 if (signatures.size < checked * 0.8) {
   throw new Error("Generator variety too low: " + signatures.size + "/" + checked + " unique floors");
 }
+
+if (!sawMigration) throw new Error("Seed suite never exercised migration encounter weighting.");
+if (!sawRain) throw new Error("Seed suite never exercised rain encounter weighting.");
+if (!sawSnow) throw new Error("Seed suite never exercised snow encounter weighting.");
 
 // Trainer line of sight must respect both facing and collision.
 {
