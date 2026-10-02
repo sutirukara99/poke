@@ -144,7 +144,7 @@ const QowBuildChunkRouteAttempt=(run,attempt=0)=>{
   QowChunkRect(m,exit.x,exit.y,2,4,"path");
 
   // Small flower accents, deliberately sparse and only on open ground.
-  for(let n=0;n<10;n++){
+  for(let n=0;n<4;n++){
     const c=centers[1+rng.int(0,Math.max(0,centers.length-2))],fx=QowClamp(c.x+rng.int(-7,7),3,m.w-4),fy=QowClamp(c.y+rng.int(-3,3),3,m.h-4);
     if(QowTile(m,fx,fy)==="ground")QowChunkPut(m,fx,fy,"flower")
   }
@@ -173,8 +173,12 @@ const QowBuildChunkRouteAttempt=(run,attempt=0)=>{
     if(secret)m.secrets.push({id:key+"-secret",room:"chunk-secret",x:p.x,y:p.y})
   }
 
+  // Phaser chunk routes intentionally use the curated semantic FRLG atlas.
+  // Native reference synthesis is disabled here because it can introduce
+  // unrelated map decorations into otherwise clean authored chunks.
   m.nativeTheme="palletTown";m.nativeReference="route1";
-  QowTerrainSynthesize(m,"palletTown","route1");
+  m.nativeSet="palletTown";m.nativeTiles=Array(m.w*m.h).fill(null);
+  m.visualEngine="phaser-semantic-v2";
   m.compositionStats={
     walkableCells:m.tiles.filter(t=>!QowBlocking(t)).length,
     pathCells:m.tiles.filter(t=>t==="path").length,
