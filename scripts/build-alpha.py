@@ -625,8 +625,10 @@ const QjourneyApplyDiscovery=(a,i)=>{if(!i)return"";if(i.reward==="heal"){for(co
 
 '''
 overworld_tilesets=(ROOT/'scripts/overworld-tilesets.js').read_text()
+overworld_native=(ROOT/'scripts/overworld-frlg-native.js').read_text()
+overworld_mapgen=(ROOT/'scripts/overworld-mapgen.js').read_text()
 overworld_runtime=(ROOT/'scripts/overworld-runtime.js').read_text()
-s=s.replace('const Dc=()=>({',journey_helpers+overworld_tilesets+overworld_runtime+'const Dc=()=>({',1)
+s=s.replace('const Dc=()=>({',journey_helpers+overworld_tilesets+overworld_native+overworld_mapgen+overworld_runtime+'const Dc=()=>({',1)
 
 # Overworld conditions affect the real encounter pool and battle weather.
 s=s.replace('let b=Ec(p,m)*(r.types.some(A=>p.types.includes(A))?1.35:1);return',
