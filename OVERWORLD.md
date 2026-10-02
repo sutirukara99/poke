@@ -29,10 +29,20 @@ Recovered Alpha Client
     │   ├── semantic tile catalog
     │   ├── FRLG metatile mappings
     │   └── local object-sprite catalog
+    ├── scripts/overworld-frlg-native.js
+    │   ├── embedded original FRLG secondary tilesets
+    │   ├── original map block references
+    │   └── palette / metatile source data
+    ├── scripts/overworld-mapgen.js
+    │   ├── Pokémon-style route / forest / coast / mountain / cave grammar
+    │   ├── authored scenery feature stamps
+    │   ├── original FRLG map-reference sampling
+    │   ├── procedural town layout + building stamps
+    │   └── native FRLG primary + secondary metatile renderer
     ├── scripts/overworld-runtime.js
     │   ├── deterministic RNG
-    │   ├── field + arena generators
-    │   ├── regional geometry
+    │   ├── arena generator + generator integration
+    │   ├── regional geometry / floor flavor
     │   ├── biome painter
     │   ├── collision / entity collision
     │   ├── visibility / fog
@@ -85,30 +95,36 @@ Generated floors are cached by the deterministic key. Re-rendering or moving doe
 
 ## Field generator
 
-The normal floor pipeline is:
+Normal field floors now use the Pokémon-map generator in `scripts/overworld-mapgen.js`. The previous room graph remains only as a safe fallback / arena-support utility; it is not the normal outdoor generator.
 
-1. derive deterministic floor seed
-2. choose region-biased biome and floor flavor
-3. construct a connected logical room graph
-4. place rooms on the hidden logical grid
-5. carve region-biased corridors and loops
-6. paint rooms from the biome profile
-7. translate current roguelike choices into physical destinations
-8. seed ambient NPCs, optional secret rooms and Item Balls
-9. clear the player spawn
-10. BFS-validate spawn, destinations, NPC approaches and pickups
-11. accept, retry, or use the safe fallback
+The normal pipeline is:
 
-The graph is never shown to the player.
+1. derive the deterministic floor seed
+2. choose the region-biased biome, weather, time and floor condition
+3. choose a Pokémon-style archetype: **route / forest / coast / mountain / cave**
+4. create a readable main route spine from the lower entrance toward the upper exit
+5. add side paths and physical rogue destinations
+6. paint archetype-specific natural geometry
+7. apply authored scenery templates such as grass pockets, ponds, clearings, rocky chicanes and coastal lagoons
+8. select a native FRLG visual theme for the region/floor
+9. stamp scenery sampled from original FRLG map block data while protecting critical paths
+10. seed ambient NPCs, secret pickups and Item Balls
+11. reconstruct exact primary + secondary FRLG metatiles for rendering
+12. BFS-validate spawn, destinations, NPC approaches and pickups
+13. accept, retry, or use the guaranteed safe fallback
+
+The result is random/seeded, but its composition follows handcrafted Pokémon map grammar instead of looking like a generic roguelike dungeon.
 
 ### Regional geometry
 
-Region identity changes geometry as well as terrain:
+Region identity changes geometry, biome pressure and the selected native FRLG visual theme:
 
-- **Kanto:** balanced baseline.
-- **Johto:** more rooms and loops; forest-heavy exploration.
-- **Hoenn:** wider rooms, stronger horizontal/coastal flow and water-biased biomes.
-- **Sinnoh:** fewer, tighter rooms with more vertical mountain-like corridors and snow/rock bias.
+- **Kanto:** classic balanced routes with Pallet/Viridian-style visuals.
+- **Johto:** denser forest language, more enclosed green pockets and Viridian-style town palettes.
+- **Hoenn:** wider coastal flow, lagoons/water pressure and brighter Cerulean-derived city palettes.
+- **Sinnoh:** tighter mountain/snow corridors, rocky chicanes and Pewter/Viridian-derived palettes.
+
+All four remain generated from the run seed; the regional theme changes the composition rules rather than simply recoloring one shared map.
 
 ## Arena generator
 
@@ -187,7 +203,9 @@ Tall grass uses a rising danger meter instead of a fixed independent roll every 
 
 A city destination no longer opens the old four-button dashboard.
 
-The city is a walkable tile scene containing:
+The city is a walkable, deterministic generated tile scene built from original FRLG town map blocks and building stamps. Center, Mart, Gym-decoration and a residential building are placed around a generated plaza, with paths, gardens, park/grass pockets, a pond and tree clusters.
+
+The city contains:
 
 - Pokémon Center entrance
 - PokéMart entrance
@@ -204,9 +222,11 @@ Large legacy world/quest dashboards are hidden during exploration and service in
 
 Logical tile size is 16 px. The main world renders internally at 480×320 and scales with `image-rendering: pixelated`.
 
-Core outdoor terrain uses the locally hosted FireRed/LeafGreen decomp source correctly: the browser reconstructs 16×16 metatiles from the original 4-bpp grayscale tile sheet, the primary `metatiles.bin` data and all 16 General palettes. Semantic terrain IDs such as ground, path, tall grass, water and sand map to explicit metatile IDs.
+Core outdoor terrain uses the locally embedded FireRed/LeafGreen decomp source correctly. The browser reconstructs 16×16 metatiles from the original 4-bpp grayscale tile sheets, primary and secondary `metatiles.bin` data and the matching 16-color palettes.
 
-Biomes without a suitable General metatile use the procedural GBA-style fallback renderer rather than treating the raw sheet as a CSS atlas.
+The generator also embeds original FRLG map block references (Route 1, Pallet Town, Viridian City, Pewter City, Cerulean City, Viridian Forest and Mt. Moon) and samples/stamps those blocks into generated layouts. Critical movement lanes remain governed by logical collision tiles, so original visual assets can be used without sacrificing deterministic path validation.
+
+Unsupported semantic cases still have the procedural GBA-style fallback renderer; the raw decomp sheets are never treated as a CSS sprite atlas.
 
 Existing local FRLG object sprites are used for trainer, NPC, Nurse, Item Ball and sign actors. Abstract route punctuation has been replaced by physical-world cues: rustling grass, signs, sprites, arena signage and legendary ground shimmer.
 
@@ -238,7 +258,7 @@ Every generated field must satisfy:
 - identical seeds are deterministic
 - repeated builds reuse the deterministic floor cache
 
-`npm run test:overworld` validates 120 seeded field floors across Kanto, Johto, Hoenn and Sinnoh plus dedicated arena templates. It also checks FRLG metatile/palette reconstruction data, collision semantics, secret rooms, NPC dialogue, regional flavor, migration/rain/snow encounter weighting, trainer sight and cache reuse.
+`npm run test:overworld` validates 120 seeded field floors across Kanto, Johto, Hoenn and Sinnoh plus dedicated arena templates. It checks the original FRLG primary/secondary data, native reference maps, authored feature grammar, region theme selection, deterministic town generation/building stamps, collision semantics, secret rooms, NPC dialogue, regional flavor, migration/rain/snow encounter weighting, trainer sight and cache reuse.
 
 ## Integration rule
 
