@@ -49,7 +49,7 @@ const QowNativeEnsureAtlas=setName=>{
       if(offset+15>=meta.length)continue;
       for(let n=0;n<8;n++){
         const o=offset+n*2,entry=meta[o]|meta[o+1]<<8,tileId=entry&1023,hFlip=!!(entry&1024),vFlip=!!(entry&2048),palIndex=entry>>>12&15,
-          palette=set.palettes?.[palIndex]??QowActiveTileset.palettes?.[palIndex]??QowActiveTileset.palettes?.[0],
+          palette=palIndex<7?(QowActiveTileset.palettes?.[palIndex]??QowActiveTileset.palettes?.[0]):(set.palettes?.[palIndex]??QowActiveTileset.palettes?.[palIndex]??QowActiveTileset.palettes?.[0]),
           src=tileId<640?pri:sec,local=tileId<640?tileId:tileId-640,quad=n&3,qx=quad%2*8,qy=Math.floor(quad/2)*8,top=n>=4;
         for(let py=0;py<8;py++)for(let px=0;px<8;px++){
           const sx=(local%16)*8+(hFlip?7-px:px),sy=Math.floor(local/16)*8+(vFlip?7-py:py);
