@@ -6,7 +6,7 @@
  * encounter/landmark pocket. The result is deterministic from the run seed.
  */
 const QowChunkComposerVersion="chunk-v1";
-const QowUseChunkRoute=run=>!run.arena&&["kanto","johto"].includes(run.region)&&(run.mapIndex??0)<=1;
+const QowUseChunkRoute=run=>!run.arena&&["kanto","johto"].includes(run.region)&&(run.mapIndex??0)===0;
 
 const QowChunkInside=(m,x,y)=>x>0&&y>0&&x<m.w-1&&y<m.h-1;
 const QowChunkPut=(m,x,y,t)=>{if(QowChunkInside(m,x,y))m.tiles[y*m.w+x]=t};
