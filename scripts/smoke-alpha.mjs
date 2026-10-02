@@ -155,6 +155,12 @@ if (!js.includes('const QowTileSize=16,QowW=45,QowH=31')) throw new Error("Canva
 if (!js.includes('const QowVisible=')) throw new Error("Fog-of-war visibility helper is missing.");
 if (!js.includes('const QowValidate=')) throw new Error("Generator validation is missing.");
 if (!js.includes('const QowBuildAttempt=')) throw new Error("Procedural room generator is missing.");
+if (!js.includes('const QowBuildPokemonAttempt=')) throw new Error("Pokémon-style route generator is missing.");
+if (!js.includes('const QowNativeFrlgCatalog=')) throw new Error("Native FRLG secondary tileset catalog is missing.");
+if (!js.includes('const QowNativeEnsureAtlas=')) throw new Error("Native FRLG primary+secondary reconstruction is missing.");
+if (!js.includes('const QowBuildTownMap=')) throw new Error("Procedural FRLG town generator is missing.");
+if (!js.includes('layoutStyle:"town"')) throw new Error("Generated town archetype is missing.");
+if (!js.includes('sourceDoor:{x:26,y:26}')) throw new Error("Original Viridian City Pokémon Center stamp is missing.");
 if (!js.includes('const QowCanvas=')) throw new Error("Canvas renderer host is missing.");
 if (!js.includes('const QowTilesetCatalog=')) throw new Error("Semantic overworld tileset catalog is missing.");
 if (!js.includes('metatilesB64:')) throw new Error("FRLG metatile source data is missing.");
