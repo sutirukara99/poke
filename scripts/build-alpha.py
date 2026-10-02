@@ -628,6 +628,12 @@ overworld_tilesets=(ROOT/'scripts/overworld-tilesets.js').read_text()
 overworld_runtime=(ROOT/'scripts/overworld-runtime.js').read_text()
 s=s.replace('const Dc=()=>({',journey_helpers+overworld_tilesets+overworld_runtime+'const Dc=()=>({',1)
 
+# Overworld conditions affect the real encounter pool and battle weather.
+s=s.replace('let b=Ec(p,m)*(r.types.some(A=>p.types.includes(A))?1.35:1);return',
+            'let b=Ec(p,m)*(r.types.some(A=>p.types.includes(A))?1.35:1);b*=QowEncounterWeight(a,p);return',1)
+s=s.replace('A=(v==null?void 0:v.weather)??gx(k)??Fk(r.biome,d)',
+            'A=(v==null?void 0:v.weather)??gx(k)??QowBattleWeather(i)??Fk(r.biome,d)',1)
+
 # Save/run defaults and migration.
 s=s.replace('giftStarters:{},alphaQuestClaims:[],settings:{','giftStarters:{},alphaQuestClaims:[],worldDiscoveries:[],settings:{',1)
 s=s.replace('score:null,badges:[]','score:null,journey:QjourneyState(),badges:[]',1)
