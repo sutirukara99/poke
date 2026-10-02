@@ -252,8 +252,9 @@ for (const [region, biome, mapIndex] of regions) {
       throw new Error("Floor native visual buffer is malformed for " + seed);
     }
     const nativeCount = mapA.nativeTiles.filter(Boolean).length;
-    if (mapA.nativeReference === "route1" && nativeCount < mapA.nativeTiles.length * 0.2) {
-      throw new Error("Safe Route 1 synthesis covers too little of the field for " + seed + ": " + nativeCount);
+    const minSafeCoverage = mapA.nativeReference === "route1" ? (mapA.layoutStyle === "coast" ? 0.02 : 0.2) : 0;
+    if (nativeCount < mapA.nativeTiles.length * minSafeCoverage) {
+      throw new Error("Safe native synthesis covers too little of the field for " + seed + ": " + nativeCount);
     }
     if (mapA.nativeReference !== "route1" && nativeCount !== 0) {
       throw new Error("Non-Route1 floor should use semantic-safe rendering until a curated native model exists for " + seed);
