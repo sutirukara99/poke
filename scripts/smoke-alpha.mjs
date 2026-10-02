@@ -167,6 +167,8 @@ if (!js.includes('center:{x:26,y:26}') || !js.includes('sourceDoor:variant.cente
 if (!js.includes('const QowCanvas=')) throw new Error("Canvas renderer fallback is missing.");
 if (!js.includes('const QowPhaserVersion="phaser-v1"')) throw new Error("Phaser overworld bridge is missing.");
 if (!js.includes('const QowPhaserCanvas=')) throw new Error("Phaser React host is missing.");
+if (!js.includes('const QowChunkComposerVersion="chunk-v1"')) throw new Error("Authored Phaser chunk composer is missing.");
+if (!js.includes('const QowBuildChunkRouteAttempt=')) throw new Error("Phaser chunk route generator is missing.");
 if (!js.includes('window.__POKEREGIONS_PHASER_OVERWORLD__')) throw new Error("Phaser touch/input bridge is missing.");
 if (!js.includes('QhasPhaser?l.jsx(QowPhaserCanvas')) throw new Error("Route view does not prefer Phaser.");
 if (!js.includes('const QowTilesetCatalog=')) throw new Error("Semantic overworld tileset catalog is missing.");
