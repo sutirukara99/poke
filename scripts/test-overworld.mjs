@@ -44,6 +44,9 @@ if (!ow) throw new Error("Overworld runtime did not expose validation hooks.");
 const tileset = ow.QowActiveTileset;
 if (tileset?.id !== "pokeregions-gba") throw new Error("Semantic overworld tileset is missing.");
 if (tileset.tileSize !== 16) throw new Error("Overworld tileset must stay on 16px logical tiles.");
+if (tileset.semanticMetatiles.path !== 269 || tileset.tiles.path?.metatileId !== 269) {
+  throw new Error("Route road must use the coherent FRLG dirt terrain metatile.");
+}
 if (Buffer.from(tileset.metatilesB64, "base64").length !== 10_240) {
   throw new Error("FRLG primary metatile data is incomplete.");
 }
@@ -106,6 +109,23 @@ const makeRun = (seed, region = "kanto", biome = "grassland", difficulty = "norm
   }
 }
 
+// Early Johto travel should read as an open Pokémon route rather than being
+// globally coerced into a dense forest biome.
+{
+  const early = makeRun("JOHTO-EARLY-COMPOSITION", "johto", "grassland");
+  early.mapIndex = 0;
+  const map = ow.QowBuild(early);
+  if (map.biome !== "grassland" || map.layoutStyle !== "route" || map.composition !== "early-route") {
+    throw new Error("Early Johto route composition is not calm/open grassland.");
+  }
+  if (map.compositionStats.branches !== 1 || map.compositionStats.fields !== 2) {
+    throw new Error("Early Johto route should have one side pocket and two encounter fields.");
+  }
+  if (map.compositionStats.pathCells > map.w * map.h * 0.18) {
+    throw new Error("Early Johto route road is too visually dominant.");
+  }
+}
+
 const makeArenaRun = (seed, step = 0, split = false) => ({
   ...makeRun(seed, "kanto", "city", "normal"),
   arena: {
@@ -164,8 +184,17 @@ for (const [region, biome] of regions) {
     if (!["route","forest","cave","coast","mountain"].includes(mapA.layoutStyle)) {
       throw new Error("Floor did not use Pokémon-style archetype generator for " + seed + ": " + mapA.layoutStyle);
     }
-    if (mapA.generationVersion !== 2) {
-      throw new Error("Floor is not using the authored Pokémon map grammar for " + seed);
+    if (mapA.generationVersion !== 3) {
+      throw new Error("Floor is not using Pokémon route composition v3 for " + seed);
+    }
+    if (!["early-route","classic-route"].includes(mapA.composition)) {
+      throw new Error("Floor has no route composition profile for " + seed);
+    }
+    if (!mapA.compositionStats || mapA.compositionStats.branches < 1 || mapA.compositionStats.branches > 2 || mapA.compositionStats.fields < 2) {
+      throw new Error("Floor composition stats are invalid for " + seed);
+    }
+    if (["route","forest"].includes(mapA.layoutStyle) && mapA.compositionStats.pathCells > mapA.w * mapA.h * 0.22) {
+      throw new Error("Route road expanded into a giant floor carpet for " + seed + ": " + mapA.compositionStats.pathCells);
     }
     if (!Array.isArray(mapA.features) || mapA.features.length < 1 || mapA.features.some((f) => !f.id || !Number.isInteger(f.cells) || f.cells < 1)) {
       throw new Error("Floor has no authored scenery features for " + seed);
@@ -173,12 +202,15 @@ for (const [region, biome] of regions) {
     if (!mapA.nativeTheme || !ow.QowNativeFrlgCatalog[mapA.nativeTheme]) {
       throw new Error("Floor did not select a native FRLG visual theme for " + seed);
     }
-    if (!Array.isArray(mapA.nativeTiles) || mapA.nativeTiles.length !== mapA.w * mapA.h || !mapA.nativeTiles.some(Boolean)) {
-      throw new Error("Floor has no native FRLG visual layer for " + seed);
+    if (mapA.visualLayer !== "frlg-general") {
+      throw new Error("Floor is not using the coherent FRLG General visual layer for " + seed);
+    }
+    if (!Array.isArray(mapA.nativeTiles) || mapA.nativeTiles.length !== mapA.w * mapA.h) {
+      throw new Error("Floor native visual buffer is malformed for " + seed);
     }
     const nativeCount = mapA.nativeTiles.filter(Boolean).length;
-    if (nativeCount > mapA.nativeTiles.length * 0.35) {
-      throw new Error("Secondary FRLG metatiles are being sprayed across the whole floor for " + seed + ": " + nativeCount);
+    if (nativeCount > mapA.nativeTiles.length * 0.08) {
+      throw new Error("Secondary FRLG metatiles are being sprayed across the field for " + seed + ": " + nativeCount);
     }
     if (signature(mapA) !== signature(mapB)) {
       throw new Error("Seed determinism failed for " + seed);
