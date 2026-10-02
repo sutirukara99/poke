@@ -4260,3 +4260,16 @@ body.pr-game-ui .alpha-shell section.playful-event:has(.ow-city-hub) > :not(.ow-
   height:100%;
   background:#9a9253;
 }
+
+
+.ow-city-hub.scene-mart .ow-city-head{
+  background:#201b10;
+}
+
+.ow-city-hub.scene-mart .ow-city-status{
+  background:#1b180f;
+}
+
+.ow-city-hub.scene-mart .ow-city-service-panel{
+  border-color:#6f6340;
+}
