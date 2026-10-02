@@ -162,6 +162,8 @@ if (!js.includes('const QowEnsureFrlgAtlas=')) throw new Error("FRLG metatile re
 if (!js.includes('const QowCityCanvas=')) throw new Error("Walkable city Canvas is missing.");
 if (!js.includes('className:"ow-city-hub scene-"+scene')) throw new Error("Walkable city hub is missing.");
 if (!js.includes('QowCenterStatic')) throw new Error("Walkable Pokémon Center interior is missing.");
+if (!js.includes('QowMartStatic')) throw new Error("Walkable PokéMart interior is missing.");
+if (!js.includes('className:"ow-city-quest-list"')) throw new Error("In-world quest board is missing.");
 if (!js.includes('className:"ow-canvas"')) throw new Error("Canvas overworld surface is missing.");
 if (!js.includes('className:"ow-floor-meta"')) throw new Error("Roguelike floor prompt is missing.");
 if (!js.includes('className:"ow-debug"')) throw new Error("F2 debug overlay is missing.");
