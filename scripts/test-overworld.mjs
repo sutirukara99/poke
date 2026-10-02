@@ -33,7 +33,7 @@ const context = {
 
 vm.createContext(context);
 vm.runInContext(
-  tilesets + "\n" + nativeAssets + "\n" + mapgen + "\n" + source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowBuildPokemonAttempt,QowBuildArenaAttempt,QowBuildTownMap,QowNativeReference,QowNativePools,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowSolidEntityAt,QowHasApproach,QowCurrentFlavor,QowEncounterWeight,QowBattleWeather,QowW,QowH,QowActiveTileset,QowNativeFrlgCatalog};",
+  tilesets + "\n" + nativeAssets + "\n" + mapgen + "\n" + source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowBuildPokemonAttempt,QowBuildArenaAttempt,QowBuildTownMap,QowNativeReference,QowNativePools,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowSolidEntityAt,QowHasApproach,QowCurrentFlavor,QowEncounterWeight,QowBattleWeather,QowEnsure,QowW,QowH,QowActiveTileset,QowNativeFrlgCatalog};",
   context,
   { filename: "overworld-runtime.js" },
 );
@@ -94,6 +94,17 @@ const makeRun = (seed, region = "kanto", biome = "grassland", difficulty = "norm
     node(seed + "-exit", "city", biome),
   ]],
 });
+
+// Regression: a fresh run has journey.overworld === null. QowEnsure must
+// return the newly-created state, not the stale null that existed before init.
+{
+  const fresh = makeRun("ENSURE-FRESH", "johto", "grassland");
+  fresh.journey = { overworld: null };
+  const state = ow.QowEnsure(fresh);
+  if (!state || state !== fresh.journey.overworld || state.pendingNode !== null) {
+    throw new Error("QowEnsure returned stale/null overworld state on first initialization.");
+  }
+}
 
 const makeArenaRun = (seed, step = 0, split = false) => ({
   ...makeRun(seed, "kanto", "city", "normal"),
@@ -164,6 +175,10 @@ for (const [region, biome] of regions) {
     }
     if (!Array.isArray(mapA.nativeTiles) || mapA.nativeTiles.length !== mapA.w * mapA.h || !mapA.nativeTiles.some(Boolean)) {
       throw new Error("Floor has no native FRLG visual layer for " + seed);
+    }
+    const nativeCount = mapA.nativeTiles.filter(Boolean).length;
+    if (nativeCount > mapA.nativeTiles.length * 0.35) {
+      throw new Error("Secondary FRLG metatiles are being sprayed across the whole floor for " + seed + ": " + nativeCount);
     }
     if (signature(mapA) !== signature(mapB)) {
       throw new Error("Seed determinism failed for " + seed);
