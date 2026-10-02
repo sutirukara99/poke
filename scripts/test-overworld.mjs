@@ -31,7 +31,7 @@ const context = {
 
 vm.createContext(context);
 vm.runInContext(
-  tilesets + "\n" + source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowW,QowH,QowActiveTileset};",
+  tilesets + "\n" + source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowSolidEntityAt,QowHasApproach,QowW,QowH,QowActiveTileset};",
   context,
   { filename: "overworld-runtime.js" },
 );
@@ -128,6 +128,13 @@ for (const [region, biome] of regions) {
       if (!reachable.has(target.x + "," + target.y)) {
         throw new Error("Destination " + target.id + " is unreachable for " + seed);
       }
+      if (target.kind !== "wild" && !ow.QowHasApproach(mapA, target, reachable)) {
+        throw new Error("Destination " + target.id + " has no usable interaction approach for " + seed);
+      }
+      const solid = ow.QowSolidEntityAt(mapA, target.x, target.y, { defeatedTrainers: [] });
+      if (target.kind === "wild" ? solid : !solid) {
+        throw new Error("Unexpected physical collision semantics for " + target.id + " in " + seed);
+      }
     }
     for (const pickup of mapA.pickups) {
       if (!reachable.has(pickup.x + "," + pickup.y)) {
@@ -145,6 +152,12 @@ for (const [region, biome] of regions) {
     for (const npc of mapA.npcs ?? []) {
       if (!reachable.has(npc.x + "," + npc.y)) {
         throw new Error("Ambient NPC " + npc.id + " is unreachable for " + seed);
+      }
+      if (!ow.QowHasApproach(mapA, npc, reachable)) {
+        throw new Error("Ambient NPC " + npc.id + " cannot be approached for " + seed);
+      }
+      if (!ow.QowSolidEntityAt(mapA, npc.x, npc.y, { defeatedTrainers: [] })) {
+        throw new Error("Ambient NPC " + npc.id + " is not physically solid for " + seed);
       }
       if (!npc.dialogue) throw new Error("Ambient NPC has no dialogue for " + seed);
     }
