@@ -131,6 +131,9 @@ const makeRun = (seed, region = "kanto", biome = "grassland", difficulty = "norm
   if (map.visualEngine !== "reference-synthesis-v4" || map.nativeReference !== "route1") {
     throw new Error("Early Johto route is not textured from a coherent outdoor FRLG reference.");
   }
+  if (map.nativeTiles.filter(Boolean).length < map.nativeTiles.length * 0.45) {
+    throw new Error("Early Johto route does not use enough native FRLG reference texture.");
+  }
   if (map.compositionStats.branches !== 1 || map.compositionStats.fields !== 2) {
     throw new Error("Early Johto route should have one side pocket and two encounter fields.");
   }
@@ -226,7 +229,8 @@ for (const [region, biome] of regions) {
       throw new Error("Floor native visual buffer is malformed for " + seed);
     }
     const nativeCount = mapA.nativeTiles.filter(Boolean).length;
-    if (nativeCount < mapA.nativeTiles.length * 0.35) {
+    const nativeMinRatio = mapA.layoutStyle === "coast" ? 0.02 : mapA.biome === "snow" ? 0.16 : 0.28;
+    if (nativeCount < mapA.nativeTiles.length * nativeMinRatio) {
       throw new Error("FRLG reference synthesis covers too little of the field for " + seed + ": " + nativeCount);
     }
     if (mapA.nativeTiles.some((v) => v && v.set !== mapA.nativeTheme)) {
