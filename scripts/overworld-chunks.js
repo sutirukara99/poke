@@ -52,6 +52,19 @@ const QowChunkPond=(m,rng,cx,cy)=>{
   QowChunkOrganic(m,rng,cx,cy,8,6,"ground");
   QowChunkOrganic(m,rng,cx,cy,5,4,"water")
 };
+const QowChunkSidePocket=(m,rng,source,side)=>{
+  const end={x:QowClamp(source.x+side*rng.int(7,9),6,m.w-7),y:source.y};
+  let x=source.x;
+  while(x!==end.x){
+    x+=Math.sign(end.x-x);
+    for(let yy=source.y-1;yy<=source.y+1;yy++)QowChunkPut(m,x,yy,"ground");
+    QowChunkPut(m,x,source.y,"path")
+  }
+  QowChunkOrganic(m,rng,end.x,end.y,7,5,"ground");
+  QowChunkPut(m,end.x,end.y,"path");
+  return end
+};
+
 const QowChunkFind=(m,start,occupied,predicate=()=>true,radius=7)=>{
   for(let r=0;r<=radius;r++)for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){
     if(Math.abs(dx)+Math.abs(dy)!==r)continue;
@@ -118,6 +131,12 @@ const QowBuildChunkRouteAttempt=(run,attempt=0)=>{
     x=nextX;centers.push({x,y:ys[n+1]})
   }
 
+  const sideSource=centers[2],sidePocket=QowChunkSidePocket(m,rng,sideSource,QowHash(key+"|side")%2?-1:1);
+  landmarks.push({id:"side-pocket",x:sidePocket.x,y:sidePocket.y});
+  m.features.push({id:"chunk-side-pocket",x:sidePocket.x,y:sidePocket.y,cells:35});
+  m.rooms.push({id:"chunk-side",x:sidePocket.x,y:sidePocket.y,w:7,h:5,type:"side-pocket"});
+  m.edges.push(["chunk-1","chunk-side"]);
+
   QowChunkOrganic(m,rng,QowSpawn.x,QowSpawn.y,9,5,"ground");
   QowChunkRect(m,QowSpawn.x,QowSpawn.y,2,4,"path");
   const exit=centers.at(-1);
@@ -161,7 +180,7 @@ const QowBuildChunkRouteAttempt=(run,attempt=0)=>{
     pathCells:m.tiles.filter(t=>t==="path").length,
     grassCells:m.tiles.filter(t=>t==="grass").length,
     blockingCells:m.tiles.filter(t=>QowBlocking(t)).length,
-    branches:landmarks.length,
+    branches:m.features.filter(f=>String(f.id).includes("side-pocket")).length,
     fields:fields.length
   };
   return m
