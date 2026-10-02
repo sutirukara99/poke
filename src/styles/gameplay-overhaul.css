@@ -4385,8 +4385,6 @@ body.pr-game-ui .alpha-shell section.playful-event:not(:has(.ow-city-hub)) .tuto
 }
 .canvas-overworld .ow-phaser-host canvas{
   display:block;
-  width:100%!important;
-  height:100%!important;
   border:0;
   background:#071012;
   image-rendering:pixelated;
