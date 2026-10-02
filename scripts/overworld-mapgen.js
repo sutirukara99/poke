@@ -244,7 +244,7 @@ const QowAddRouteFields=(m,rng,run,style,biome,spine,protectedSet)=>{
     else if(style==="mountain")tile=biome==="snow"?"snow":"ground";
     else if(style==="coast"&&n%2)tile="sand";
     const w=early?rng.int(6,8):rng.int(6,10),h=early?rng.int(4,5):rng.int(4,7),
-      cells=QowPaintSoftRect(m,rng,protectedSet,cx,cy,w,h,tile);
+      cells=QowPaintSoftRect(m,rng,protectedSet,cx,cy,w,h,tile,true);
     if(cells){
       fields.push({x:cx,y:cy,w,h,tile});
       m.features.push({id:tile==="grass"?"grass-field":style+"-pocket",x:cx,y:cy,cells})
