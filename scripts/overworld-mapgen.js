@@ -217,30 +217,47 @@ const QowBuildPokemonAttempt=(run,attempt=0)=>{
 };
 
 const QowBuildTownMap=run=>{
-  const key="town|"+QowKey(run),rng=QowRng(QowHash(key)),w=31,h=23,m={key,w,h,tiles:Array(w*h).fill("ground"),nativeTiles:Array(w*h).fill(null),region:run.region,biome:"city",weather:"clear",timeOfDay:"day",condition:"quiet",layoutStyle:"town",rooms:[],edges:[],destinations:[],pickups:[],secrets:[],npcs:[]};
+  const key="town|"+QowKey(run),rng=QowRng(QowHash(key)),w=31,h=23,m={key,w,h,tiles:Array(w*h).fill("ground"),nativeTiles:Array(w*h).fill(null),region:run.region,biome:"city",weather:"clear",timeOfDay:"day",condition:"quiet",layoutStyle:"town",rooms:[],edges:[],destinations:[],pickups:[],secrets:[],npcs:[],spawn:{x:15,y:20}},protectedSet=new Set;
   for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(x===0||y===0||x===w-1||y===h-1)m.tiles[y*w+x]="tree";
-  for(let y=2;y<h-1;y++)for(let x=14;x<=16;x++)m.tiles[y*w+x]="path";
-  for(let x=3;x<w-3;x++)for(let y=10;y<=12;y++)m.tiles[y*w+x]="path";
-  for(let x=4;x<=26;x++)m.tiles[19*w+x]="path";
-  const pondRight=rng.chance(.5),pondX=pondRight?24:5;for(let y=13;y<=16;y++)for(let x=pondX-2;x<=pondX+2;x++)if((x-pondX)*(x-pondX)+(y-14.5)*(y-14.5)<8)m.tiles[Math.floor(y)*w+x]="water";
-  for(let n=0;n<16;n++){const x=rng.int(2,w-3),y=rng.int(2,h-3);if(m.tiles[y*w+x]==="ground")m.tiles[y*w+x]=rng.chance(.55)?"flower":"grass"}
+
+  const slots=[
+    {x:7,y:9},{x:23,y:9},{x:7,y:18},{x:23,y:18}
+  ],rot=rng.int(0,3),ordered=slots.map((_,i)=>slots[(i+rot)%slots.length]),
+    centerDoor=ordered[0],martDoor=ordered[1],gymDoor=ordered[2],houseDoor=ordered[3],plaza={x:15,y:12},exit={x:15,y:21};
+
+  QowCarveWidePath(m,exit,plaza,1,protectedSet,"path",false);
+  for(const door of [centerDoor,martDoor,gymDoor,houseDoor])QowCarveWidePath(m,plaza,door,1,protectedSet,"path",rng.chance(.5));
+  QowOrganicPatch(m,rng,protectedSet,15,12,4,3,"path",1);
+
+  const pondOnLeft=rng.chance(.5),pondX=pondOnLeft?3:27,pondY=rng.int(11,15);
+  QowOrganicPatch(m,rng,protectedSet,pondX,pondY,2,3,"water",.95);
+  for(let n=0;n<22;n++){const x=rng.int(2,w-3),y=rng.int(2,h-3);if(m.tiles[y*w+x]==="ground"&&!protectedSet.has(x+","+y))m.tiles[y*w+x]=rng.chance(.6)?"flower":"grass"}
+  for(let n=0;n<5;n++){const cx=rng.pick([2,4,26,28]),cy=rng.int(3,19);QowOrganicPatch(m,rng,protectedSet,cx,cy,2,2,"tree",.8)}
+
   QowNativeSkin(m,"viridianCity","viridianCity");
-  const buildings=[
-    {id:"center",set:"viridianCity",ref:"viridianCity",sourceDoor:{x:26,y:26},targetDoor:{x:8,y:10},w:9,h:7},
-    {id:"mart",set:"viridianCity",ref:"viridianCity",sourceDoor:{x:36,y:19},targetDoor:{x:23,y:10},w:9,h:7},
-    {id:"gym-deco",set:"viridianCity",ref:"viridianCity",sourceDoor:{x:36,y:10},targetDoor:{x:23,y:19},w:11,h:8},
-    {id:"house-deco",set:"palletTown",ref:"palletTown",sourceDoor:{x:6,y:7},targetDoor:{x:7,y:19},w:9,h:7}
+  [
+    {id:"center",set:"viridianCity",ref:"viridianCity",sourceDoor:{x:26,y:26},targetDoor:centerDoor,w:9,h:7},
+    {id:"mart",set:"viridianCity",ref:"viridianCity",sourceDoor:{x:36,y:19},targetDoor:martDoor,w:9,h:7},
+    {id:"gym-deco",set:"viridianCity",ref:"viridianCity",sourceDoor:{x:36,y:10},targetDoor:gymDoor,w:11,h:8},
+    {id:"house-deco",set:"palletTown",ref:"palletTown",sourceDoor:{x:6,y:7},targetDoor:houseDoor,w:9,h:7}
+  ].forEach(b=>QowStampBuilding(m,b));
+
+  const tutorSide=rng.chance(.5)?-2:2,questSide=-tutorSide;
+  m.services=[
+    {id:"center",kind:"city",x:centerDoor.x,y:centerDoor.y,label:"Pokémon-Center betreten",detail:"Nurse, Heilung und PC",hideEntity:true},
+    {id:"mart",kind:"city",x:martDoor.x,y:martDoor.y,label:"PokéMart betreten",detail:"Vorräte und Reisebedarf",hideEntity:true},
+    {id:"tutor",kind:"tutor",x:plaza.x+tutorSide,y:plaza.y+2,label:"Move-Tutor",detail:"Moveset umbauen"},
+    {id:"quest",kind:"city",x:plaza.x+questSide,y:plaza.y-2,label:"Quest-Brett",detail:"Nebenaufgabe suchen"},
+    {id:"exit",kind:"city",x:exit.x,y:exit.y,label:"Stadt verlassen",detail:"Weiter zur nächsten Route",hideEntity:true}
   ];
-  buildings.forEach(b=>QowStampBuilding(m,b));
-  for(let x=7;x<=9;x++)for(let y=10;y<=12;y++)m.tiles[y*w+x]="path";
-  for(let x=22;x<=24;x++)for(let y=10;y<=12;y++)m.tiles[y*w+x]="path";
+  m.landmarks={center:centerDoor,mart:martDoor,gym:gymDoor,house:houseDoor,plaza,exit};
   return m
 };
 
-const QowTownServices=()=>[
+const QowTownServices=map=>map?.services??[
   {id:"center",kind:"city",x:8,y:10,label:"Pokémon-Center betreten",detail:"Nurse, Heilung und PC",hideEntity:true},
   {id:"mart",kind:"city",x:23,y:10,label:"PokéMart betreten",detail:"Vorräte und Reisebedarf",hideEntity:true},
-  {id:"tutor",kind:"tutor",x:15,y:14,label:"Move-Tutor",detail:"Moveset umbauen"},
-  {id:"quest",kind:"city",x:15,y:9,label:"Quest-Brett",detail:"Nebenaufgabe suchen"},
+  {id:"tutor",kind:"tutor",x:13,y:14,label:"Move-Tutor",detail:"Moveset umbauen"},
+  {id:"quest",kind:"city",x:17,y:10,label:"Quest-Brett",detail:"Nebenaufgabe suchen"},
   {id:"exit",kind:"city",x:15,y:21,label:"Stadt verlassen",detail:"Weiter zur nächsten Route",hideEntity:true}
 ];
