@@ -1,7 +1,7 @@
 if(i.type==="discardHeld"&&r.phase!=="battle"&&(r.heldItems[i.item]??0)>0){r.heldItems[i.item]--,r.message=Ge[i.item].name+" wurde weggeworfen.";return d}
 if(i.type==="overworldDebug"&&r.phase==="map"){
   const Qs=QowEnsure(r),Qm=QowBuild(r);
-  if(i.action==="regen"){Qs.debugSalt=(Qs.debugSalt??0)+1,Qs.pendingNode=null,Qs.lastMessage="Debug: Floor wird mit neuem Salt regeneriert.";return d}
+  if(i.action==="regen"){Qs.debugSalt=(Qs.debugSalt??0)+1,Qs.pendingNode=null,Qs.x=QowSpawn.x,Qs.y=QowSpawn.y,Qs.prevX=QowSpawn.x,Qs.prevY=QowSpawn.y,Qs.seen=QowVisible(QowSpawn.x,QowSpawn.y,5,Qm.w,Qm.h),Qs.lastMessage="Debug: Floor wird mit neuem Salt regeneriert.";return d}
   if(i.action==="reveal"){
     const Qall=[];for(let Qy=0;Qy<Qm.h;Qy++)for(let Qx=0;Qx<Qm.w;Qx++)Qall.push(Qx+","+Qy);
     Qs.seen=Qall,Qs.lastMessage="Debug: kompletter Floor aufgedeckt.";
@@ -25,6 +25,11 @@ if(i.type==="overworldDebug"&&r.phase==="map"){
 }
 if(i.type==="overworldMove"&&r.phase==="map"){
   const Qs=QowEnsure(r),Qm=QowBuild(r);
+  // Saved coordinates from an older generator/debug regeneration must never
+  // leave the player inside a newly-blocking visual/logical tile.
+  if(QowBlocking(QowTile(Qm,Qs.x,Qs.y))){
+    Qs.x=Qm.spawn.x,Qs.y=Qm.spawn.y,Qs.prevX=Qm.spawn.x,Qs.prevY=Qm.spawn.y,Qs.seen=QowVisible(Qm.spawn.x,Qm.spawn.y,5,Qm.w,Qm.h),Qs.lastMessage="Die Route wurde neu aufgebaut.";
+  }
   if(Qs.pendingNode)return d;
   const Qdir=i.dir,Qdx=Qdir==="left"?-1:Qdir==="right"?1:0,Qdy=Qdir==="up"?-1:Qdir==="down"?1:0;
   Qs.facing=Qdir;
