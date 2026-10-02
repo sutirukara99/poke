@@ -25,7 +25,7 @@ const QowTile=(a,i,d)=>i<0||d<0||i>=a.w||d>=a.h?"wall":a.tiles[d*a.w+i];
 const QowVisible=(a,i,d=5,w=QowW,h=QowH)=>{const r=[];for(let u=-d;u<=d;u++)for(let m=-d;m<=d;m++){const y=a+m,p=i+u;if(y>=0&&y<w&&p>=0&&p<h&&Math.abs(m)+Math.abs(u)<=d+2)r.push(y+","+p)}return r};
 const QowReveal=(a,i,d,w=QowW,h=QowH)=>{const r=new Set(a.seen??[]);QowVisible(i,d,5,w,h).forEach(u=>r.add(u)),a.seen=[...r]};
 const QowFront=a=>({x:a.x+(a.facing==="left"?-1:a.facing==="right"?1:0),y:a.y+(a.facing==="up"?-1:a.facing==="down"?1:0)});
-const QowKindLabel=a=>({wild:"Wildgebiet",trainer:"Trainer",shop:"Händler",mystery:"Ereignis",heal:"Rastplatz",item:"Fundort",city:"Stadt",tutor:"Move-Tutor",boss:"Rivale",gym:"Arena",league:"Pokémon-Liga",legendary:"Legendäre Spur"}[a]??"Ziel");
+const QowKindLabel=a=>({wild:"Spuren im Gras",trainer:"Trainer",shop:"Händler",mystery:"Seltsamer Fund",heal:"Rastplatz",item:"Fundstelle",city:"Stadt",tutor:"Move-Tutor",boss:"Rivale",gym:"Arena",league:"Pokémon-Liga",legendary:"Legendäre Spur"}[a]??"Ziel");
 const QowBiomeProfile=a=>({
   forest:{base:"ground",grass:.42,flower:.05,obstacle:"tree",obstacleChance:.055},
   cave:{base:"ground",grass:0,flower:0,obstacle:"rock",obstacleChance:.085},
