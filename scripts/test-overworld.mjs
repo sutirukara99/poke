@@ -5,6 +5,7 @@ const tilesets = await readFile(new URL("./overworld-tilesets.js", import.meta.u
 const nativeAssets = await readFile(new URL("./overworld-frlg-native.js", import.meta.url), "utf8");
 const mapgen = await readFile(new URL("./overworld-mapgen.js", import.meta.url), "utf8");
 const terrain = await readFile(new URL("./overworld-terrain-engine.js", import.meta.url), "utf8");
+const chunks = await readFile(new URL("./overworld-chunks.js", import.meta.url), "utf8");
 const source = await readFile(new URL("./overworld-runtime.js", import.meta.url), "utf8");
 
 const context = {
@@ -34,7 +35,7 @@ const context = {
 
 vm.createContext(context);
 vm.runInContext(
-  tilesets + "\n" + nativeAssets + "\n" + mapgen + "\n" + terrain + "\n" + source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowBuildPokemonAttempt,QowBuildArenaAttempt,QowBuildTownMap,QowNativeReference,QowNativePools,QowTerrainModel,QowTerrainSynthesize,QowTerrainSafeIds,QowTerrainLogicalClass,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowSolidEntityAt,QowHasApproach,QowCurrentFlavor,QowEncounterWeight,QowBattleWeather,QowEnsure,QowRouteBiome,QowKey,QowW,QowH,QowActiveTileset,QowNativeFrlgCatalog};",
+  tilesets + "\n" + nativeAssets + "\n" + mapgen + "\n" + terrain + "\n" + chunks + "\n" + source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowBuildPokemonAttempt,QowBuildChunkRouteAttempt,QowUseChunkRoute,QowBuildArenaAttempt,QowBuildTownMap,QowNativeReference,QowNativePools,QowTerrainModel,QowTerrainSynthesize,QowTerrainSafeIds,QowTerrainLogicalClass,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowSolidEntityAt,QowHasApproach,QowCurrentFlavor,QowEncounterWeight,QowBattleWeather,QowEnsure,QowRouteBiome,QowKey,QowW,QowH,QowActiveTileset,QowNativeFrlgCatalog};",
   context,
   { filename: "overworld-runtime.js" },
 );
@@ -130,8 +131,8 @@ const makeRun = (seed, region = "kanto", biome = "grassland", difficulty = "norm
   const early = makeRun("JOHTO-EARLY-COMPOSITION", "johto", "grassland");
   early.mapIndex = 0;
   const map = ow.QowBuild(early);
-  if (map.biome !== "grassland" || map.layoutStyle !== "route" || map.composition !== "early-natural") {
-    throw new Error("Early Johto route composition is not calm/open grassland.");
+  if (map.biome !== "grassland" || map.layoutStyle !== "route" || map.composition !== "phaser-chunks" || map.generationVersion !== 6) {
+    throw new Error("Early Johto route is not using the authored chunk composer.");
   }
   if (map.visualEngine !== "reference-safe-v5" || map.nativeReference !== "route1") {
     throw new Error("Early Johto route is not textured from the safe Route 1 model.");
@@ -139,8 +140,8 @@ const makeRun = (seed, region = "kanto", biome = "grassland", difficulty = "norm
   if (map.nativeTiles.filter(Boolean).length < map.nativeTiles.length * 0.2) {
     throw new Error("Early Johto route does not use enough safe native FRLG terrain.");
   }
-  if (map.compositionStats.branches !== 1 || map.compositionStats.fields !== 2) {
-    throw new Error("Early Johto route should have one side pocket and two encounter fields.");
+  if (map.compositionStats.fields < 3 || map.rooms.filter((r) => String(r.id).startsWith("chunk-")).length < 4) {
+    throw new Error("Early Johto chunk route lacks authored macro sections.");
   }
   if (map.compositionStats.pathCells > map.w * map.h * 0.18) {
     throw new Error("Early Johto route road is too visually dominant.");
@@ -227,11 +228,15 @@ for (const [region, biome, mapIndex] of regions) {
     if (!["route","forest","cave","coast","mountain"].includes(mapA.layoutStyle)) {
       throw new Error("Floor did not use Pokémon-style archetype generator for " + seed + ": " + mapA.layoutStyle);
     }
-    if (mapA.generationVersion !== 5) {
-      throw new Error("Floor is not using playable overworld generation v5 for " + seed);
+    const expectedVersion = ow.QowUseChunkRoute(runA) ? 6 : 5;
+    if (mapA.generationVersion !== expectedVersion) {
+      throw new Error("Unexpected overworld generator version for " + seed + ": " + mapA.generationVersion + " expected " + expectedVersion);
     }
-    if (!["early-natural","natural-route"].includes(mapA.composition)) {
-      throw new Error("Floor has no natural composition profile for " + seed);
+    if (ow.QowUseChunkRoute(runA) && (mapA.composition !== "phaser-chunks" || mapA.worldEngine !== "phaser")) {
+      throw new Error("Early Kanto/Johto floor did not use authored Phaser chunk composition for " + seed);
+    }
+    if (!["early-natural","natural-route","phaser-chunks"].includes(mapA.composition)) {
+      throw new Error("Floor has no supported composition profile for " + seed);
     }
     if (!["reference-safe-v5","semantic-safe-v5"].includes(mapA.visualEngine)) {
       throw new Error("Floor did not use the collision-safe visual engine for " + seed + ": " + mapA.visualEngine);
