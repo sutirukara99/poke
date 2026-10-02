@@ -16,7 +16,7 @@ const QowTileSize=16,QowW=45,QowH=31,QowSpawn={x:22,y:27};
 const QowCanvasW=480,QowCanvasH=320;
 const QowHash=a=>{let i=2166136261>>>0;for(let d=0;d<String(a).length;d++)i^=String(a).charCodeAt(d),i=Math.imul(i,16777619);return i>>>0};
 const QowRng=a=>{let i=a>>>0;return{next:()=>((i=Math.imul(i,1664525)+1013904223>>>0)/4294967296),int:(d,r)=>d+Math.floor(((i=Math.imul(i,1664525)+1013904223>>>0)/4294967296)*(r-d+1)),chance:d=>((i=Math.imul(i,1664525)+1013904223>>>0)/4294967296)<d,pick:d=>d[Math.floor(((i=Math.imul(i,1664525)+1013904223>>>0)/4294967296)*d.length)],state:()=>i}};
-const QowKey=a=>[a.seed,a.region,a.mode,a.mapIndex??0,a.step??0,a.arena?.step??"-",a.difficulty??"normal",a.journey?.overworld?.debugSalt??0].join("|");
+const QowKey=a=>[a.seed,a.region,a.mode,a.mapIndex??0,a.step??0,a.arena?.step??"-",a.difficulty??"normal",a.journey?.overworld?.debugSalt??0,(a.arena?.path??a.path??[]).join(",")].join("|");
 const QowChoices=a=>{const i=a.arena?.route??a.route,d=a.arena?.step??a.step,r=a.arena?.path??a.path??[],u=!!a.fogRevealed||a.activeRelics?.includes?.("cracked-compass"),h=i?.[d]??[];return h.filter(m=>qu(i,d,r,Iy(m,!!a.arena))&&(!m.secret||u)).map(m=>({node:m,lane:Rc(m,h)}))};
 const QowBlocking=a=>!QowTileDefs[a]?.walkable;
 const QowSolidEntityAt=(a,i,d,r)=>{const u=(a.npcs??[]).find(h=>h.x===i&&h.y===d);if(u)return u;const h=(a.destinations??[]).find(m=>m.x===i&&m.y===d);return h&&h.kind!=="wild"&&!(h.kind==="trainer"&&(r?.defeatedTrainers??[]).includes(h.id))?h:null};
@@ -95,7 +95,8 @@ if(u.length<=1){const Qboss=u[0]?.node?.kind==="gym",Qy=Qboss?6:8,target=room(22
 }else{const split=room(22,20,9,5,"arena-split","arena");corr(start.x,start.y-2,split.x,split.y+2,"v");const xs=[14,30];for(let q=0;q<Math.min(2,u.length);q++){const x=xs[q],target=room(x,8,9,5,"arena-wing-"+q,"arena");corr(split.x+(q===0?-3:3),split.y,x,target.y+2,"h");const midY=14;corr(x,split.y,x,midY,"v"),corr(x,midY,x,target.y+2,"v");const dest={id:u[q].node.id,kind:u[q].node.kind,title:u[q].node.title,detail:u[q].node.detail,x:target.x,y:target.y,lane:u[q].lane,node:u[q].node,room:target.id,facing:"down"};h.destinations.push(dest),QowPaintDestinationRoom(h,dest)}}
 for(let y=25;y<=29;y++)for(let x=19;x<=25;x++)h.tiles[y*h.w+x]="path";
 return h};
-const QowBuild=a=>{if(a.arena){for(let i=0;i<8;i++){const d=QowBuildArenaAttempt(a,i);if(QowValidate(d))return d}}else for(let i=0;i<8;i++){const d=QowBuildAttempt(a,i);if(QowValidate(d))return d}return QowFallback(a)};
+const QowMapCache=new Map,QowCacheFloor=(a,i)=>{QowMapCache.has(a)&&QowMapCache.delete(a),QowMapCache.set(a,i);for(;QowMapCache.size>24;)QowMapCache.delete(QowMapCache.keys().next().value);return i};
+const QowBuild=a=>{const q=QowKey(a),cached=QowMapCache.get(q);if(cached)return QowMapCache.delete(q),QowMapCache.set(q,cached),cached;let built=null;if(a.arena){for(let i=0;i<8;i++){const d=QowBuildArenaAttempt(a,i);if(QowValidate(d)){built=d;break}}}else for(let i=0;i<8;i++){const d=QowBuildAttempt(a,i);if(QowValidate(d)){built=d;break}}return QowCacheFloor(q,built??QowFallback(a))};
 
 const QowClearLine=(a,i,d,r,u)=>{if(i!==r&&d!==u)return!1;const h=Math.sign(r-i),m=Math.sign(u-d);let y=i+h,p=d+m;for(;y!==r||p!==u;){if(QowBlocking(QowTile(a,y,p)))return!1;y+=h,p+=m}return!0};
 const QowTrainerSees=(a,i,d,r)=>{if(!i||i.kind!=="trainer")return!1;const u=d-i.x,h=r-i.y,m=Math.abs(u)+Math.abs(h);if(m<1||m>4||u!==0&&h!==0)return!1;const y=i.facing??"down";if(y==="down"&&!(u===0&&h>0)||y==="up"&&!(u===0&&h<0)||y==="left"&&!(h===0&&u<0)||y==="right"&&!(h===0&&u>0))return!1;return QowClearLine(a,i.x,i.y,d,r)};
