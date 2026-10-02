@@ -4,6 +4,7 @@ import "./styles/game-experience.css";
 import "./styles/design-overhaul.css";
 import "./styles/gameplay-overhaul.css";
 import "./styles/maintenance.css";
+import Phaser from "phaser";
 import { ACTIVE_BUILD, RECOVERY_BASELINE } from "./recovery/version";
 import { mountCloudAccountUi } from "./cloud/account-ui";
 import { mountAdminUi } from "./cloud/admin-ui";
@@ -20,11 +21,13 @@ declare global {
     __POKEREGIONS_RECOVERY__?: typeof RECOVERY_BASELINE;
     __POKEREGIONS_BUILD__?: typeof ACTIVE_BUILD;
     __POKEREGIONS_ACTIVE_RELICS__?: string[];
+    Phaser?: typeof Phaser;
   }
 }
 
 window.__POKEREGIONS_RECOVERY__ = RECOVERY_BASELINE;
 window.__POKEREGIONS_BUILD__ = ACTIVE_BUILD;
+window.Phaser = Phaser;
 
 let bootTimer: number | undefined;
 let bootObserver: MutationObserver | undefined;
