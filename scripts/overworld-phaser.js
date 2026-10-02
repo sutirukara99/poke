@@ -220,7 +220,7 @@ const QowMountPhaser=(host,bridge)=>{
     banner:false,
     audio:{noAudio:true},
     scene:[PokeregionsOverworldScene],
-    physics:{default:false},
+    scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH,width:QowCanvasW,height:QowCanvasH},
     render:{antialias:false,pixelArt:true,roundPixels:true}
   });
 
