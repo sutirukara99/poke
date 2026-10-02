@@ -33,7 +33,7 @@ l.jsxs("span",{children:["FPS ",Qfps," · TILE ",QowTile(Qm,Qp.x,Qp.y)," · RNG 
 l.jsxs("span",{children:["SEED ",String(y.seed).slice(0,16)]}),
 l.jsxs("span",{children:["FLOOR KEY ",Qm.key.slice(-28)]}),
 l.jsxs("span",{children:["BIOME ",Qm.biome," · ",Qm.condition," · ",Qm.timeOfDay," · ",Qm.weather," · ATTEMPT ",Qm.attempt]}),
-l.jsxs("span",{children:["ROOMS ",Qm.rooms.length," · TARGETS ",Qm.destinations.length]}),
+l.jsxs("span",{children:["LAYOUT ",String(Qm.layoutStyle??"legacy").toUpperCase()," · ZONES ",Qm.rooms.length," · TARGETS ",Qm.destinations.length]}),
 l.jsxs("span",{children:["DANGER ",Math.round(Qp.danger??0)," · SEEN ",(Qp.seen??[]).length]}),
 l.jsxs("div",{className:"ow-debug-actions",children:[
 l.jsx("button",{type:"button",onClick:()=>h({type:"overworldDebug",action:"reveal"}),children:"MAP"}),
@@ -45,6 +45,6 @@ l.jsx("button",{type:"button",onClick:()=>h({type:"overworldDebug",action:"regen
 ]}),
 l.jsxs("footer",{className:"ow-command",children:[
 l.jsx("div",{className:"ow-party-strip",children:Qteam.map((Qmon,Qidx)=>l.jsxs("span",{"data-lead":Qidx===0?"true":"false","data-fainted":Qmon.hp<=0?"true":"false",children:[l.jsx(xe,{src:st(Qmon.species,Qmon.shiny),name:""}),l.jsx("i",{style:{width:String(Math.max(0,Math.min(100,(Qmon.hp??0)/Math.max(1,Qmon.maxHp??1)*100)))+"%"}})]},Qmon.species+"-"+Qidx))}),
-l.jsxs("div",{className:"ow-run-info",children:[l.jsx("span",{children:y?.mode==="endless"?"ENDLESS":y?.dailyChallenge?"DAILY":"STORY"}),Qquest&&l.jsxs("span",{className:"ow-active-quest",children:["! ",Qquest.title," · ",Qquest.progress??0,"/",Qquest.target??0]}),l.jsx("span",{children:String(Qp.steps??0)+" SCHRITTE"}),l.jsx("span",{children:String(Qm.rooms.length)+" RÄUME"})]})
+l.jsxs("div",{className:"ow-run-info",children:[l.jsx("span",{children:y?.mode==="endless"?"ENDLESS":y?.dailyChallenge?"DAILY":"STORY"}),Qquest&&l.jsxs("span",{className:"ow-active-quest",children:["! ",Qquest.title," · ",Qquest.progress??0,"/",Qquest.target??0]}),l.jsx("span",{children:String(Qp.steps??0)+" SCHRITTE"}),l.jsx("span",{children:String(Qm.rooms.length)+" ZONEN"})]})
 ]})
 ]})}
