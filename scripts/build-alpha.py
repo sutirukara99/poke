@@ -628,8 +628,10 @@ overworld_tilesets=(ROOT/'scripts/overworld-tilesets.js').read_text()
 overworld_native=(ROOT/'scripts/overworld-frlg-native.js').read_text()
 overworld_mapgen=(ROOT/'scripts/overworld-mapgen.js').read_text()
 overworld_terrain=(ROOT/'scripts/overworld-terrain-engine.js').read_text()
+overworld_chunks=(ROOT/'scripts/overworld-chunks.js').read_text()
 overworld_runtime=(ROOT/'scripts/overworld-runtime.js').read_text()
-s=s.replace('const Dc=()=>({',journey_helpers+overworld_tilesets+overworld_native+overworld_mapgen+overworld_terrain+overworld_runtime+'const Dc=()=>({',1)
+overworld_phaser=(ROOT/'scripts/overworld-phaser.js').read_text()
+s=s.replace('const Dc=()=>({',journey_helpers+overworld_tilesets+overworld_native+overworld_mapgen+overworld_terrain+overworld_chunks+overworld_runtime+overworld_phaser+'const Dc=()=>({',1)
 
 # Overworld conditions affect the real encounter pool and battle weather.
 s=s.replace('let b=Ec(p,m)*(r.types.some(A=>p.types.includes(A))?1.35:1);return',

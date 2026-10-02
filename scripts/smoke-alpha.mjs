@@ -164,7 +164,13 @@ if (!js.includes('const QowNativeEnsureAtlas=')) throw new Error("Native FRLG pr
 if (!js.includes('const QowBuildTownMap=')) throw new Error("Procedural FRLG town generator is missing.");
 if (!js.includes('layoutStyle:"town"')) throw new Error("Generated town archetype is missing.");
 if (!js.includes('center:{x:26,y:26}') || !js.includes('sourceDoor:variant.center')) throw new Error("Original Viridian City Pokémon Center stamp is missing.");
-if (!js.includes('const QowCanvas=')) throw new Error("Canvas renderer host is missing.");
+if (!js.includes('const QowCanvas=')) throw new Error("Canvas renderer fallback is missing.");
+if (!js.includes('const QowPhaserVersion="phaser-v1"')) throw new Error("Phaser overworld bridge is missing.");
+if (!js.includes('const QowPhaserCanvas=')) throw new Error("Phaser React host is missing.");
+if (!js.includes('const QowChunkComposerVersion="chunk-v1"')) throw new Error("Authored Phaser chunk composer is missing.");
+if (!js.includes('const QowBuildChunkRouteAttempt=')) throw new Error("Phaser chunk route generator is missing.");
+if (!js.includes('window.__POKEREGIONS_PHASER_OVERWORLD__')) throw new Error("Phaser touch/input bridge is missing.");
+if (!js.includes('QhasPhaser?l.jsx(QowPhaserCanvas')) throw new Error("Route view does not prefer Phaser.");
 if (!js.includes('const QowTilesetCatalog=')) throw new Error("Semantic overworld tileset catalog is missing.");
 if (!js.includes('metatilesB64:')) throw new Error("FRLG metatile source data is missing.");
 if (!js.includes('const QowEnsureFrlgAtlas=')) throw new Error("FRLG metatile reconstruction pipeline is missing.");
