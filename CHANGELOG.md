@@ -8,10 +8,18 @@
 - Bestehende Battle-, Catch-, Inventar-, Relikt-, Klassen-, PC-, Account- und Cloud-Systeme bleiben als Backend erhalten.
 
 ### Prozeduraler Kern
-- Normale Floors sind **45×31 Tiles** groß und entstehen aus einem versteckten Raumgraphen mit Korridoren, Loops, Nebenräumen, Geheimräumen, NPCs, Loot und physischen Rogue-Zielen.
-- **Kanto, Johto, Hoenn und Sinnoh verändern jetzt die Geometrie**, nicht nur Farben: Johto loopiger, Hoenn breiter/küstenlastiger, Sinnoh enger und vertikaler, Kanto ausgewogen.
+- Normale Floors sind **45×31 Tiles** groß und werden jetzt primär als echte Pokémon-artige Karten gebaut: Hauptweg, Seitenpfade, Grasflächen, Teiche/Lagunen, Lichtungen, Fels-Chicanes, Loot-Spots und physische Rogue-Ziele statt sichtbarer Dungeon-Räume.
+- Eigene Generator-Archetypen für **Route, Wald, Küste, Berg/Schnee und Höhle** sorgen dafür, dass sich Orte strukturell unterscheiden.
+- Ein authored Feature-Pass setzt handgebaut wirkende Kartenbausteine wie Grass Pockets, kleine Gärten, Waldlichtungen, Lagunen und Felsengassen deterministisch aus dem Run-Seed.
+- **Kanto, Johto, Hoenn und Sinnoh verändern Geometrie, Biom-Druck und native FRLG-Visual-Themes**, statt nur Farben auszutauschen.
 - Jeder Floor wird per BFS auf Spawn, Ziele, NPC-Zugänge und Pickups geprüft. Ungültige Kandidaten werden deterministisch neu erzeugt; danach existiert ein sicherer Fallback.
 - Deterministische Floors werden gecacht, damit Bewegung/React-Renders nicht erneut den gesamten Generator ausführen.
+
+### Originale FRLG-Kartenassets
+- Zusätzlich zum General-Tileset sind originale **FRLG Secondary Tilesets + Metatile-Daten + Paletten** eingebettet.
+- Originale Kartenblöcke aus **Route 1, Pallet Town, Viridian City, Pewter City, Cerulean City, Viridian Forest und Mt. Moon** dienen als echte visuelle Quellen für die generierten Karten.
+- Scenery-Chunks werden aus diesen Originalkarten gestempelt, während geschützte Laufwege/Kollisionen erhalten bleiben.
+- Städte werden seedbasiert aus echten FRLG-Gebäudestamps aufgebaut: Pokémon-Center, PokéMart, Gym-Deko, Wohnhaus, Plaza, Wege, Teich, Garten und Baumgruppen.
 
 ### Eigene Arena-Floors
 - Arenen nutzen einen separaten Indoor-Generator.
