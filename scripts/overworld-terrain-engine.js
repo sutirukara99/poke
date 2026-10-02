@@ -9,6 +9,22 @@
  */
 const QowTerrainModelCache=new Map;
 
+/*
+ * Only terrain IDs that are known to be part of Route 1's natural primary
+ * tiles are eligible for field synthesis. Previous versions classified every
+ * passable/blocked reference metatile by collision alone, which allowed
+ * fences, ledges and building fragments to masquerade as generic ground.
+ */
+const QowTerrainSafeIds={
+  grass:new Set([13]),
+  open:new Set([1,4,8,9,14,15,16]),
+  blocked:new Set([20,21,22,23,28,29,30,31,36,37,38,39])
+};
+const QowTerrainSafeCandidate=(setName,refName,cls,id)=>{
+  if(setName!=="palletTown"||refName!=="route1")return false;
+  return QowTerrainSafeIds[cls]?.has(id)??false
+};
+
 const QowTerrainLogicalClass=tile=>{
   if(tile==="grass")return"grass";
   if(["tree","rock","wall"].includes(tile))return"blocked";
@@ -36,8 +52,8 @@ const QowTerrainModel=(setName,refName)=>{
   const byClass={open:[],grass:[],blocked:[]},bySig=new Map,hPairs=new Map,vPairs=new Map;
   for(let y=1;y<ref.h-1;y++)for(let x=1;x<ref.w-1;x++){
     const raw=ref.blocks[y*ref.w+x],id=raw&1023,cls=classes[y*ref.w+x];
-    // Unique one-off map objects/signs are intentionally excluded from terrain synthesis.
-    if((count.get(id)??0)<3)continue;
+    // Unique one-off objects and non-terrain metatiles are excluded.
+    if((count.get(id)??0)<3||!QowTerrainSafeCandidate(setName,refName,cls,id))continue;
     const sig=QowTerrainSignature(classes,ref.w,ref.h,x,y),candidate={x,y,id,cls,sig};
     byClass[cls].push(candidate);
     const sk=cls+"|"+sig,arr=bySig.get(sk)??[];arr.push(candidate),bySig.set(sk,arr);
@@ -75,9 +91,12 @@ const QowTerrainChoose=(model,map,x,y,cls,leftVisual,upVisual)=>{
   return winners[QowHash(map.key+"|texture|"+x+"|"+y)%winners.length]
 };
 const QowTerrainSynthesize=(map,setName,refName)=>{
-  const model=QowTerrainModel(setName,refName);if(!model)return map;
-  map.nativeSet=setName,map.nativeRef=refName,map.nativeTiles=Array(map.w*map.h).fill(null),
-  map.visualEngine="reference-synthesis-v4";
+  const model=QowTerrainModel(setName,refName);
+  map.nativeSet=setName,map.nativeRef=refName,map.nativeTiles=Array(map.w*map.h).fill(null);
+  if(!model||!model.byClass.open.length||!model.byClass.blocked.length){
+    map.visualEngine="semantic-safe-v5";return map
+  }
+  map.visualEngine="reference-safe-v5";
   for(let y=0;y<map.h;y++)for(let x=0;x<map.w;x++){
     const tile=QowTile(map,x,y),cls=QowTerrainLogicalClass(tile);if(!cls)continue;
     const left=x>0?map.nativeTiles[y*map.w+x-1]:null,up=y>0?map.nativeTiles[(y-1)*map.w+x]:null,
