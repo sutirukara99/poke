@@ -134,11 +134,11 @@ const makeRun = (seed, region = "kanto", biome = "grassland", difficulty = "norm
   if (map.biome !== "grassland" || map.layoutStyle !== "route" || map.composition !== "phaser-chunks" || map.generationVersion !== 6) {
     throw new Error("Early Johto route is not using the authored chunk composer.");
   }
-  if (map.visualEngine !== "reference-safe-v5" || map.nativeReference !== "route1") {
-    throw new Error("Early Johto route is not textured from the safe Route 1 model.");
+  if (map.visualEngine !== "phaser-semantic-v2" || map.nativeReference !== "route1") {
+    throw new Error("Early Johto route is not using the clean Phaser semantic visual layer.");
   }
-  if (map.nativeTiles.filter(Boolean).length < map.nativeTiles.length * 0.2) {
-    throw new Error("Early Johto route does not use enough safe native FRLG terrain.");
+  if (map.nativeTiles.filter(Boolean).length !== 0) {
+    throw new Error("Phaser chunk route still contains synthesized native-map noise.");
   }
   if (map.compositionStats.fields < 3 || map.rooms.filter((r) => String(r.id).startsWith("chunk-")).length < 4) {
     throw new Error("Early Johto chunk route lacks authored macro sections.");
@@ -238,8 +238,8 @@ for (const [region, biome, mapIndex] of regions) {
     if (!["early-natural","natural-route","phaser-chunks"].includes(mapA.composition)) {
       throw new Error("Floor has no supported composition profile for " + seed);
     }
-    if (!["reference-safe-v5","semantic-safe-v5"].includes(mapA.visualEngine)) {
-      throw new Error("Floor did not use the collision-safe visual engine for " + seed + ": " + mapA.visualEngine);
+    if (!["reference-safe-v5","semantic-safe-v5","phaser-semantic-v2"].includes(mapA.visualEngine)) {
+      throw new Error("Floor did not use a supported collision-safe visual engine for " + seed + ": " + mapA.visualEngine);
     }
     if (!mapA.compositionStats || mapA.compositionStats.branches < 1 || mapA.compositionStats.branches > 2 || mapA.compositionStats.fields < 2) {
       throw new Error("Floor composition stats are invalid for " + seed);
@@ -257,12 +257,18 @@ for (const [region, biome, mapIndex] of regions) {
       throw new Error("Floor native visual buffer is malformed for " + seed);
     }
     const nativeCount = mapA.nativeTiles.filter(Boolean).length;
-    const minSafeCoverage = mapA.nativeReference === "route1" ? (mapA.layoutStyle === "coast" ? 0.02 : 0.2) : 0;
-    if (nativeCount < mapA.nativeTiles.length * minSafeCoverage) {
-      throw new Error("Safe native synthesis covers too little of the field for " + seed + ": " + nativeCount);
-    }
-    if (mapA.nativeReference !== "route1" && nativeCount !== 0) {
-      throw new Error("Non-Route1 floor should use semantic-safe rendering until a curated native model exists for " + seed);
+    if (ow.QowUseChunkRoute(runA)) {
+      if (nativeCount !== 0 || mapA.visualEngine !== "phaser-semantic-v2") {
+        throw new Error("Phaser chunk route must stay free of native-map synthesis noise for " + seed);
+      }
+    } else {
+      const minSafeCoverage = mapA.nativeReference === "route1" ? (mapA.layoutStyle === "coast" ? 0.02 : 0.2) : 0;
+      if (nativeCount < mapA.nativeTiles.length * minSafeCoverage) {
+        throw new Error("Safe native synthesis covers too little of the field for " + seed + ": " + nativeCount);
+      }
+      if (mapA.nativeReference !== "route1" && nativeCount !== 0) {
+        throw new Error("Non-Route1 floor should use semantic-safe rendering until a curated native model exists for " + seed);
+      }
     }
     if (mapA.nativeTiles.some((v) => v && v.set !== mapA.nativeTheme)) {
       throw new Error("Field mixes incompatible native tilesets for " + seed);

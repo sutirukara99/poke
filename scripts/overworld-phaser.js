@@ -4,7 +4,7 @@
  * Phaser owns the live game loop, camera, keyboard cadence and sprite tweening.
  * React remains responsible for HUD and the existing reducer/backend.
  */
-const QowPhaserVersion="phaser-v1";
+const QowPhaserVersion="phaser-v2",QowPhaserViewportW=240,QowPhaserViewportH=160;
 const QowPhaserAvailable=()=>!!window.Phaser;
 
 const QowPhaserTerrainCanvas=map=>{
@@ -15,11 +15,28 @@ const QowPhaserTerrainCanvas=map=>{
   if(!ctx)return canvas;
   ctx.imageSmoothingEnabled=false;
   const palette=QowPalette(map.region,map.biome);
-  ctx.fillStyle=palette.bg;
-  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle=palette.bg;ctx.fillRect(0,0,canvas.width,canvas.height);
   const camera={x:0,y:0};
   for(let y=0;y<map.h;y++)for(let x=0;x<map.w;x++)QowDrawTile(ctx,0,0,y,x,camera,map);
   return canvas
+};
+const QowPhaserSemanticTile=(tile,index)=>{
+  // FireRed Route 1 does not have a continuous "road carpet"; travel is read
+  // from the surrounding trees/grass/ledges. Using the old path metatile here
+  // produced the pale cyan squares seen in the live build.
+  if(tile==="path")return index?.ground??0;
+  if(Number.isInteger(index?.[tile]))return index[tile];
+  if(tile==="snow"||tile==="ruin"||tile==="bossfloor"||tile==="lava")return index?.ground??0;
+  return index?.ground??0
+};
+const QowPhaserTileData=(map,index)=>Array.from({length:map.h},(_,y)=>Array.from({length:map.w},(_,x)=>QowPhaserSemanticTile(QowTile(map,x,y),index)));
+const QowPhaserIntegerScale=(host,game)=>{
+  if(!host||!game?.canvas)return;
+  const scale=Math.max(1,Math.min(4,Math.floor(Math.min(host.clientWidth/QowPhaserViewportW,host.clientHeight/QowPhaserViewportH))||1));
+  game.canvas.style.width=(QowPhaserViewportW*scale)+"px";
+  game.canvas.style.height=(QowPhaserViewportH*scale)+"px";
+  game.canvas.style.maxWidth="100%";
+  game.canvas.style.maxHeight="100%"
 };
 
 const QowPhaserEntityTexture=entity=>{
@@ -61,6 +78,8 @@ const QowMountPhaser=(host,bridge)=>{
       this.nextMoveAt=0;
       this.lastHeld="";
       this.terrainImage=null;
+      this.tilemap=null;
+      this.tileLayer=null;
       this.entitySprites=[];
       this.refreshTerrain();
       this.createEntities();
@@ -69,6 +88,10 @@ const QowMountPhaser=(host,bridge)=>{
       this.player=this.add.sprite(px,py,"ow-player",QowPhaserFacingFrame(bridge.current.player.facing??"down"))
         .setOrigin(.5,1).setDepth(100);
       this.player.setFlipX((bridge.current.player.facing??"down")==="right");
+      const anims=[["down",[0,1,0,2]],["up",[3,4,3,5]],["left",[6,7,6,8]]];
+      for(const [name,frames] of anims)if(!this.anims.exists("ow-walk-"+name))this.anims.create({
+        key:"ow-walk-"+name,frames:frames.map(frame=>({key:"ow-player",frame})),frameRate:10,repeat:-1
+      });
 
       if(this.textures.exists("ow-lead")){
         this.lead=this.add.image(px,py+1,"ow-lead").setOrigin(.5,1).setDisplaySize(16,16).setDepth(95)
@@ -77,6 +100,7 @@ const QowMountPhaser=(host,bridge)=>{
       this.cameras.main.setBounds(0,0,this.mapData.w*QowTileSize,this.mapData.h*QowTileSize);
       this.cameras.main.startFollow(this.player,true,1,1);
       this.cameras.main.setRoundPixels(true);
+      this.cameras.main.setDeadzone(0,0);
 
       this.keys=this.input.keyboard.addKeys({
         up:"W",down:"S",left:"A",right:"D",
@@ -99,12 +123,22 @@ const QowMountPhaser=(host,bridge)=>{
     }
     refreshTerrain(){
       if(!this.mapData||destroyed)return;
-      const key="ow-terrain-"+QowHash(this.mapData.key+"|"+QowPhaserVersion);
-      const canvas=QowPhaserTerrainCanvas(this.mapData);
-      if(this.terrainImage)this.terrainImage.destroy();
-      if(this.textures.exists(key))this.textures.remove(key);
-      this.textures.addCanvas(key,canvas);
-      this.terrainImage=this.add.image(0,0,key).setOrigin(0,0).setDepth(0)
+      this.tileLayer?.destroy();this.tileLayer=null;this.tilemap?.destroy?.();this.tilemap=null;
+      this.terrainImage?.destroy();this.terrainImage=null;
+      const frlg=QowEnsureFrlgAtlas(),key="ow-semantic-"+QowHash(this.mapData.key+"|"+QowPhaserVersion);
+      if(frlg?.atlas&&frlg?.index){
+        if(this.textures.exists(key))this.textures.remove(key);
+        this.textures.addCanvas(key,frlg.atlas);
+        const data=QowPhaserTileData(this.mapData,frlg.index);
+        this.tilemap=this.make.tilemap({data,tileWidth:16,tileHeight:16});
+        const tiles=this.tilemap.addTilesetImage(key,key,16,16,0,0,0);
+        if(tiles)this.tileLayer=this.tilemap.createLayer(0,tiles,0,0)?.setDepth(0)??null;
+      }else{
+        const fallbackKey=key+"-fallback",canvas=QowPhaserTerrainCanvas(this.mapData);
+        if(this.textures.exists(fallbackKey))this.textures.remove(fallbackKey);
+        this.textures.addCanvas(fallbackKey,canvas);
+        this.terrainImage=this.add.image(0,0,fallbackKey).setOrigin(0,0).setDepth(0)
+      }
     }
     createEntities(){
       for(const sprite of this.entitySprites)sprite.destroy();
@@ -129,8 +163,15 @@ const QowMountPhaser=(host,bridge)=>{
     }
     setFacing(dir,walking=false){
       const base=QowPhaserFacingFrame(dir);
-      this.player?.setFrame(base+(walking?1:0));
-      this.player?.setFlipX(dir==="right")
+      if(!this.player)return;
+      this.player.setFlipX(dir==="right");
+      if(walking){
+        const animDir=dir==="right"?"left":dir,key="ow-walk-"+animDir;
+        this.player.anims?.play?.(key,true)
+      }else{
+        this.player.anims?.stop?.();
+        this.player.setFrame(base)
+      }
     }
     heldDirection(){
       const k=this.keys;
@@ -151,7 +192,7 @@ const QowMountPhaser=(host,bridge)=>{
       this.setFacing(dir,false);
       if(this.blocked(tx,ty)){
         bridge.current.dispatch({type:"overworldMove",dir});
-        this.nextMoveAt=this.time.now+120;
+        this.nextMoveAt=this.time.now+90;
         return false
       }
       this.moving=true;
@@ -164,12 +205,17 @@ const QowMountPhaser=(host,bridge)=>{
       this.tweens.add({
         targets:this.player,
         x:tx*16+8,y:ty*16+16,
-        duration:112,
+        duration:128,
         ease:"Linear",
-        onUpdate:()=>{if(this.player)this.player.setDepth(100+Math.floor(this.player.y/16))},
+        onUpdate:()=>{
+          if(!this.player)return;
+          this.player.x=Math.round(this.player.x);this.player.y=Math.round(this.player.y);
+          this.player.setDepth(100+Math.floor(this.player.y/16))
+        },
         onComplete:()=>{
+          this.player?.setPosition(tx*16+8,ty*16+16);
           this.localX=tx;this.localY=ty;this.moving=false;this.setFacing(dir,false);
-          this.nextMoveAt=this.time.now+(fromTouch?45:80);
+          this.nextMoveAt=this.time.now;
           bridge.current.dispatch({type:"overworldMove",dir})
         }
       });
@@ -200,7 +246,7 @@ const QowMountPhaser=(host,bridge)=>{
       const dir=this.heldDirection();
       if(!dir){this.lastHeld="";return}
       if(dir!==this.lastHeld){this.lastHeld=dir;this.nextMoveAt=time}
-      if(time>=this.nextMoveAt&&this.requestMove(dir))this.nextMoveAt=time+125
+      if(time>=this.nextMoveAt&&this.requestMove(dir))this.nextMoveAt=time
     }
     shutdown(){
       window.removeEventListener("pokeregions:overworld-assets",this.assetRefresh);
@@ -210,8 +256,8 @@ const QowMountPhaser=(host,bridge)=>{
 
   game=new Phaser.Game({
     type:Phaser.CANVAS,
-    width:QowCanvasW,
-    height:QowCanvasH,
+    width:QowPhaserViewportW,
+    height:QowPhaserViewportH,
     parent:host,
     backgroundColor:"#071011",
     pixelArt:true,
@@ -220,12 +266,18 @@ const QowMountPhaser=(host,bridge)=>{
     banner:false,
     audio:{noAudio:true},
     scene:[PokeregionsOverworldScene],
-    scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH,width:QowCanvasW,height:QowCanvasH},
+    scale:{mode:Phaser.Scale.NONE,width:QowPhaserViewportW,height:QowPhaserViewportH},
     render:{antialias:false,pixelArt:true,roundPixels:true}
   });
+  const resize=()=>QowPhaserIntegerScale(host,game);
+  requestAnimationFrame(resize);
+  const observer=typeof ResizeObserver!=="undefined"?new ResizeObserver(resize):null;
+  observer?.observe(host);
+  window.addEventListener("resize",resize);
 
   return()=>{
     destroyed=true;
+    observer?.disconnect();window.removeEventListener("resize",resize);
     try{sceneRef?.shutdown?.()}catch{}
     if(window.__POKEREGIONS_PHASER_OVERWORLD__?.scene===sceneRef)delete window.__POKEREGIONS_PHASER_OVERWORLD__;
     game?.destroy(true);
