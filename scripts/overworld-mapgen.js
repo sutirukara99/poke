@@ -133,7 +133,17 @@ const QowStampBuilding=(map,spec)=>{
 };
 
 const QowPokemonStyle=biome=>biome==="forest"||biome==="night"?"forest":biome==="cave"||biome==="ruins"?"cave":["coast","sea","marsh"].includes(biome)?"coast":["mountain","snow","volcano"].includes(biome)?"mountain":"route";
-const QowPokemonNativeSource=style=>style==="forest"?["viridianForest","viridianForest"]:style==="cave"||style==="mountain"?["cave","mtMoon1F"]:["palletTown","route1"];
+const QowPokemonNativeSource=(style,region="kanto",mapIndex=0)=>{
+  if(style==="forest")return["viridianForest","viridianForest"];
+  if(style==="cave"||style==="mountain")return["cave","mtMoon1F"];
+  const routeThemes={
+    kanto:[["palletTown","route1"],["viridianCity","viridianCity"]],
+    johto:[["viridianCity","viridianCity"],["palletTown","route1"]],
+    hoenn:[["ceruleanCity","ceruleanCity"],["palletTown","route1"]],
+    sinnoh:[["pewterCity","pewterCity"],["viridianCity","viridianCity"]]
+  },pool=routeThemes[region]??routeThemes.kanto;
+  return pool[Math.abs(mapIndex)%pool.length]
+};
 const QowMapIndex=(m,x,y)=>y*m.w+x;
 const QowIn=(m,x,y)=>x>0&&y>0&&x<m.w-1&&y<m.h-1;
 const QowPut=(m,x,y,t)=>{if(QowIn(m,x,y))m.tiles[QowMapIndex(m,x,y)]=t};
@@ -151,9 +161,76 @@ const QowFindWalkableNear=(m,x,y,occupied,radius=4)=>{
   return null
 };
 
+/*
+ * Authored-looking Pokémon map grammar.
+ * The route spine guarantees progression; these deterministic feature stamps
+ * create the human-made pockets, clearings, ponds, gardens and chicanes that
+ * make generated floors read like actual GBA routes rather than dungeon rooms.
+ */
+const QowFeatureTemplates={
+  route:[
+    {id:"grass-pocket",rows:[" ggg ","ggggg","gg.gg","ggggg"," ggg "]},
+    {id:"pond-grove",rows:[" ttt ","twwwt","tw.wt","twwwt"," ttt "]},
+    {id:"flower-garden",rows:[" fff ","fgggf","fg.gf","fgggf"," fff "]},
+    {id:"tree-corner",rows:["tttt ","t....","t....","t....","     "]}
+  ],
+  forest:[
+    {id:"forest-clearing",rows:["ttttt","tgggt","tg.gt","tgggt","ttttt"]},
+    {id:"deep-grass",rows:["tgggt","ggggg","gg.gg","ggggg","tgggt"]},
+    {id:"woodland-ring",rows:["ttttt","t...t","t...t","t...t","ttttt"]}
+  ],
+  coast:[
+    {id:"lagoon",rows:[" www ","wwwww","ww.ww","wwwww"," www "]},
+    {id:"beach-grass",rows:[" ggg ","ggggg","gg.gg","ggggg"," sss "]},
+    {id:"rocky-shore",rows:[" rrr ","rwwwr","rw.wr","rwwwr"," rrr "]}
+  ],
+  mountain:[
+    {id:"boulder-chicane",rows:[" rr  "," rrr ","  .r ","rrr  ","  rr "]},
+    {id:"highland-pocket",rows:["rrrrr","rgggr","rg.gr","rgggr","rrrrr"]},
+    {id:"snow-pocket",rows:[" rrr ","rsssr","rs.sr","rsssr"," rrr "]}
+  ],
+  cave:[
+    {id:"rock-island",rows:["rrrrr","r...r","r...r","r...r","rrrrr"]},
+    {id:"cave-pocket",rows:["rrrrr","rgggr","rg.gr","rgggr","rrrrr"]},
+    {id:"stone-chicane",rows:["rr   "," rr  ","  .  ","  rr ","   rr"]}
+  ]
+};
+const QowFeatureTile=(ch,style,biome)=>({
+  ".":style==="coast"?"sand":style==="cave"?"ground":"path",
+  g:"grass",f:"flower",t:"tree",w:"water",r:biome==="volcano"?"lava":"rock",s:biome==="snow"?"snow":"sand"
+}[ch]??null);
+const QowStampFeature=(m,template,cx,cy,style,biome,protectedSet)=>{
+  const h=template.rows.length,w=Math.max(...template.rows.map(r=>r.length)),ox=cx-Math.floor(w/2),oy=cy-Math.floor(h/2);
+  let painted=0;
+  for(let yy=0;yy<h;yy++)for(let xx=0;xx<template.rows[yy].length;xx++){
+    const ch=template.rows[yy][xx],x=ox+xx,y=oy+yy,key=x+","+y,tile=QowFeatureTile(ch,style,biome);
+    if(!tile||!QowIn(m,x,y))continue;
+    if(protectedSet.has(key)&&ch!==".")continue;
+    if(ch==="."&&!protectedSet.has(key))continue;
+    QowPut(m,x,y,tile),painted++
+  }
+  if(painted)m.features.push({id:template.id,x:cx,y:cy,cells:painted});
+  return painted
+};
+const QowApplyFeatureGrammar=(m,rng,style,biome,spine,branches,protectedSet)=>{
+  m.features??=[];
+  const templates=QowFeatureTemplates[style]??QowFeatureTemplates.route,
+    anchors=[...branches,...spine.slice(1,-1)].sort(()=>0); // deterministic order; RNG chooses positions below.
+  const used=new Set;
+  const count=style==="forest"?5:style==="cave"?4:style==="route"?4:3;
+  for(let n=0;n<count;n++){
+    const source=anchors[rng.int(0,Math.max(0,anchors.length-1))]??spine[Math.min(spine.length-1,n+1)],
+      side=n%2===0?-1:1,cx=QowClamp(source.x+side*rng.int(4,8),4,m.w-5),cy=QowClamp(source.y+rng.int(-3,3),4,m.h-5),k=cx+","+cy;
+    if(used.has(k)){n--;if(used.size>12)break;continue}
+    used.add(k);
+    QowStampFeature(m,rng.pick(templates),cx,cy,style,biome,protectedSet)
+  }
+  return m
+};
+
 const QowBuildPokemonAttempt=(run,attempt=0)=>{
   const key=QowKey(run),rng=QowRng(QowHash(key+"|pokemon-map|"+attempt)),choices=QowChoices(run),biome=QowRegionBias(run.region,choices[0]?.node?.biome??"grassland"),flavor=QowFloorFlavor(run,biome),style=QowPokemonStyle(biome),
-    m={key,w:QowW,h:QowH,tiles:Array(QowW*QowH).fill(style==="cave"?"wall":biome==="coast"||biome==="sea"?"sand":biome==="snow"?"snow":"ground"),destinations:[],pickups:[],secrets:[],npcs:[],rooms:[],edges:[],biome,layoutStyle:style,arena:false,...flavor,spawn:{...QowSpawn},attempt},
+    m={key,w:QowW,h:QowH,tiles:Array(QowW*QowH).fill(style==="cave"?"wall":biome==="coast"||biome==="sea"?"sand":biome==="snow"?"snow":"ground"),destinations:[],pickups:[],secrets:[],npcs:[],rooms:[],edges:[],features:[],biome,layoutStyle:style,generationVersion:2,arena:false,...flavor,spawn:{...QowSpawn},attempt},
     protectedSet=new Set,spine=[{...QowSpawn}];
   for(const y of [23,19,15,11,7,3]){
     const prev=spine.at(-1),jitter=style==="forest"?rng.int(-6,6):style==="mountain"?rng.int(-7,7):style==="coast"?rng.int(-4,4):rng.int(-5,5),
@@ -206,9 +283,11 @@ const QowBuildPokemonAttempt=(run,attempt=0)=>{
     for(let n=0;n<6;n++){const p=spine[rng.int(1,spine.length-1)];QowOrganicPatch(m,rng,protectedSet,p.x+rng.int(-4,4),p.y+rng.int(-2,2),rng.int(2,4),rng.int(2,3),"ground",.88)}
   }
 
+  QowApplyFeatureGrammar(m,rng,style,biome,spine,branchAnchors,protectedSet);
+
   for(let y=QowSpawn.y-2;y<=QowSpawn.y+2;y++)for(let x=QowSpawn.x-3;x<=QowSpawn.x+3;x++)QowPut(m,x,y,style==="coast"?"sand":style==="cave"?"ground":"path");
 
-  const [nativeSet,nativeRef]=QowPokemonNativeSource(style);
+  const [nativeSet,nativeRef]=QowPokemonNativeSource(style,run.region,run.mapIndex??0);m.nativeTheme=nativeSet;
   QowStampSceneryChunks(m,nativeSet,nativeRef,rng,protectedSet,style,style==="forest"||style==="cave"?4:3);
 
   const occupied=new Set;
@@ -240,7 +319,7 @@ const QowBuildTownMap=run=>{
     {set:"pewterCity",ref:"pewterCity",center:{x:17,y:25},mart:{x:28,y:18},gym:{x:15,y:16}},
     {set:"ceruleanCity",ref:"ceruleanCity",center:{x:22,y:19},mart:{x:29,y:28},gym:{x:31,y:21}}
   ],regionBias={kanto:0,johto:0,hoenn:2,sinnoh:1}[run.region]??0,variant=variants[(regionBias+(run.mapIndex??0)+rng.int(0,2))%variants.length],
-    m={key,w,h,tiles:Array(w*h).fill("ground"),nativeTiles:Array(w*h).fill(null),region:run.region,biome:"city",weather:"clear",timeOfDay:"day",condition:"quiet",layoutStyle:"town",nativeTheme:variant.set,rooms:[],edges:[],destinations:[],pickups:[],secrets:[],npcs:[],spawn:{x:15,y:20}},protectedSet=new Set;
+    m={key,w,h,tiles:Array(w*h).fill("ground"),nativeTiles:Array(w*h).fill(null),region:run.region,biome:"city",weather:"clear",timeOfDay:"day",condition:"quiet",layoutStyle:"town",generationVersion:2,nativeTheme:variant.set,rooms:[],edges:[],destinations:[],pickups:[],secrets:[],npcs:[],features:[],spawn:{x:15,y:20}},protectedSet=new Set;
   for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(x===0||y===0||x===w-1||y===h-1)m.tiles[y*w+x]="tree";
 
   const slots=[
@@ -256,6 +335,11 @@ const QowBuildTownMap=run=>{
   QowOrganicPatch(m,rng,protectedSet,pondX,pondY,2,3,"water",.95);
   for(let n=0;n<22;n++){const x=rng.int(2,w-3),y=rng.int(2,h-3);if(m.tiles[y*w+x]==="ground"&&!protectedSet.has(x+","+y))m.tiles[y*w+x]=rng.chance(.6)?"flower":"grass"}
   for(let n=0;n<5;n++){const cx=rng.pick([2,4,26,28]),cy=rng.int(3,19);QowOrganicPatch(m,rng,protectedSet,cx,cy,2,2,"tree",.8)}
+  // Small authored town pockets keep the random layout readable like a real GBA settlement.
+  for(const [id,cx,cy,tile] of [["garden",4,5,"flower"],["park",27,5,"grass"],["grove",3,18,"tree"]]){
+    let cells=0;for(let y=cy-1;y<=cy+1;y++)for(let x=cx-1;x<=cx+1;x++)if(QowIn(m,x,y)&&!protectedSet.has(x+","+y)){QowPut(m,x,y,tile),cells++}
+    cells&&m.features.push({id,x:cx,y:cy,cells})
+  }
 
   QowNativeSkin(m,variant.set,variant.ref);
   [
