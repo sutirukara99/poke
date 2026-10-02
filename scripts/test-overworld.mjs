@@ -4,6 +4,7 @@ import vm from "node:vm";
 const tilesets = await readFile(new URL("./overworld-tilesets.js", import.meta.url), "utf8");
 const nativeAssets = await readFile(new URL("./overworld-frlg-native.js", import.meta.url), "utf8");
 const mapgen = await readFile(new URL("./overworld-mapgen.js", import.meta.url), "utf8");
+const terrain = await readFile(new URL("./overworld-terrain-engine.js", import.meta.url), "utf8");
 const source = await readFile(new URL("./overworld-runtime.js", import.meta.url), "utf8");
 
 const context = {
@@ -33,7 +34,7 @@ const context = {
 
 vm.createContext(context);
 vm.runInContext(
-  tilesets + "\n" + nativeAssets + "\n" + mapgen + "\n" + source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowBuildPokemonAttempt,QowBuildArenaAttempt,QowBuildTownMap,QowNativeReference,QowNativePools,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowSolidEntityAt,QowHasApproach,QowCurrentFlavor,QowEncounterWeight,QowBattleWeather,QowEnsure,QowW,QowH,QowActiveTileset,QowNativeFrlgCatalog};",
+  tilesets + "\n" + nativeAssets + "\n" + mapgen + "\n" + terrain + "\n" + source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowBuildPokemonAttempt,QowBuildArenaAttempt,QowBuildTownMap,QowNativeReference,QowNativePools,QowTerrainModel,QowTerrainSynthesize,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowSolidEntityAt,QowHasApproach,QowCurrentFlavor,QowEncounterWeight,QowBattleWeather,QowEnsure,QowW,QowH,QowActiveTileset,QowNativeFrlgCatalog};",
   context,
   { filename: "overworld-runtime.js" },
 );
@@ -72,6 +73,15 @@ for (const [name, expectedRef] of [["palletTown","route1"],["viridianCity","viri
   if (!refMap || refMap.blocks.length !== refMap.w * refMap.h) throw new Error("Native map reference failed to decode for " + name);
   const pools = ow.QowNativePools(name, expectedRef);
   if (!pools.passable.length || !pools.blocked.length) throw new Error("Native collision/material pools are empty for " + name);
+}
+
+
+// Texture synthesis must learn reusable outdoor adjacency from Route 1.
+{
+  const model = ow.QowTerrainModel("palletTown", "route1");
+  if (!model || model.byClass.open.length < 20 || model.byClass.blocked.length < 20 || model.byClass.grass.length < 20) {
+    throw new Error("Reference-driven terrain model did not learn enough Route 1 samples.");
+  }
 }
 
 const node = (id, kind, biome) => ({
@@ -115,14 +125,21 @@ const makeRun = (seed, region = "kanto", biome = "grassland", difficulty = "norm
   const early = makeRun("JOHTO-EARLY-COMPOSITION", "johto", "grassland");
   early.mapIndex = 0;
   const map = ow.QowBuild(early);
-  if (map.biome !== "grassland" || map.layoutStyle !== "route" || map.composition !== "early-route") {
+  if (map.biome !== "grassland" || map.layoutStyle !== "route" || map.composition !== "early-natural") {
     throw new Error("Early Johto route composition is not calm/open grassland.");
+  }
+  if (map.visualEngine !== "reference-synthesis-v4" || map.nativeReference !== "route1") {
+    throw new Error("Early Johto route is not textured from a coherent outdoor FRLG reference.");
   }
   if (map.compositionStats.branches !== 1 || map.compositionStats.fields !== 2) {
     throw new Error("Early Johto route should have one side pocket and two encounter fields.");
   }
   if (map.compositionStats.pathCells > map.w * map.h * 0.18) {
     throw new Error("Early Johto route road is too visually dominant.");
+  }
+  const walkRatio = map.compositionStats.walkableCells / (map.w * map.h);
+  if (walkRatio < 0.2 || walkRatio > 0.58) {
+    throw new Error("Early Johto route walkable-space ratio is unnatural: " + walkRatio);
   }
 }
 
@@ -184,11 +201,14 @@ for (const [region, biome] of regions) {
     if (!["route","forest","cave","coast","mountain"].includes(mapA.layoutStyle)) {
       throw new Error("Floor did not use Pokémon-style archetype generator for " + seed + ": " + mapA.layoutStyle);
     }
-    if (mapA.generationVersion !== 3) {
-      throw new Error("Floor is not using Pokémon route composition v3 for " + seed);
+    if (mapA.generationVersion !== 4) {
+      throw new Error("Floor is not using natural overworld engine v4 for " + seed);
     }
-    if (!["early-route","classic-route"].includes(mapA.composition)) {
-      throw new Error("Floor has no route composition profile for " + seed);
+    if (!["early-natural","natural-route"].includes(mapA.composition)) {
+      throw new Error("Floor has no natural composition profile for " + seed);
+    }
+    if (mapA.visualEngine !== "reference-synthesis-v4") {
+      throw new Error("Floor did not use reference-driven FRLG texture synthesis for " + seed);
     }
     if (!mapA.compositionStats || mapA.compositionStats.branches < 1 || mapA.compositionStats.branches > 2 || mapA.compositionStats.fields < 2) {
       throw new Error("Floor composition stats are invalid for " + seed);
@@ -202,15 +222,15 @@ for (const [region, biome] of regions) {
     if (!mapA.nativeTheme || !ow.QowNativeFrlgCatalog[mapA.nativeTheme]) {
       throw new Error("Floor did not select a native FRLG visual theme for " + seed);
     }
-    if (mapA.visualLayer !== "frlg-general") {
-      throw new Error("Floor is not using the coherent FRLG General visual layer for " + seed);
-    }
     if (!Array.isArray(mapA.nativeTiles) || mapA.nativeTiles.length !== mapA.w * mapA.h) {
       throw new Error("Floor native visual buffer is malformed for " + seed);
     }
     const nativeCount = mapA.nativeTiles.filter(Boolean).length;
-    if (nativeCount > mapA.nativeTiles.length * 0.08) {
-      throw new Error("Secondary FRLG metatiles are being sprayed across the field for " + seed + ": " + nativeCount);
+    if (nativeCount < mapA.nativeTiles.length * 0.35) {
+      throw new Error("FRLG reference synthesis covers too little of the field for " + seed + ": " + nativeCount);
+    }
+    if (mapA.nativeTiles.some((v) => v && v.set !== mapA.nativeTheme)) {
+      throw new Error("Field mixes incompatible native tilesets for " + seed);
     }
     if (signature(mapA) !== signature(mapB)) {
       throw new Error("Seed determinism failed for " + seed);
