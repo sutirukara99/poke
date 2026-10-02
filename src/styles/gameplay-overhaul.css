@@ -4176,3 +4176,87 @@ body.pr-game-ui .alpha-shell section.playful-event:has(.ow-city-hub){
 body.pr-game-ui .alpha-shell section.playful-event:has(.ow-city-hub) > :not(.ow-city-hub){
   display:none!important;
 }
+
+
+.ow-city-market,
+.ow-city-quests{
+  display:grid;
+  gap:10px;
+}
+
+.ow-city-market>p,
+.ow-city-quests>p{
+  margin:0;
+  color:#9fb4b8;
+  font:700 11px/1.35 "Pixelify Sans",system-ui,sans-serif;
+}
+
+.ow-city-market article{
+  display:grid;
+  gap:6px;
+  padding:12px;
+  border:1px solid #2c4951;
+  border-radius:4px;
+  background:#0d2227;
+}
+
+.ow-city-market article strong{
+  color:#e7df86;
+  font:700 15px/1 "Pixelify Sans",system-ui,sans-serif;
+}
+
+.ow-city-market article span,
+.ow-city-market article b{
+  color:#b8c9cc;
+  font:700 11px/1.25 "Pixelify Sans",system-ui,sans-serif;
+}
+
+.ow-city-quest-list{
+  display:grid;
+  gap:7px;
+}
+
+.ow-city-quest-list article{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:6px 10px;
+  align-items:center;
+  padding:9px 10px;
+  border:1px solid #2a444b;
+  border-radius:4px;
+  background:#0c2025;
+}
+
+.ow-city-quest-list article.done{
+  opacity:.7;
+}
+
+.ow-city-quest-list article>div:first-child{
+  display:grid;
+  gap:3px;
+}
+
+.ow-city-quest-list strong{
+  color:#dbe7e9;
+  font:700 12px/1.1 "Pixelify Sans",system-ui,sans-serif;
+}
+
+.ow-city-quest-list small,
+.ow-city-quest-list span{
+  color:#87a0a6;
+  font:700 9px/1.2 "Pixelify Sans",system-ui,sans-serif;
+}
+
+.ow-city-quest-progress{
+  grid-column:1/-1;
+  height:5px;
+  overflow:hidden;
+  border-radius:999px;
+  background:#132f35;
+}
+
+.ow-city-quest-progress i{
+  display:block;
+  height:100%;
+  background:#9a9253;
+}
