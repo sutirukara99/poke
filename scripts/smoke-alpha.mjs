@@ -151,7 +151,10 @@ if (!js.includes('QjourneyDiscoveryPools')) throw new Error("Regional Journey di
 if (!js.includes('d.worldDiscoveries??=[]')) throw new Error("Persistent world discovery migration is missing.");
 if (!js.includes('QjourneyFindDiscovery(r.region,d.worldDiscoveries??[],u)')) throw new Error("Overworld discoveries are not checked against account-wide finds.");
 if (!js.includes('free-roam-overworld')) throw new Error("Free-roam overworld presentation is missing.");
-if (!js.includes('const QowTileSize=16,QowW=45,QowH=31')) throw new Error("Canvas overworld dimensions are missing.");
+if (!js.includes('QowTileSize=16,QowW=45,QowH=31')) throw new Error("Canvas overworld dimensions are missing.");
+if (!js.includes('QowEngineVersion="v5-playable"')) throw new Error("Overworld save-key versioning is missing.");
+if (!js.includes('QrepeatDelay=165,QrepeatEvery=118')) throw new Error("Deterministic overworld key-repeat cadence is missing.");
+if (!js.includes('reference-safe-v5') || !js.includes('semantic-safe-v5')) throw new Error("Collision-safe overworld visual modes are missing.");
 if (!js.includes('const QowVisible=')) throw new Error("Fog-of-war visibility helper is missing.");
 if (!js.includes('const QowValidate=')) throw new Error("Generator validation is missing.");
 if (!js.includes('const QowBuildAttempt=')) throw new Error("Procedural room generator is missing.");
