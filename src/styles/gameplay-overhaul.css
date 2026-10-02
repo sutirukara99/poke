@@ -4367,3 +4367,31 @@ body.pr-game-ui .alpha-shell section.playful-event:not(:has(.ow-city-hub)) .tuto
     padding:13px!important;
   }
 }
+
+
+/* ================= PHASER OVERWORLD =================
+   Phaser owns the live world surface. React remains HUD/menu only.
+   The legacy Canvas renderer remains as a hard fallback when Phaser is
+   unavailable during boot or an unsupported environment.
+   ================================================== */
+.canvas-overworld .ow-phaser-host{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#071012;
+  outline:0;
+}
+.canvas-overworld .ow-phaser-host canvas{
+  display:block;
+  width:100%!important;
+  height:100%!important;
+  border:0;
+  background:#071012;
+  image-rendering:pixelated;
+  image-rendering:crisp-edges;
+}
+.canvas-overworld.engine-phaser .ow-canvas-wrap{
+  background:#071012;
+}
