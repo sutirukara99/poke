@@ -262,8 +262,11 @@ if (JSON.stringify(townA.tiles) !== JSON.stringify(townB.tiles) || JSON.stringif
 if (!townA.nativeTiles.some((v) => v?.set === "viridianCity") || !townA.nativeTiles.some((v) => v?.set === "palletTown")) {
   throw new Error("Town does not combine original FRLG city/residential building stamps.");
 }
-for (const [x,y] of [[8,10],[23,10],[15,20]]) {
-  if (ow.QowBlocking(ow.QowTile(townA,x,y))) throw new Error("Town landmark approach is blocked at " + x + "," + y);
+for (const p of [townA.landmarks.center,townA.landmarks.mart,townA.spawn]) {
+  if (!p || ow.QowBlocking(ow.QowTile(townA,p.x,p.y))) throw new Error("Town landmark approach is blocked.");
+}
+if (!Array.isArray(townA.services) || !townA.services.some((s) => s.id === "center") || !townA.services.some((s) => s.id === "mart")) {
+  throw new Error("Randomized town services are not anchored to generated landmarks.");
 }
 
 for (let n = 0; n < 24; n += 1) {
