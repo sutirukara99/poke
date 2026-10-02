@@ -40,7 +40,7 @@ const QowBiomeProfile=a=>({
   night:{base:"ground",grass:.3,flower:.02,obstacle:"tree",obstacleChance:.045},
   grassland:{base:"ground",grass:.28,flower:.045,obstacle:"rock",obstacleChance:.025}
 }[a]??{base:"ground",grass:.28,flower:.04,obstacle:"rock",obstacleChance:.03});
-const QowRegionBias=(a,i)=>a==="johto"&&i==="grassland"?"forest":a==="hoenn"&&i==="grassland"?"coast":a==="sinnoh"&&i==="grassland"?"mountain":i;
+const QowRegionBias=(a,i)=>a==="hoenn"&&i==="grassland"?"coast":a==="sinnoh"&&i==="grassland"?"mountain":i;
 const QowRegionLayout=a=>({kanto:{roomBonus:0,loop:.16,big:.55,jitter:1},johto:{roomBonus:1,loop:.27,big:.62,jitter:1},hoenn:{roomBonus:0,loop:.11,big:.72,jitter:1},sinnoh:{roomBonus:-1,loop:.08,big:.3,jitter:0}}[a]??{roomBonus:0,loop:.16,big:.55,jitter:1});
 const QowCorridorMode=(a,i)=>a==="sinnoh"?(i.chance(.76)?"v":"h"):a==="hoenn"?(i.chance(.68)?"h":"v"):i.chance(.5)?"h":"v";
 const QowConditionLabel=a=>({dense:"Dichtes Gebiet",migration:"Seltene Migration",patrol:"Trainer-Patrouille",rich:"Reiche Fundorte",quiet:"Ruhige Route"}[a]??"Normale Route");
