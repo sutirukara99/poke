@@ -176,6 +176,10 @@ for (const [region, biome] of regions) {
     if (!Array.isArray(mapA.nativeTiles) || mapA.nativeTiles.length !== mapA.w * mapA.h || !mapA.nativeTiles.some(Boolean)) {
       throw new Error("Floor has no native FRLG visual layer for " + seed);
     }
+    const nativeCount = mapA.nativeTiles.filter(Boolean).length;
+    if (nativeCount > mapA.nativeTiles.length * 0.35) {
+      throw new Error("Secondary FRLG metatiles are being sprayed across the whole floor for " + seed + ": " + nativeCount);
+    }
     if (signature(mapA) !== signature(mapB)) {
       throw new Error("Seed determinism failed for " + seed);
     }
