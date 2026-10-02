@@ -34,7 +34,7 @@ const context = {
 
 vm.createContext(context);
 vm.runInContext(
-  tilesets + "\n" + nativeAssets + "\n" + mapgen + "\n" + terrain + "\n" + source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowBuildPokemonAttempt,QowBuildArenaAttempt,QowBuildTownMap,QowNativeReference,QowNativePools,QowTerrainModel,QowTerrainSynthesize,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowSolidEntityAt,QowHasApproach,QowCurrentFlavor,QowEncounterWeight,QowBattleWeather,QowEnsure,QowW,QowH,QowActiveTileset,QowNativeFrlgCatalog};",
+  tilesets + "\n" + nativeAssets + "\n" + mapgen + "\n" + terrain + "\n" + source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowBuildPokemonAttempt,QowBuildArenaAttempt,QowBuildTownMap,QowNativeReference,QowNativePools,QowTerrainModel,QowTerrainSynthesize,QowTerrainSafeIds,QowTerrainLogicalClass,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowSolidEntityAt,QowHasApproach,QowCurrentFlavor,QowEncounterWeight,QowBattleWeather,QowEnsure,QowRouteBiome,QowKey,QowW,QowH,QowActiveTileset,QowNativeFrlgCatalog};",
   context,
   { filename: "overworld-runtime.js" },
 );
@@ -45,8 +45,8 @@ if (!ow) throw new Error("Overworld runtime did not expose validation hooks.");
 const tileset = ow.QowActiveTileset;
 if (tileset?.id !== "pokeregions-gba") throw new Error("Semantic overworld tileset is missing.");
 if (tileset.tileSize !== 16) throw new Error("Overworld tileset must stay on 16px logical tiles.");
-if (tileset.semanticMetatiles.path !== 269 || tileset.tiles.path?.metatileId !== 269) {
-  throw new Error("Route road must use the coherent FRLG dirt terrain metatile.");
+if (tileset.semanticMetatiles.path !== 189 || tileset.tiles.path?.metatileId !== 189) {
+  throw new Error("Route road must use the corrected FRLG Route 1 path metatile.");
 }
 if (Buffer.from(tileset.metatilesB64, "base64").length !== 10_240) {
   throw new Error("FRLG primary metatile data is incomplete.");
@@ -79,8 +79,13 @@ for (const [name, expectedRef] of [["palletTown","route1"],["viridianCity","viri
 // Texture synthesis must learn reusable outdoor adjacency from Route 1.
 {
   const model = ow.QowTerrainModel("palletTown", "route1");
-  if (!model || model.byClass.open.length < 20 || model.byClass.blocked.length < 20 || model.byClass.grass.length < 20) {
-    throw new Error("Reference-driven terrain model did not learn enough Route 1 samples.");
+  if (!model || model.byClass.open.length < 5 || model.byClass.blocked.length < 10 || model.byClass.grass.length < 20) {
+    throw new Error("Safe reference-driven terrain model did not learn enough Route 1 samples.");
+  }
+  for (const cls of ["open","blocked","grass"]) {
+    for (const candidate of model.byClass[cls]) {
+      if (!ow.QowTerrainSafeIds[cls].has(candidate.id)) throw new Error("Unsafe FRLG terrain candidate leaked into " + cls + ": " + candidate.id);
+    }
   }
 }
 
@@ -128,11 +133,11 @@ const makeRun = (seed, region = "kanto", biome = "grassland", difficulty = "norm
   if (map.biome !== "grassland" || map.layoutStyle !== "route" || map.composition !== "early-natural") {
     throw new Error("Early Johto route composition is not calm/open grassland.");
   }
-  if (map.visualEngine !== "reference-synthesis-v4" || map.nativeReference !== "route1") {
-    throw new Error("Early Johto route is not textured from a coherent outdoor FRLG reference.");
+  if (map.visualEngine !== "reference-safe-v5" || map.nativeReference !== "route1") {
+    throw new Error("Early Johto route is not textured from the safe Route 1 model.");
   }
-  if (map.nativeTiles.filter(Boolean).length < map.nativeTiles.length * 0.45) {
-    throw new Error("Early Johto route does not use enough native FRLG reference texture.");
+  if (map.nativeTiles.filter(Boolean).length < map.nativeTiles.length * 0.2) {
+    throw new Error("Early Johto route does not use enough safe native FRLG terrain.");
   }
   if (map.compositionStats.branches !== 1 || map.compositionStats.fields !== 2) {
     throw new Error("Early Johto route should have one side pocket and two encounter fields.");
@@ -143,6 +148,23 @@ const makeRun = (seed, region = "kanto", biome = "grassland", difficulty = "norm
   const walkRatio = map.compositionStats.walkableCells / (map.w * map.h);
   if (walkRatio < 0.2 || walkRatio > 0.58) {
     throw new Error("Early Johto route walkable-space ratio is unnatural: " + walkRatio);
+  }
+}
+
+// Route biome belongs to the location/floor, not whichever destination node
+// happens to be first. A city objective on an early Kanto/Johto route must not
+// turn the entire field into city/cave terrain.
+{
+  const kanto = makeRun("BIOME-KANTO", "kanto", "city");
+  const johto = makeRun("BIOME-JOHTO", "johto", "mountain");
+  if (ow.QowRouteBiome(kanto) !== "grassland" || ow.QowBuild(kanto).biome !== "grassland") {
+    throw new Error("Kanto early-route biome is still coupled to destination metadata.");
+  }
+  if (ow.QowRouteBiome(johto) !== "grassland" || ow.QowBuild(johto).biome !== "grassland") {
+    throw new Error("Johto early-route biome is still coupled to destination metadata.");
+  }
+  if (!String(ow.QowKey(kanto)).startsWith("v5-playable|")) {
+    throw new Error("Overworld key version did not invalidate stale saved coordinates.");
   }
 }
 
@@ -174,10 +196,10 @@ const signature = (map) =>
   });
 
 const regions = [
-  ["kanto", "grassland"],
-  ["johto", "forest"],
-  ["hoenn", "coast"],
-  ["sinnoh", "snow"],
+  ["kanto", "grassland", 0],
+  ["johto", "forest", 1],
+  ["hoenn", "coast", 1],
+  ["sinnoh", "snow", 4],
 ];
 
 let checked = 0;
@@ -186,10 +208,11 @@ let sawRain = false;
 let sawSnow = false;
 const signatures = new Set();
 
-for (const [region, biome] of regions) {
+for (const [region, biome, mapIndex] of regions) {
   for (let n = 0; n < 30; n += 1) {
     const seed = "CI-" + region + "-" + n;
     const runA = makeRun(seed, region, biome, n % 4 === 0 ? "hard" : "normal");
+    runA.mapIndex = mapIndex;
     const runB = structuredClone(runA);
     const mapA = ow.QowBuild(runA);
     const mapB = ow.QowBuild(runB);
@@ -204,14 +227,14 @@ for (const [region, biome] of regions) {
     if (!["route","forest","cave","coast","mountain"].includes(mapA.layoutStyle)) {
       throw new Error("Floor did not use Pokémon-style archetype generator for " + seed + ": " + mapA.layoutStyle);
     }
-    if (mapA.generationVersion !== 4) {
-      throw new Error("Floor is not using natural overworld engine v4 for " + seed);
+    if (mapA.generationVersion !== 5) {
+      throw new Error("Floor is not using playable overworld generation v5 for " + seed);
     }
     if (!["early-natural","natural-route"].includes(mapA.composition)) {
       throw new Error("Floor has no natural composition profile for " + seed);
     }
-    if (mapA.visualEngine !== "reference-synthesis-v4") {
-      throw new Error("Floor did not use reference-driven FRLG texture synthesis for " + seed);
+    if (!["reference-safe-v5","semantic-safe-v5"].includes(mapA.visualEngine)) {
+      throw new Error("Floor did not use the collision-safe visual engine for " + seed + ": " + mapA.visualEngine);
     }
     if (!mapA.compositionStats || mapA.compositionStats.branches < 1 || mapA.compositionStats.branches > 2 || mapA.compositionStats.fields < 2) {
       throw new Error("Floor composition stats are invalid for " + seed);
@@ -229,12 +252,24 @@ for (const [region, biome] of regions) {
       throw new Error("Floor native visual buffer is malformed for " + seed);
     }
     const nativeCount = mapA.nativeTiles.filter(Boolean).length;
-    const nativeMinRatio = mapA.layoutStyle === "coast" ? 0.02 : mapA.biome === "snow" ? 0.16 : 0.28;
-    if (nativeCount < mapA.nativeTiles.length * nativeMinRatio) {
-      throw new Error("FRLG reference synthesis covers too little of the field for " + seed + ": " + nativeCount);
+    const minSafeCoverage = mapA.nativeReference === "route1" ? (mapA.layoutStyle === "coast" ? 0.02 : 0.2) : 0;
+    if (nativeCount < mapA.nativeTiles.length * minSafeCoverage) {
+      throw new Error("Safe native synthesis covers too little of the field for " + seed + ": " + nativeCount);
+    }
+    if (mapA.nativeReference !== "route1" && nativeCount !== 0) {
+      throw new Error("Non-Route1 floor should use semantic-safe rendering until a curated native model exists for " + seed);
     }
     if (mapA.nativeTiles.some((v) => v && v.set !== mapA.nativeTheme)) {
       throw new Error("Field mixes incompatible native tilesets for " + seed);
+    }
+    for (let idx = 0; idx < mapA.nativeTiles.length; idx += 1) {
+      const visual = mapA.nativeTiles[idx];
+      if (!visual) continue;
+      const logical = ow.QowTerrainLogicalClass(mapA.tiles[idx]);
+      const visualClass = ["open","blocked","grass"].find((cls) => ow.QowTerrainSafeIds[cls].has(visual.id));
+      if (!visualClass || visualClass !== logical) {
+        throw new Error("Visual/logical collision mismatch for " + seed + " at " + idx + ": " + logical + " vs " + visualClass);
+      }
     }
     if (signature(mapA) !== signature(mapB)) {
       throw new Error("Seed determinism failed for " + seed);
