@@ -58,7 +58,7 @@ for (const [semantic, id] of Object.entries(tileset.semanticMetatiles)) {
 }
 
 const nativeSets = ow.QowNativeFrlgCatalog;
-for (const [name, expectedRef] of [["palletTown","route1"],["viridianCity","viridianCity"],["viridianForest","viridianForest"],["cave","mtMoon1F"]]) {
+for (const [name, expectedRef] of [["palletTown","route1"],["viridianCity","viridianCity"],["pewterCity","pewterCity"],["ceruleanCity","ceruleanCity"],["viridianForest","viridianForest"],["cave","mtMoon1F"]]) {
   const set = nativeSets?.[name];
   if (!set) throw new Error("Missing native FRLG secondary tileset " + name);
   if (!String(set.tilesDataUri).startsWith("data:image/png;base64,")) throw new Error("Native FRLG tiles are not embedded for " + name);
@@ -259,9 +259,10 @@ if (townA.layoutStyle !== "town" || townA.w < 30 || townA.h < 20) throw new Erro
 if (JSON.stringify(townA.tiles) !== JSON.stringify(townB.tiles) || JSON.stringify(townA.nativeTiles) !== JSON.stringify(townB.nativeTiles)) {
   throw new Error("Procedural town is not deterministic.");
 }
-if (!townA.nativeTiles.some((v) => v?.set === "viridianCity") || !townA.nativeTiles.some((v) => v?.set === "palletTown")) {
+if (!townA.nativeTiles.some((v) => ["viridianCity","pewterCity","ceruleanCity"].includes(v?.set)) || !townA.nativeTiles.some((v) => v?.set === "palletTown")) {
   throw new Error("Town does not combine original FRLG city/residential building stamps.");
 }
+if (!["viridianCity","pewterCity","ceruleanCity"].includes(townA.nativeTheme)) throw new Error("Town native city theme is invalid.");
 for (const p of [townA.landmarks.center,townA.landmarks.mart,townA.spawn]) {
   if (!p || ow.QowBlocking(ow.QowTile(townA,p.x,p.y))) throw new Error("Town landmark approach is blocked.");
 }
