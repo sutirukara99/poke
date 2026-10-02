@@ -158,154 +158,198 @@ const QowFindWalkableNear=(m,x,y,occupied,radius=4)=>{
 };
 
 /*
- * Authored-looking Pokémon map grammar.
- * The route spine guarantees progression; these deterministic feature stamps
- * create the human-made pockets, clearings, ponds, gardens and chicanes that
- * make generated floors read like actual GBA routes rather than dungeon rooms.
+ * Pokémon route composition v3.
+ *
+ * Randomness chooses authored-looking arrangements, not individual noise.
+ * A floor is composed from a narrow readable road, alternating encounter
+ * fields, side pockets and large natural masses. This mirrors the way classic
+ * Pokémon routes are mapped: clear travel line first, optional risk/reward
+ * spaces second, decoration last.
  */
-const QowFeatureTemplates={
-  route:[
-    {id:"grass-pocket",rows:[" ggg ","ggggg","gg.gg","ggggg"," ggg "]},
-    {id:"pond-grove",rows:[" ttt ","twwwt","tw.wt","twwwt"," ttt "]},
-    {id:"flower-garden",rows:[" fff ","fgggf","fg.gf","fgggf"," fff "]},
-    {id:"tree-corner",rows:["tttt ","t....","t....","t....","     "]}
-  ],
-  forest:[
-    {id:"forest-clearing",rows:["ttttt","tgggt","tg.gt","tgggt","ttttt"]},
-    {id:"deep-grass",rows:["tgggt","ggggg","gg.gg","ggggg","tgggt"]},
-    {id:"woodland-ring",rows:["ttttt","t...t","t...t","t...t","ttttt"]}
-  ],
-  coast:[
-    {id:"lagoon",rows:[" www ","wwwww","ww.ww","wwwww"," www "]},
-    {id:"beach-grass",rows:[" ggg ","ggggg","gg.gg","ggggg"," sss "]},
-    {id:"rocky-shore",rows:[" rrr ","rwwwr","rw.wr","rwwwr"," rrr "]}
-  ],
-  mountain:[
-    {id:"boulder-chicane",rows:[" rr  "," rrr ","  .r ","rrr  ","  rr "]},
-    {id:"highland-pocket",rows:["rrrrr","rgggr","rg.gr","rgggr","rrrrr"]},
-    {id:"snow-pocket",rows:[" rrr ","rsssr","rs.sr","rsssr"," rrr "]}
-  ],
-  cave:[
-    {id:"rock-island",rows:["rrrrr","r...r","r...r","r...r","rrrrr"]},
-    {id:"cave-pocket",rows:["rrrrr","rgggr","rg.gr","rgggr","rrrrr"]},
-    {id:"stone-chicane",rows:["rr   "," rr  ","  .  ","  rr ","   rr"]}
-  ]
+const QowRoadCell=(m,set,x,y,tile)=>{
+  if(!QowIn(m,x,y))return;
+  QowPut(m,x,y,tile),QowProtect(set,x,y)
 };
-const QowFeatureTile=(ch,style,biome)=>({
-  ".":style==="coast"?"sand":style==="cave"?"ground":"path",
-  g:"grass",f:"flower",t:"tree",w:"water",r:biome==="volcano"?"lava":"rock",s:biome==="snow"?"snow":"sand"
-}[ch]??null);
-const QowStampFeature=(m,template,cx,cy,style,biome,protectedSet)=>{
-  const h=template.rows.length,w=Math.max(...template.rows.map(r=>r.length)),ox=cx-Math.floor(w/2),oy=cy-Math.floor(h/2);
-  let painted=0;
-  for(let yy=0;yy<h;yy++)for(let xx=0;xx<template.rows[yy].length;xx++){
-    const ch=template.rows[yy][xx],x=ox+xx,y=oy+yy,key=x+","+y,tile=QowFeatureTile(ch,style,biome);
-    if(!tile||!QowIn(m,x,y))continue;
-    if(protectedSet.has(key)&&ch!==".")continue;
-    if(ch==="."&&!protectedSet.has(key))continue;
-    QowPut(m,x,y,tile),painted++
-  }
-  if(painted)m.features.push({id:template.id,x:cx,y:cy,cells:painted});
-  return painted
+const QowCarveRibbon=(m,a,b,set,tile="path",verticalFirst=true,width=2)=>{
+  let x=a.x,y=a.y;
+  const paint=axis=>{
+    QowRoadCell(m,set,x,y,tile);
+    if(width>1){
+      const ox=axis==="v"?1:0,oy=axis==="h"?1:0;
+      QowRoadCell(m,set,x+ox,y+oy,tile)
+    }
+  };
+  const axis=(target,isX)=>{
+    const dir=Math.sign(target-(isX?x:y));if(!dir){paint(isX?"h":"v");return}
+    while((isX?x:y)!==target){isX?x+=dir:y+=dir,paint(isX?"h":"v")}
+  };
+  paint(verticalFirst?"v":"h");
+  verticalFirst?(axis(b.y,false),axis(b.x,true)):(axis(b.x,true),axis(b.y,false))
 };
-const QowApplyFeatureGrammar=(m,rng,style,biome,spine,branches,protectedSet)=>{
-  m.features??=[];
-  const templates=QowFeatureTemplates[style]??QowFeatureTemplates.route,
-    anchors=[...branches,...spine.slice(1,-1)].sort(()=>0); // deterministic order; RNG chooses positions below.
-  const used=new Set;
-  const count=style==="forest"?5:style==="cave"?4:style==="route"?4:3;
-  for(let n=0;n<count;n++){
-    const source=anchors[rng.int(0,Math.max(0,anchors.length-1))]??spine[Math.min(spine.length-1,n+1)],
-      side=n%2===0?-1:1,cx=QowClamp(source.x+side*rng.int(4,8),4,m.w-5),cy=QowClamp(source.y+rng.int(-3,3),4,m.h-5),k=cx+","+cy;
-    if(used.has(k)){n--;if(used.size>12)break;continue}
-    used.add(k);
-    QowStampFeature(m,rng.pick(templates),cx,cy,style,biome,protectedSet)
-  }
-  return m
+const QowCarveSingle=(m,a,b,set,tile="path",horizontalFirst=true)=>{
+  let x=a.x,y=a.y;
+  const paint=()=>QowRoadCell(m,set,x,y,tile),axis=(target,isX)=>{while((isX?x:y)!==target){isX?x+=Math.sign(target-x):y+=Math.sign(target-y),paint()}};
+  paint(),horizontalFirst?(axis(b.x,true),axis(b.y,false)):(axis(b.y,false),axis(b.x,true))
 };
-
-const QowBuildPokemonAttempt=(run,attempt=0)=>{
-  const key=QowKey(run),rng=QowRng(QowHash(key+"|pokemon-map|"+attempt)),choices=QowChoices(run),biome=QowRegionBias(run.region,choices[0]?.node?.biome??"grassland"),flavor=QowFloorFlavor(run,biome),style=QowPokemonStyle(biome),
-    m={key,w:QowW,h:QowH,tiles:Array(QowW*QowH).fill(style==="cave"?"wall":biome==="coast"||biome==="sea"?"sand":biome==="snow"?"snow":"ground"),destinations:[],pickups:[],secrets:[],npcs:[],rooms:[],edges:[],features:[],biome,layoutStyle:style,generationVersion:2,arena:false,...flavor,spawn:{...QowSpawn},attempt},
-    protectedSet=new Set,spine=[{...QowSpawn}];
-  for(const y of [23,19,15,11,7,3]){
-    const prev=spine.at(-1),jitter=style==="forest"?rng.int(-6,6):style==="mountain"?rng.int(-7,7):style==="coast"?rng.int(-4,4):rng.int(-5,5),
-      x=QowClamp(prev.x+jitter,style==="coast"?10:5,style==="coast"?30:39);spine.push({x,y})
+const QowPaintSoftRect=(m,rng,set,cx,cy,w,h,tile,protect=false)=>{
+  const left=cx-Math.floor(w/2),top=cy-Math.floor(h/2);let cells=0;
+  for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){
+    const x=left+xx,y=top+yy,k=x+","+y;if(!QowIn(m,x,y)||set.has(k))continue;
+    const corner=(xx===0||xx===w-1)&&(yy===0||yy===h-1);
+    if(corner&&rng.chance(.7))continue;
+    QowPut(m,x,y,tile),protect&&QowProtect(set,x,y),cells++
   }
-
-  if(style!=="cave"){
-    for(let x=0;x<m.w;x++)m.tiles[x]=m.tiles[(m.h-1)*m.w+x]=style==="coast"?"water":style==="mountain"?"rock":"tree";
-    for(let y=0;y<m.h;y++)m.tiles[y*m.w]=m.tiles[y*m.w+m.w-1]=style==="coast"?"water":style==="mountain"?"rock":"tree"
+  return cells
+};
+const QowFrameField=(m,rng,style,protectedSet)=>{
+  const barrier=style==="coast"?"water":style==="mountain"?"rock":style==="cave"?"wall":"tree";
+  if(style==="cave")return;
+  for(let y=1;y<m.h-1;y++)for(let x=1;x<m.w-1;x++){
+    const edge=Math.min(x,y,m.w-1-x,m.h-1-y);
+    if(edge<=1||(edge===2&&rng.chance(.48)))QowPut(m,x,y,barrier)
   }
-  if(style==="coast"){
-    const waterRight=rng.chance(.5),shore=waterRight?rng.int(30,34):rng.int(10,14);
-    for(let y=1;y<m.h-1;y++)for(let x=1;x<m.w-1;x++)if(waterRight?x>shore:x<shore)QowPut(m,x,y,"water");
+  // Long, coherent edge masses frame the route. Avoid small random speckles.
+  for(let n=0;n<6;n++){
+    const left=n%2===0,cx=left?rng.int(3,7):rng.int(m.w-8,m.w-4),cy=rng.int(5,m.h-6);
+    QowPaintSoftRect(m,rng,protectedSet,cx,cy,rng.int(4,7),rng.int(4,7),barrier)
   }
-
-  for(let n=0;n<spine.length-1;n++){
-    QowCarveWidePath(m,spine[n],spine[n+1],style==="forest"||style==="cave"?1:1,protectedSet,style==="coast"?"sand":"path",rng.chance(.5));
-    m.rooms.push({id:"route-"+n,x:spine[n].x,y:spine[n].y,w:7,h:5,type:n===0?"start":"route-segment"});
+};
+const QowBuildSpine=(m,rng,style,early,protectedSet)=>{
+  const road=style==="coast"?"sand":style==="cave"?"ground":"path",anchors=[{...QowSpawn}],ys=[23,19,15,11,7,3];
+  let x=QowSpawn.x,dir=rng.chance(.5)?-1:1;
+  for(let n=0;n<ys.length;n++){
+    if(n%2===1||n===ys.length-1){
+      const max=early?4:style==="mountain"?6:style==="forest"?5:4;
+      let next=x+dir*rng.int(2,max);
+      if(next<10||next>34)dir*=-1,next=x+dir*rng.int(2,max);
+      x=QowClamp(next,9,35);
+      if(rng.chance(.72))dir*=-1
+    }
+    anchors.push({x,y:ys[n]})
+  }
+  for(let n=0;n<anchors.length-1;n++){
+    QowCarveRibbon(m,anchors[n],anchors[n+1],protectedSet,road,n%2===0,2);
+    m.rooms.push({id:"route-"+n,x:anchors[n].x,y:anchors[n].y,w:5,h:5,type:n===0?"start":"route-zone"});
     n&&m.edges.push(["route-"+(n-1),"route-"+n])
   }
-  if(style==="cave")for(const p of spine)QowOrganicPatch(m,rng,protectedSet,p.x,p.y,rng.int(3,5),rng.int(2,4),"ground",.94);
+  return anchors
+};
+const QowAddRouteFields=(m,rng,run,style,biome,spine,protectedSet)=>{
+  const fields=[],early=(run.mapIndex??0)<=1,count=early?2:style==="forest"?4:3;
+  for(let n=0;n<count;n++){
+    const anchor=spine[1+n%Math.max(1,spine.length-2)],side=n%2===0?-1:1,
+      distance=early?rng.int(5,7):rng.int(5,9),cx=QowClamp(anchor.x+side*distance,5,m.w-6),cy=QowClamp(anchor.y+rng.int(-1,1),5,m.h-6);
+    let tile="grass";
+    if(style==="cave")tile="ground";
+    else if(style==="mountain")tile=biome==="snow"?"snow":"ground";
+    else if(style==="coast"&&n%2)tile="sand";
+    const w=early?rng.int(6,8):rng.int(6,10),h=early?rng.int(4,5):rng.int(4,7),
+      cells=QowPaintSoftRect(m,rng,protectedSet,cx,cy,w,h,tile);
+    if(cells){
+      fields.push({x:cx,y:cy,w,h,tile});
+      m.features.push({id:tile==="grass"?"grass-field":style+"-pocket",x:cx,y:cy,cells})
+    }
+  }
+  return fields
+};
+const QowAddNaturalMasses=(m,rng,run,style,biome,spine,protectedSet)=>{
+  const early=(run.mapIndex??0)<=1,amount=early?3:style==="forest"?7:5;
+  for(let n=0;n<amount;n++){
+    const side=n%2===0?-1:1,anchor=spine[1+(n%(spine.length-2))],
+      cx=QowClamp(anchor.x+side*rng.int(9,14),4,m.w-5),cy=QowClamp(anchor.y+rng.int(-2,2),4,m.h-5);
+    let tile=style==="coast"?"water":style==="mountain"?(biome==="volcano"?"lava":"rock"):style==="cave"?"rock":"tree";
+    const cells=QowPaintSoftRect(m,rng,protectedSet,cx,cy,rng.int(5,9),rng.int(4,7),tile);
+    cells&&m.features.push({id:tile+"-mass",x:cx,y:cy,cells})
+  }
+  if(style==="route"&&rng.chance(early?.38:.65)){
+    const side=rng.chance(.5)?-1:1,anchor=spine[rng.int(2,spine.length-2)],cx=QowClamp(anchor.x+side*rng.int(9,12),5,m.w-6),cy=QowClamp(anchor.y,6,m.h-7),
+      cells=QowPaintSoftRect(m,rng,protectedSet,cx,cy,rng.int(5,7),rng.int(4,6),"water");
+    cells&&m.features.push({id:"pond",x:cx,y:cy,cells})
+  }
+};
+const QowAddFlowers=(m,rng,style,protectedSet)=>{
+  if(!["route","forest"].includes(style))return;
+  for(let n=0;n<12;n++){
+    const x=rng.int(3,m.w-4),y=rng.int(3,m.h-4),k=x+","+y;
+    if(!protectedSet.has(k)&&QowTile(m,x,y)==="ground")QowPut(m,x,y,"flower")
+  }
+};
+const QowBuildPokemonAttempt=(run,attempt=0)=>{
+  const key=QowKey(run),rng=QowRng(QowHash(key+"|pokemon-map-v3|"+attempt)),choices=QowChoices(run),
+    biome=QowRegionBias(run.region,choices[0]?.node?.biome??"grassland"),flavor=QowFloorFlavor(run,biome),style=QowPokemonStyle(biome),early=(run.mapIndex??0)<=1,
+    base=style==="cave"?"wall":style==="coast"?"sand":biome==="snow"?"snow":"ground",
+    m={key,w:QowW,h:QowH,tiles:Array(QowW*QowH).fill(base),destinations:[],pickups:[],secrets:[],npcs:[],rooms:[],edges:[],features:[],biome,layoutStyle:style,generationVersion:3,composition:early?"early-route":"classic-route",arena:false,...flavor,spawn:{...QowSpawn},attempt},
+    protectedSet=new Set;
 
-  const fork=spine[Math.max(2,spine.length-3)],targets=[];
-  if(choices.length<=1)targets.push({...spine.at(-1)});
-  else{
-    const left={x:6+rng.int(0,3),y:4+rng.int(0,2)},right={x:38-rng.int(0,3),y:4+rng.int(0,2)};
-    QowCarveWidePath(m,fork,left,1,protectedSet,style==="coast"?"sand":"path",true),QowCarveWidePath(m,fork,right,1,protectedSet,style==="coast"?"sand":"path",true);
-    targets.push(left,right);if(choices.length>2)targets.splice(1,0,{...spine.at(-1)})
+  QowFrameField(m,rng,style,protectedSet);
+  const spine=QowBuildSpine(m,rng,style,early,protectedSet);
+
+  if(style==="cave"){
+    for(const p of spine)QowPaintSoftRect(m,rng,protectedSet,p.x,p.y,rng.int(6,9),rng.int(4,6),"ground");
   }
 
-  const branchAnchors=[];
-  for(let n=1;n<=2;n++){
-    const source=spine[rng.int(2,Math.max(2,spine.length-3))],side=n===1?-1:1,end={x:side<0?rng.int(4,8):rng.int(36,40),y:QowClamp(source.y+rng.int(-2,2),5,m.h-5)};
-    QowCarveWidePath(m,source,end,0,protectedSet,style==="coast"?"sand":"path",true),branchAnchors.push(end);
-    m.rooms.push({id:"side-"+n,x:end.x,y:end.y,w:5,h:5,type:"side-path"}),m.edges.push(["route-"+Math.max(0,spine.indexOf(source)-1),"side-"+n])
+  const fields=QowAddRouteFields(m,rng,run,style,biome,spine,protectedSet);
+  QowAddNaturalMasses(m,rng,run,style,biome,spine,protectedSet);
+  QowAddFlowers(m,rng,style,protectedSet);
+
+  // One optional side pocket on early routes, two later. They terminate in a
+  // readable clearing rather than stretching to the map edge.
+  const branchAnchors=[],branchCount=early?1:2,road=style==="coast"?"sand":style==="cave"?"ground":"path";
+  for(let n=0;n<branchCount;n++){
+    const source=spine[2+n*2]??spine[2],side=n%2===0?-1:1,end={x:QowClamp(source.x+side*rng.int(7,10),5,m.w-6),y:QowClamp(source.y+rng.int(-1,1),5,m.h-6)};
+    QowCarveSingle(m,source,end,protectedSet,road,true);
+    QowPaintSoftRect(m,rng,protectedSet,end.x,end.y,5,5,style==="cave"?"ground":style==="coast"?"sand":"ground");
+    branchAnchors.push(end),m.rooms.push({id:"side-"+n,x:end.x,y:end.y,w:5,h:5,type:"side-pocket"}),m.edges.push(["route-"+Math.max(0,1+n*2),"side-"+n])
   }
 
-  if(style==="route"){
-    for(let n=0;n<7;n++){const cx=rng.int(4,m.w-5),cy=rng.int(4,m.h-5);QowOrganicPatch(m,rng,protectedSet,cx,cy,rng.int(2,5),rng.int(2,4),rng.chance(.72)?"grass":"tree",.82)}
-    if(rng.chance(.7)){const side=rng.chance(.5)?1:-1,cx=QowClamp(22+side*rng.int(10,15),5,39),cy=rng.int(10,22);QowOrganicPatch(m,rng,protectedSet,cx,cy,rng.int(2,4),rng.int(2,3),"water",.92)}
-    for(let n=0;n<10;n++)QowPut(m,rng.int(3,m.w-4),rng.int(3,m.h-4),"flower")
-  }else if(style==="forest"){
-    for(let n=0;n<14;n++)QowOrganicPatch(m,rng,protectedSet,rng.int(3,m.w-4),rng.int(3,m.h-4),rng.int(2,5),rng.int(2,4),rng.chance(.35)?"grass":"tree",.88);
-    for(const p of spine)QowOrganicPatch(m,rng,protectedSet,p.x,p.y,2,2,"ground",.55)
-  }else if(style==="coast"){
-    for(let n=0;n<6;n++)QowOrganicPatch(m,rng,protectedSet,rng.int(5,m.w-6),rng.int(4,m.h-5),rng.int(2,4),rng.int(1,3),rng.chance(.5)?"grass":"water",.78)
-  }else if(style==="mountain"){
-    const obstacle=biome==="volcano"?"lava":"rock";for(let n=0;n<12;n++)QowOrganicPatch(m,rng,protectedSet,rng.int(3,m.w-4),rng.int(3,m.h-4),rng.int(1,3),rng.int(1,3),obstacle,.84)
-  }else if(style==="cave"){
-    for(let n=0;n<6;n++){const p=spine[rng.int(1,spine.length-1)];QowOrganicPatch(m,rng,protectedSet,p.x+rng.int(-4,4),p.y+rng.int(-2,2),rng.int(2,4),rng.int(2,3),"ground",.88)}
-  }
+  // Spawn and route exit are compact clearings, never giant road carpets.
+  QowPaintSoftRect(m,rng,new Set,QowSpawn.x,QowSpawn.y,5,3,road,true);
+  const exit=spine.at(-1);QowPaintSoftRect(m,rng,new Set,exit.x,exit.y,5,3,road,true);
 
-  QowApplyFeatureGrammar(m,rng,style,biome,spine,branchAnchors,protectedSet);
-
-  for(let y=QowSpawn.y-2;y<=QowSpawn.y+2;y++)for(let x=QowSpawn.x-3;x<=QowSpawn.x+3;x++)QowPut(m,x,y,style==="coast"?"sand":style==="cave"?"ground":"path");
-
-  const [nativeSet,nativeRef]=QowPokemonNativeSource(style,run.region,run.mapIndex??0);m.nativeTheme=nativeSet;
-  QowStampSceneryChunks(m,nativeSet,nativeRef,rng,protectedSet,style,style==="forest"||style==="cave"?4:3);
-
-  const occupied=new Set;
-  choices.forEach((choice,index)=>{
-    const pos=targets[Math.min(index,targets.length-1)]??spine.at(-1);QowPut(m,pos.x,pos.y,choice.node.kind==="wild"?"grass":style==="coast"?"sand":"path");
-    const dest={id:choice.node.id,kind:choice.node.kind,title:choice.node.title,detail:choice.node.detail,x:pos.x,y:pos.y,lane:choice.lane,node:choice.node,room:"target-"+index,facing:"down"};
-    m.destinations.push(dest),occupied.add(pos.x+","+pos.y),m.rooms.push({id:"target-"+index,x:pos.x,y:pos.y,w:5,h:5,type:choice.node.kind})
-  });
-
-  const npcCandidates=spine.slice(2,-2);
-  for(let n=0;n<Math.min(2,npcCandidates.length);n++)if(rng.chance(.72)){
-    const c=npcCandidates[(n*2+rng.int(0,1))%npcCandidates.length],p=QowFindWalkableNear(m,c.x+2,c.y,occupied,3);if(p){occupied.add(p.x+","+p.y),m.npcs.push({id:key+"-npc-"+n,kind:"wanderer",x:p.x,y:p.y,facing:rng.pick(["up","down","left","right"]),dialogue:QowNpcDialogue(run,biome,n)})}
-  }
-
-  const pickupMax=m.condition==="rich"?5:3;
-  for(let n=0;n<pickupMax;n++){
-    const anchor=branchAnchors[n%branchAnchors.length]??spine[Math.min(spine.length-1,n+2)],p=QowFindWalkableNear(m,anchor.x,anchor.y,occupied,5);if(!p)continue;
-    const secret=n===0&&rng.chance(.62);occupied.add(p.x+","+p.y),m.pickups.push({id:key+"-pickup-"+n,x:p.x,y:p.y,room:"side-"+(n%2+1),secret});
-    if(secret)m.secrets.push({id:key+"-secret-0",room:"side-"+(n%2+1),x:p.x,y:p.y})
-  }
-
+  const [nativeSet,nativeRef]=QowPokemonNativeSource(style,run.region,run.mapIndex??0);
+  m.nativeTheme=nativeSet,m.nativeReference=nativeRef,m.visualLayer="frlg-general";
+  // Do not paste arbitrary rectangular secondary-map fragments into fields.
+  // They only remain for coherent town/building stamps.
   QowNativeSkin(m,nativeSet,nativeRef);
+
+  const occupied=new Set,targetSlots=[];
+  const takeSlot=(preferred,radius=5)=>{
+    const p=QowFindWalkableNear(m,preferred.x,preferred.y,occupied,radius);
+    if(p)occupied.add(p.x+","+p.y);
+    return p
+  };
+  for(let index=0;index<choices.length;index++){
+    const choice=choices[index];let preferred;
+    if(["city","gym","league","boss"].includes(choice.node.kind))preferred=exit;
+    else if(choice.node.kind==="wild"&&fields.length)preferred=fields[index%fields.length];
+    else if(choice.node.kind==="trainer")preferred=spine[Math.min(spine.length-2,3+index)];
+    else preferred=branchAnchors[index%Math.max(1,branchAnchors.length)]??spine[Math.min(spine.length-2,2+index)];
+    const pos=takeSlot(preferred,choice.node.kind==="wild"?3:5)??{...preferred};
+    if(choice.node.kind==="wild")QowPut(m,pos.x,pos.y,"grass");else QowPut(m,pos.x,pos.y,road);
+    const dest={id:choice.node.id,kind:choice.node.kind,title:choice.node.title,detail:choice.node.detail,x:pos.x,y:pos.y,lane:choice.lane,node:choice.node,room:"target-"+index,facing:"down"};
+    m.destinations.push(dest),targetSlots.push(pos),m.rooms.push({id:"target-"+index,x:pos.x,y:pos.y,w:3,h:3,type:choice.node.kind})
+  }
+
+  const npcCount=early?1:2,npcCandidates=spine.slice(2,-2);
+  for(let n=0;n<Math.min(npcCount,npcCandidates.length);n++){
+    const c=npcCandidates[(n*2+1)%npcCandidates.length],side=n%2===0?1:-1,p=takeSlot({x:c.x+side*3,y:c.y},4);
+    if(p)m.npcs.push({id:key+"-npc-"+n,kind:"wanderer",x:p.x,y:p.y,facing:side>0?"left":"right",dialogue:QowNpcDialogue(run,biome,n)})
+  }
+
+  const pickupMax=m.condition==="rich"?4:early?2:3,pickupAnchors=[...branchAnchors,...fields,...spine.slice(2,-2)];
+  for(let n=0;n<pickupMax;n++){
+    const anchor=pickupAnchors[n%pickupAnchors.length]??spine[Math.min(spine.length-1,n+2)],p=takeSlot(anchor,5);if(!p)continue;
+    const secret=n===0&&branchAnchors.length>0&&rng.chance(.58);m.pickups.push({id:key+"-pickup-"+n,x:p.x,y:p.y,room:secret?"side-0":"route-loot-"+n,secret});
+    if(secret)m.secrets.push({id:key+"-secret-0",room:"side-0",x:p.x,y:p.y})
+  }
+
+  m.compositionStats={
+    pathCells:m.tiles.filter(t=>t==="path").length,
+    grassCells:m.tiles.filter(t=>t==="grass").length,
+    blockingCells:m.tiles.filter(t=>["tree","rock","wall","water","lava"].includes(t)).length,
+    branches:branchAnchors.length,
+    fields:fields.length
+  };
   return m
 };
 
