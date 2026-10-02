@@ -34,7 +34,7 @@ const context = {
 
 vm.createContext(context);
 vm.runInContext(
-  tilesets + "\n" + nativeAssets + "\n" + mapgen + "\n" + terrain + "\n" + source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowBuildPokemonAttempt,QowBuildArenaAttempt,QowBuildTownMap,QowNativeReference,QowNativePools,QowTerrainModel,QowTerrainSynthesize,QowTerrainSafeIds,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowSolidEntityAt,QowHasApproach,QowCurrentFlavor,QowEncounterWeight,QowBattleWeather,QowEnsure,QowRouteBiome,QowKey,QowW,QowH,QowActiveTileset,QowNativeFrlgCatalog};",
+  tilesets + "\n" + nativeAssets + "\n" + mapgen + "\n" + terrain + "\n" + source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowBuildPokemonAttempt,QowBuildArenaAttempt,QowBuildTownMap,QowNativeReference,QowNativePools,QowTerrainModel,QowTerrainSynthesize,QowTerrainSafeIds,QowTerrainLogicalClass,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowSolidEntityAt,QowHasApproach,QowCurrentFlavor,QowEncounterWeight,QowBattleWeather,QowEnsure,QowRouteBiome,QowKey,QowW,QowH,QowActiveTileset,QowNativeFrlgCatalog};",
   context,
   { filename: "overworld-runtime.js" },
 );
@@ -260,6 +260,15 @@ for (const [region, biome, mapIndex] of regions) {
     }
     if (mapA.nativeTiles.some((v) => v && v.set !== mapA.nativeTheme)) {
       throw new Error("Field mixes incompatible native tilesets for " + seed);
+    }
+    for (let idx = 0; idx < mapA.nativeTiles.length; idx += 1) {
+      const visual = mapA.nativeTiles[idx];
+      if (!visual) continue;
+      const logical = ow.QowTerrainLogicalClass(mapA.tiles[idx]);
+      const visualClass = ["open","blocked","grass"].find((cls) => ow.QowTerrainSafeIds[cls].has(visual.id));
+      if (!visualClass || visualClass !== logical) {
+        throw new Error("Visual/logical collision mismatch for " + seed + " at " + idx + ": " + logical + " vs " + visualClass);
+      }
     }
     if (signature(mapA) !== signature(mapB)) {
       throw new Error("Seed determinism failed for " + seed);
