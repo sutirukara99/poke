@@ -297,10 +297,10 @@ const QowV4CompositionStats=m=>({
   fields:m.features.filter(f=>String(f.id).startsWith("grass-field")).length
 });
 const QowBuildPokemonAttempt=(run,attempt=0)=>{
-  const key=QowKey(run),rng=QowRng(QowHash(key+"|natural-v4|"+attempt)),choices=QowChoices(run),
-    biome=QowRegionBias(run.region,choices[0]?.node?.biome??"grassland"),flavor=QowFloorFlavor(run,biome),style=QowPokemonStyle(biome),early=(run.mapIndex??0)<=1,
+  const key=QowKey(run),rng=QowRng(QowHash(key+"|natural-v5|"+attempt)),choices=QowChoices(run),
+    biome=QowRouteBiome(run),flavor=QowFloorFlavor(run,biome),style=QowPokemonStyle(biome),early=(run.mapIndex??0)<=1,
     barrier=QowV4BarrierTile(style,biome),
-    m={key,w:QowW,h:QowH,tiles:Array(QowW*QowH).fill(barrier),destinations:[],pickups:[],secrets:[],npcs:[],rooms:[],edges:[],features:[],biome,layoutStyle:style,generationVersion:4,composition:early?"early-natural":"natural-route",arena:false,...flavor,spawn:{...QowSpawn},attempt},
+    m={key,w:QowW,h:QowH,tiles:Array(QowW*QowH).fill(barrier),destinations:[],pickups:[],secrets:[],npcs:[],rooms:[],edges:[],features:[],biome,layoutStyle:style,generationVersion:5,composition:early?"early-natural":"natural-route",arena:false,...flavor,spawn:{...QowSpawn},attempt},
     protectedSet=new Set;
 
   const spine=QowV4BuildSpine(m,rng,run,style,biome,protectedSet);
