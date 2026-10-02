@@ -2,6 +2,8 @@ import { readFile } from "node:fs/promises";
 import vm from "node:vm";
 
 const tilesets = await readFile(new URL("./overworld-tilesets.js", import.meta.url), "utf8");
+const nativeAssets = await readFile(new URL("./overworld-frlg-native.js", import.meta.url), "utf8");
+const mapgen = await readFile(new URL("./overworld-mapgen.js", import.meta.url), "utf8");
 const source = await readFile(new URL("./overworld-runtime.js", import.meta.url), "utf8");
 
 const context = {
@@ -31,7 +33,7 @@ const context = {
 
 vm.createContext(context);
 vm.runInContext(
-  tilesets + "\n" + source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowBuildArenaAttempt,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowSolidEntityAt,QowHasApproach,QowCurrentFlavor,QowEncounterWeight,QowBattleWeather,QowW,QowH,QowActiveTileset};",
+  tilesets + "\n" + nativeAssets + "\n" + mapgen + "\n" + source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowBuildPokemonAttempt,QowBuildArenaAttempt,QowBuildTownMap,QowNativeReference,QowNativePools,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowSolidEntityAt,QowHasApproach,QowCurrentFlavor,QowEncounterWeight,QowBattleWeather,QowW,QowH,QowActiveTileset,QowNativeFrlgCatalog};",
   context,
   { filename: "overworld-runtime.js" },
 );
@@ -53,6 +55,20 @@ for (const [semantic, id] of Object.entries(tileset.semanticMetatiles)) {
   if (tileset.tiles[semantic] && tileset.tiles[semantic].metatileId !== id) {
     throw new Error("Semantic tile definition does not match FRLG mapping for " + semantic);
   }
+}
+
+const nativeSets = ow.QowNativeFrlgCatalog;
+for (const [name, expectedRef] of [["palletTown","route1"],["viridianCity","viridianCity"],["viridianForest","viridianForest"],["cave","mtMoon1F"]]) {
+  const set = nativeSets?.[name];
+  if (!set) throw new Error("Missing native FRLG secondary tileset " + name);
+  if (!String(set.tilesDataUri).startsWith("data:image/png;base64,")) throw new Error("Native FRLG tiles are not embedded for " + name);
+  if (!Array.isArray(set.palettes) || set.palettes.length !== 16 || set.palettes.some((p) => p.length !== 16)) {
+    throw new Error("Native FRLG palette set is incomplete for " + name);
+  }
+  const refMap = ow.QowNativeReference(name, expectedRef);
+  if (!refMap || refMap.blocks.length !== refMap.w * refMap.h) throw new Error("Native map reference failed to decode for " + name);
+  const pools = ow.QowNativePools(name, expectedRef);
+  if (!pools.passable.length || !pools.blocked.length) throw new Error("Native collision/material pools are empty for " + name);
 }
 
 const node = (id, kind, biome) => ({
@@ -133,6 +149,12 @@ for (const [region, biome] of regions) {
 
     if (!ow.QowValidate(mapA)) {
       throw new Error("Invalid floor generated for " + seed);
+    }
+    if (!["route","forest","cave","coast","mountain"].includes(mapA.layoutStyle)) {
+      throw new Error("Floor did not use Pokémon-style archetype generator for " + seed + ": " + mapA.layoutStyle);
+    }
+    if (!Array.isArray(mapA.nativeTiles) || mapA.nativeTiles.length !== mapA.w * mapA.h || !mapA.nativeTiles.some(Boolean)) {
+      throw new Error("Floor has no native FRLG visual layer for " + seed);
     }
     if (signature(mapA) !== signature(mapB)) {
       throw new Error("Seed determinism failed for " + seed);
@@ -230,6 +252,19 @@ if (signatures.size < checked * 0.8) {
 if (!sawMigration) throw new Error("Seed suite never exercised migration encounter weighting.");
 if (!sawRain) throw new Error("Seed suite never exercised rain encounter weighting.");
 if (!sawSnow) throw new Error("Seed suite never exercised snow encounter weighting.");
+
+const townA = ow.QowBuildTownMap(makeRun("TOWN-A","kanto","grassland"));
+const townB = ow.QowBuildTownMap(makeRun("TOWN-A","kanto","grassland"));
+if (townA.layoutStyle !== "town" || townA.w < 30 || townA.h < 20) throw new Error("Procedural town archetype is missing.");
+if (JSON.stringify(townA.tiles) !== JSON.stringify(townB.tiles) || JSON.stringify(townA.nativeTiles) !== JSON.stringify(townB.nativeTiles)) {
+  throw new Error("Procedural town is not deterministic.");
+}
+if (!townA.nativeTiles.some((v) => v?.set === "viridianCity") || !townA.nativeTiles.some((v) => v?.set === "palletTown")) {
+  throw new Error("Town does not combine original FRLG city/residential building stamps.");
+}
+for (const [x,y] of [[8,10],[23,10],[15,20]]) {
+  if (ow.QowBlocking(ow.QowTile(townA,x,y))) throw new Error("Town landmark approach is blocked at " + x + "," + y);
+}
 
 for (let n = 0; n < 24; n += 1) {
   const split = n % 2 === 0;
