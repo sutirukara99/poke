@@ -10,10 +10,11 @@
     "preview": "vite preview",
     "verify:recovery": "node scripts/verify-recovery.mjs",
     "verify:alpha": "npm run rebuild:alpha && node scripts/check-alpha-syntax.mjs && node scripts/smoke-alpha.mjs",
-    "check": "tsc --noEmit && npm run verify:recovery && npm run verify:alpha",
+    "check": "tsc --noEmit && npm run verify:recovery && npm run verify:alpha && npm run test:overworld",
     "predev": "npm run rebuild:alpha",
     "prebuild": "npm run rebuild:alpha",
-    "deploy": "npm run check && npm run build && wrangler deploy"
+    "deploy": "npm run check && npm run build && wrangler deploy",
+    "test:overworld": "node scripts/test-overworld.mjs"
   },
   "dependencies": {
     "react": "19.1.1",

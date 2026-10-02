@@ -1,5 +1,73 @@
 # Changelog
 
+## 1.0.0-alpha.1 Canvas Overworld Engine Rebuild — 2026-10-02
+
+### Overworld statt Node-Board
+- Der bisherige React-/DOM-Tile-Prototyp wurde vollständig als sichtbare Reiseoberfläche ersetzt. Die Welt läuft über einen isolierten **Canvas-2D-Renderer**; React bleibt für HUD, Menüs und bestehende Systeme zuständig.
+- Alte Journey-Banner, Route-Fortschrittsleisten, Quest-Dashboards und Party-Sidebars verschwinden während Exploration und fokussierten Weltinteraktionen.
+- Bestehende Battle-, Catch-, Inventar-, Relikt-, Klassen-, PC-, Account- und Cloud-Systeme bleiben als Backend erhalten.
+
+### Prozeduraler Kern
+- Normale Floors sind **45×31 Tiles** groß und werden jetzt primär als echte Pokémon-artige Karten gebaut: Hauptweg, Seitenpfade, Grasflächen, Teiche/Lagunen, Lichtungen, Fels-Chicanes, Loot-Spots und physische Rogue-Ziele statt sichtbarer Dungeon-Räume.
+- Eigene Generator-Archetypen für **Route, Wald, Küste, Berg/Schnee und Höhle** sorgen dafür, dass sich Orte strukturell unterscheiden.
+- Ein authored Feature-Pass setzt handgebaut wirkende Kartenbausteine wie Grass Pockets, kleine Gärten, Waldlichtungen, Lagunen und Felsengassen deterministisch aus dem Run-Seed.
+- **Kanto, Johto, Hoenn und Sinnoh verändern Geometrie, Biom-Druck und native FRLG-Visual-Themes**, statt nur Farben auszutauschen.
+- Jeder Floor wird per BFS auf Spawn, Ziele, NPC-Zugänge und Pickups geprüft. Ungültige Kandidaten werden deterministisch neu erzeugt; danach existiert ein sicherer Fallback.
+- Deterministische Floors werden gecacht, damit Bewegung/React-Renders nicht erneut den gesamten Generator ausführen.
+
+### Originale FRLG-Kartenassets
+- Zusätzlich zum General-Tileset sind originale **FRLG Secondary Tilesets + Metatile-Daten + Paletten** eingebettet.
+- Originale Kartenblöcke aus **Route 1, Pallet Town, Viridian City, Pewter City, Cerulean City, Viridian Forest und Mt. Moon** dienen als echte visuelle Quellen für die generierten Karten.
+- Scenery-Chunks werden aus diesen Originalkarten gestempelt, während geschützte Laufwege/Kollisionen erhalten bleiben.
+- Städte werden seedbasiert aus echten FRLG-Gebäudestamps aufgebaut: Pokémon-Center, PokéMart, Gym-Deko, Wohnhaus, Plaza, Wege, Teich, Garten und Baumgruppen.
+
+### Eigene Arena-Floors
+- Arenen nutzen einen separaten Indoor-Generator.
+- Eingang unten, klarer Progressionskorridor, echte linke/rechte Trainerflügel bei Split-Entscheidungen und ein größerer zentraler Finalraum für den Arenaleiter.
+- Arena-Floors besitzen feste Indoor-Conditions statt normaler Route-Wetterwürfe.
+
+### Pokémon-Spielgefühl
+- Held-Key-WASD/Pfeiltasten, Tile-Tweening und echte Idle/Walk-Frames.
+- Das Lead-Pokémon folgt der vorherigen Trainer-Tile statt als HUD-Deko festzukleben.
+- Trainer, NPCs und Service-Objekte besitzen eigene Kollision; man läuft nicht mehr durch Figuren hindurch.
+- Trainer erkennen den Spieler nur in ihrer Blickrichtung; Wände/Hindernisse blockieren Sicht.
+- Abstrakte `!`/`?`-Marker wurden durch Gras-Spuren, Schilder, echte NPC-Sprites, Arena-Schilder und legendären Bodenschimmer ersetzt.
+- Touch-Geräte erhalten ein D-Pad plus A-/Menü-Buttons; Desktop bleibt Referenz.
+
+### Hohes Gras, Wetter & echte Encounter-Effekte
+- Hohes Gras nutzt einen steigenden **Gefahr-Meter** statt eines starren Zufallswurfs pro Schritt.
+- Zufällige Grasbegegnungen kehren nach dem Kampf an exakt dieselbe Position zurück.
+- Floors würfeln deterministisch Tageszeit, Wetter und Rogue-Condition.
+- **Migration** erhöht echte Rare/Uncommon-Gewichte; Nacht beeinflusst Dark/Ghost/Poison, Regen Water/Electric, Schnee Ice/Steel und Nebel Psychic/Ghost/Fairy.
+- Regen und Schnee werden als echtes Battle-Wetter weitergereicht, statt nur Canvas-Effekt zu sein.
+- Reiche Floors erzeugen mehr physische Funde; geheime Räume garantieren ihren eigenen Geheimfund.
+
+### Begehbare Städte
+- Der alte Stadt-Dashboard-Hub wurde durch eine echte kleine Tile-Stadt ersetzt.
+- **Pokémon-Center und PokéMart besitzen eigene begehbare Innenräume.**
+- Nurse, PC, Händler, Move-Tutor, Quest-Brett und Ausgang sind physische Interaktionen.
+- Der Markt bucht nicht mehr beim ersten Kontakt automatisch ab; erst Händler ansprechen, Angebot sehen, Kauf bestätigen.
+- Das Quest-Brett zeigt aktive Missionen samt Fortschritt und kann neue Nebenmissionen annehmen.
+- Während der Route bleibt nur ein kompakter aktiver Quest-Hinweis in der unteren Spielleiste.
+
+### Tileset-Fix
+- Das rohe FRLG-`general-tiles.png` wird korrekt rekonstruiert: 4-bpp-Tiles + originale `metatiles.bin`-Komposition + alle 16 General-Paletten werden im Canvas zu echten 16×16-Metatiles zusammengesetzt.
+- Kein blindes CSS-Slicing des Decomp-Sheets mehr.
+- Terrain ohne passendes General-Metatile fällt kontrolliert auf den prozeduralen GBA-Look zurück.
+
+### UX, Übergänge & Debug
+- Battle-Entry bekommt eine echte kurze Transition, bevor der State in den Kampf wechselt; die Rückkehr blendet die Overworld wieder ein.
+- Nicht-Kampf-Ziele wie Shop, Mystery, Heal und Tutor werden als fokussierte Spieloberfläche dargestellt statt neben Dashboard-Chrome.
+- **F2** zeigt FPS, Position, Tile, RNG, Seed, Floor-Key, Biom, Wetter/Condition, Generator-Versuch, Raum-/Zielzahlen, Gefahr und Fog.
+- Debug-Aktionen: Map aufdecken, Wildkampf erzwingen, zum Hauptziel teleportieren, Floor deterministisch regenerieren.
+
+### Engine & QA
+- Overworld-Code ist in eigene Tileset-, Runtime-, Reducer-, Component- und City-Fragmente ausgelagert.
+- CI validiert **120 deterministische Feld-Floors über alle vier Regionen plus eigene Arena-Templates**.
+- Geprüft werden Reproduzierbarkeit, Connectivity, NPC-/Ziel-Zugänge, Entity-Collision, Geheimräume, Pickups, Fog, Trainer-Sicht, Encounter-Weighting, Battle-Wetter, FRLG-Metatile-Daten und Floor-Cache-Reuse.
+- Architektur und Integrationsregeln stehen in `OVERWORLD.md`.
+- Wartungsmodus bleibt bis zum manuellen Playtest aktiv.
+
 ## 1.0.0-alpha.1 Roguelike Overworld Cleanup — 2026-10-02
 
 ### Floor statt Webseiten-Panel
