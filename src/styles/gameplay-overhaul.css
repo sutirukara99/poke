@@ -4273,3 +4273,20 @@ body.pr-game-ui .alpha-shell section.playful-event:has(.ow-city-hub) > :not(.ow-
 .ow-city-hub.scene-mart .ow-city-service-panel{
   border-color:#6f6340;
 }
+
+
+.canvas-overworld .ow-run-info .ow-active-quest{
+  max-width:280px;
+  overflow:hidden;
+  border-color:#6c6441;
+  background:#211f13;
+  color:#e5dd80;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+@media(max-width:620px){
+  .canvas-overworld .ow-run-info .ow-active-quest{
+    max-width:160px;
+  }
+}
