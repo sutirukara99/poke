@@ -126,6 +126,10 @@ for (const [region, biome] of regions) {
     const runB = structuredClone(runA);
     const mapA = ow.QowBuild(runA);
     const mapB = ow.QowBuild(runB);
+    const mapCached = ow.QowBuild(runA);
+    if (mapCached !== mapA) {
+      throw new Error("Floor cache did not reuse deterministic map for " + seed);
+    }
 
     if (!ow.QowValidate(mapA)) {
       throw new Error("Invalid floor generated for " + seed);
