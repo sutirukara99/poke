@@ -165,8 +165,12 @@ if (!js.includes('const QowBuildTownMap=')) throw new Error("Procedural FRLG tow
 if (!js.includes('layoutStyle:"town"')) throw new Error("Generated town archetype is missing.");
 if (!js.includes('center:{x:26,y:26}') || !js.includes('sourceDoor:variant.center')) throw new Error("Original Viridian City Pokémon Center stamp is missing.");
 if (!js.includes('const QowCanvas=')) throw new Error("Canvas renderer fallback is missing.");
-if (!js.includes('const QowPhaserVersion="phaser-v1"')) throw new Error("Phaser overworld bridge is missing.");
+if (!js.includes('const QowPhaserVersion="phaser-v2",QowPhaserViewportW=240,QowPhaserViewportH=160')) throw new Error("Phaser v2 pixel viewport is missing.");
 if (!js.includes('const QowPhaserCanvas=')) throw new Error("Phaser React host is missing.");
+if (!js.includes('this.make.tilemap({data,tileWidth:16,tileHeight:16})')) throw new Error("Native Phaser tilemap renderer is missing.");
+if (!js.includes('duration:128')) throw new Error("Pixel-snapped Phaser movement timing is missing.");
+if (!js.includes('scale:{mode:Phaser.Scale.NONE')) throw new Error("Integer-scale Phaser viewport is missing.");
+if (!js.includes('visualEngine="phaser-semantic-v2"')) throw new Error("Clean Phaser semantic chunk rendering is missing.");
 if (!js.includes('const QowChunkComposerVersion="chunk-v1"')) throw new Error("Authored Phaser chunk composer is missing.");
 if (!js.includes('const QowBuildChunkRouteAttempt=')) throw new Error("Phaser chunk route generator is missing.");
 if (!js.includes('window.__POKEREGIONS_PHASER_OVERWORLD__')) throw new Error("Phaser touch/input bridge is missing.");
