@@ -235,7 +235,12 @@ const QowBuildPokemonAttempt=(run,attempt=0)=>{
 };
 
 const QowBuildTownMap=run=>{
-  const key="town|"+QowKey(run),rng=QowRng(QowHash(key)),w=31,h=23,m={key,w,h,tiles:Array(w*h).fill("ground"),nativeTiles:Array(w*h).fill(null),region:run.region,biome:"city",weather:"clear",timeOfDay:"day",condition:"quiet",layoutStyle:"town",rooms:[],edges:[],destinations:[],pickups:[],secrets:[],npcs:[],spawn:{x:15,y:20}},protectedSet=new Set;
+  const key="town|"+QowKey(run),rng=QowRng(QowHash(key)),w=31,h=23,variants=[
+    {set:"viridianCity",ref:"viridianCity",center:{x:26,y:26},mart:{x:36,y:19},gym:{x:36,y:10}},
+    {set:"pewterCity",ref:"pewterCity",center:{x:17,y:25},mart:{x:28,y:18},gym:{x:15,y:16}},
+    {set:"ceruleanCity",ref:"ceruleanCity",center:{x:22,y:19},mart:{x:29,y:28},gym:{x:31,y:21}}
+  ],regionBias={kanto:0,johto:0,hoenn:2,sinnoh:1}[run.region]??0,variant=variants[(regionBias+(run.mapIndex??0)+rng.int(0,2))%variants.length],
+    m={key,w,h,tiles:Array(w*h).fill("ground"),nativeTiles:Array(w*h).fill(null),region:run.region,biome:"city",weather:"clear",timeOfDay:"day",condition:"quiet",layoutStyle:"town",nativeTheme:variant.set,rooms:[],edges:[],destinations:[],pickups:[],secrets:[],npcs:[],spawn:{x:15,y:20}},protectedSet=new Set;
   for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(x===0||y===0||x===w-1||y===h-1)m.tiles[y*w+x]="tree";
 
   const slots=[
@@ -252,11 +257,11 @@ const QowBuildTownMap=run=>{
   for(let n=0;n<22;n++){const x=rng.int(2,w-3),y=rng.int(2,h-3);if(m.tiles[y*w+x]==="ground"&&!protectedSet.has(x+","+y))m.tiles[y*w+x]=rng.chance(.6)?"flower":"grass"}
   for(let n=0;n<5;n++){const cx=rng.pick([2,4,26,28]),cy=rng.int(3,19);QowOrganicPatch(m,rng,protectedSet,cx,cy,2,2,"tree",.8)}
 
-  QowNativeSkin(m,"viridianCity","viridianCity");
+  QowNativeSkin(m,variant.set,variant.ref);
   [
-    {id:"center",set:"viridianCity",ref:"viridianCity",sourceDoor:{x:26,y:26},targetDoor:centerDoor,w:9,h:7},
-    {id:"mart",set:"viridianCity",ref:"viridianCity",sourceDoor:{x:36,y:19},targetDoor:martDoor,w:9,h:7},
-    {id:"gym-deco",set:"viridianCity",ref:"viridianCity",sourceDoor:{x:36,y:10},targetDoor:gymDoor,w:11,h:8},
+    {id:"center",set:variant.set,ref:variant.ref,sourceDoor:variant.center,targetDoor:centerDoor,w:9,h:7},
+    {id:"mart",set:variant.set,ref:variant.ref,sourceDoor:variant.mart,targetDoor:martDoor,w:9,h:7},
+    {id:"gym-deco",set:variant.set,ref:variant.ref,sourceDoor:variant.gym,targetDoor:gymDoor,w:11,h:8},
     {id:"house-deco",set:"palletTown",ref:"palletTown",sourceDoor:{x:6,y:7},targetDoor:houseDoor,w:9,h:7}
   ].forEach(b=>QowStampBuilding(m,b));
 
