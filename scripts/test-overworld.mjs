@@ -153,6 +153,15 @@ for (const [region, biome] of regions) {
     if (!["route","forest","cave","coast","mountain"].includes(mapA.layoutStyle)) {
       throw new Error("Floor did not use Pokémon-style archetype generator for " + seed + ": " + mapA.layoutStyle);
     }
+    if (mapA.generationVersion !== 2) {
+      throw new Error("Floor is not using the authored Pokémon map grammar for " + seed);
+    }
+    if (!Array.isArray(mapA.features) || mapA.features.length < 1 || mapA.features.some((f) => !f.id || !Number.isInteger(f.cells) || f.cells < 1)) {
+      throw new Error("Floor has no authored scenery features for " + seed);
+    }
+    if (!mapA.nativeTheme || !ow.QowNativeFrlgCatalog[mapA.nativeTheme]) {
+      throw new Error("Floor did not select a native FRLG visual theme for " + seed);
+    }
     if (!Array.isArray(mapA.nativeTiles) || mapA.nativeTiles.length !== mapA.w * mapA.h || !mapA.nativeTiles.some(Boolean)) {
       throw new Error("Floor has no native FRLG visual layer for " + seed);
     }
@@ -255,7 +264,8 @@ if (!sawSnow) throw new Error("Seed suite never exercised snow encounter weighti
 
 const townA = ow.QowBuildTownMap(makeRun("TOWN-A","kanto","grassland"));
 const townB = ow.QowBuildTownMap(makeRun("TOWN-A","kanto","grassland"));
-if (townA.layoutStyle !== "town" || townA.w < 30 || townA.h < 20) throw new Error("Procedural town archetype is missing.");
+if (townA.layoutStyle !== "town" || townA.w < 30 || townA.h < 20 || townA.generationVersion !== 2) throw new Error("Procedural town archetype is missing.");
+if (!Array.isArray(townA.features) || townA.features.length < 3) throw new Error("Town authored scenery pass is missing.");
 if (JSON.stringify(townA.tiles) !== JSON.stringify(townB.tiles) || JSON.stringify(townA.nativeTiles) !== JSON.stringify(townB.nativeTiles)) {
   throw new Error("Procedural town is not deterministic.");
 }
