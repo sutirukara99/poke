@@ -31,7 +31,7 @@ const context = {
 
 vm.createContext(context);
 vm.runInContext(
-  tilesets + "\n" + source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowSolidEntityAt,QowHasApproach,QowCurrentFlavor,QowEncounterWeight,QowBattleWeather,QowW,QowH,QowActiveTileset};",
+  tilesets + "\n" + source + "\n;globalThis.__ow={QowBuild,QowBuildAttempt,QowBuildArenaAttempt,QowValidate,QowFallback,QowTile,QowBlocking,QowVisible,QowReachable,QowTrainerSees,QowSolidEntityAt,QowHasApproach,QowCurrentFlavor,QowEncounterWeight,QowBattleWeather,QowW,QowH,QowActiveTileset};",
   context,
   { filename: "overworld-runtime.js" },
 );
@@ -77,6 +77,17 @@ const makeRun = (seed, region = "kanto", biome = "grassland", difficulty = "norm
     node(seed + "-trainer", "trainer", biome),
     node(seed + "-exit", "city", biome),
   ]],
+});
+
+const makeArenaRun = (seed, step = 0, split = false) => ({
+  ...makeRun(seed, "kanto", "city", "normal"),
+  arena: {
+    step,
+    path: [],
+    route: split
+      ? [[node(seed + "-left", "trainer", "city"), node(seed + "-right", "trainer", "city")], [node(seed + "-leader", "gym", "city")]]
+      : [[node(seed + "-trainer", "trainer", "city")], [node(seed + "-leader", "gym", "city")]],
+  },
 });
 
 const signature = (map) =>
@@ -215,6 +226,28 @@ if (signatures.size < checked * 0.8) {
 if (!sawMigration) throw new Error("Seed suite never exercised migration encounter weighting.");
 if (!sawRain) throw new Error("Seed suite never exercised rain encounter weighting.");
 if (!sawSnow) throw new Error("Seed suite never exercised snow encounter weighting.");
+
+for (let n = 0; n < 24; n += 1) {
+  const split = n % 2 === 0;
+  const step = n % 3 === 0 ? 1 : 0;
+  const run = makeArenaRun("ARENA-" + n, step, split);
+  const map = ow.QowBuild(run);
+  if (!map.arena) throw new Error("Arena run did not use arena generator.");
+  if (!ow.QowValidate(map)) throw new Error("Arena floor validation failed for " + run.seed);
+  if (map.weather !== "clear" || map.timeOfDay !== "day" || map.condition !== "patrol") {
+    throw new Error("Arena floor flavor is not deterministic indoor state for " + run.seed);
+  }
+  const expectedChoices = run.arena.route[step].length;
+  if (map.destinations.length !== expectedChoices) {
+    throw new Error("Arena destination count mismatch for " + run.seed);
+  }
+  const reachable = ow.QowReachable(map, map.spawn.x, map.spawn.y);
+  for (const target of map.destinations) {
+    if (!ow.QowHasApproach(map, target, reachable)) {
+      throw new Error("Arena target cannot be approached for " + run.seed);
+    }
+  }
+}
 
 // Trainer line of sight must respect both facing and collision.
 {
