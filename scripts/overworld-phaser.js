@@ -21,6 +21,10 @@ const QowPhaserTerrainCanvas=map=>{
   return canvas
 };
 const QowPhaserSemanticTile=(tile,index)=>{
+  // FireRed Route 1 does not have a continuous "road carpet"; travel is read
+  // from the surrounding trees/grass/ledges. Using the old path metatile here
+  // produced the pale cyan squares seen in the live build.
+  if(tile==="path")return index?.ground??0;
   if(Number.isInteger(index?.[tile]))return index[tile];
   if(tile==="snow"||tile==="ruin"||tile==="bossfloor"||tile==="lava")return index?.ground??0;
   return index?.ground??0
