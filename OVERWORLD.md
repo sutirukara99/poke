@@ -34,11 +34,16 @@ Recovered Alpha Client
     │   ├── original map block references
     │   └── palette / metatile source data
     ├── scripts/overworld-mapgen.js
-    │   ├── Pokémon-style route / forest / coast / mountain / cave grammar
-    │   ├── authored scenery feature stamps
-    │   ├── original FRLG map-reference sampling
+    │   ├── natural route / forest / coast / mountain / cave topology
+    │   ├── macro waypoints + clearings + side pockets
+    │   ├── grass fields / landmarks / objective placement
     │   ├── procedural town layout + building stamps
     │   └── native FRLG primary + secondary metatile renderer
+    ├── scripts/overworld-terrain-engine.js
+    │   ├── learns adjacency from original FRLG reference maps
+    │   ├── filters one-off map objects out of terrain synthesis
+    │   ├── preserves real horizontal / vertical metatile pairings
+    │   └── paints coherent native visual terrain over logical collision
     ├── scripts/overworld-runtime.js
     │   ├── deterministic RNG
     │   ├── arena generator + generator integration
@@ -95,25 +100,32 @@ Generated floors are cached by the deterministic key. Re-rendering or moving doe
 
 ## Field generator
 
-Normal field floors now use the Pokémon-map generator in `scripts/overworld-mapgen.js`. The previous room graph remains only as a safe fallback / arena-support utility; it is not the normal outdoor generator.
+Normal outdoor floors use the **Natural Overworld Engine v4**. The map is generated as a logical landscape first and textured from original FRLG reference-map adjacency afterwards.
 
-The normal pipeline is:
+The pipeline is:
 
 1. derive the deterministic floor seed
-2. choose the region-biased biome, weather, time and floor condition
-3. choose a Pokémon-style archetype: **route / forest / coast / mountain / cave**
-4. create a readable main route spine from the lower entrance toward the upper exit
-5. add side paths and physical rogue destinations
-6. paint archetype-specific natural geometry
-7. apply authored scenery templates such as grass pockets, ponds, clearings, rocky chicanes and coastal lagoons
-8. select a native FRLG visual theme for the region/floor
-9. stamp scenery sampled from original FRLG map block data while protecting critical paths
-10. seed ambient NPCs, secret pickups and Item Balls
-11. reconstruct exact primary + secondary FRLG metatiles for rendering
-12. BFS-validate spawn, destinations, NPC approaches and pickups
-13. accept, retry, or use the guaranteed safe fallback
+2. choose biome, weather, time and floor condition
+3. choose the archetype: **route / forest / coast / mountain / cave**
+4. fill the floor with its natural blocking mass (trees, rock, water or cave wall)
+5. carve one readable main route through that mass using macro waypoints
+6. widen selected bends into authored clearings instead of opening the whole map
+7. attach one side pocket on early routes and up to two on later routes
+8. place coherent tall-grass fields beside the travel line
+9. place optional landmarks such as ponds or rock outcrops
+10. place objectives, NPCs and pickups only after topology is complete
+11. build a visual model from a real FRLG reference map
+12. synthesize native metatiles using reference neighborhood and original horizontal/vertical adjacency
+13. render explicit road/water/sand/snow tiles through the semantic fallback where needed
+14. BFS-validate spawn, destinations, NPC approaches and pickups
+15. accept, retry, or use the guaranteed-safe fallback
 
-The result is random/seeded, but its composition follows handcrafted Pokémon map grammar instead of looking like a generic roguelike dungeon.
+The important rule is that randomness changes **composition**, not individual visual noise. A route should read as a designed Pokémon map: blocked natural mass, one primary line of travel, optional side content, then decoration.
+
+For ordinary outdoor routes the texture reference is **FireRed/LeafGreen Route 1** instead of city maps. This prevents roofs, walls or unrelated city metatiles from leaking into fields. Forest and cave archetypes use their dedicated native references.
+
+The native atlas also distinguishes primary and secondary palette ownership: General/primary metatiles use the primary palette set, while secondary palette slots use the selected secondary tileset.
+
 
 ### Regional geometry
 

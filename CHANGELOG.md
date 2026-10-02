@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.0.0-alpha.1 Natural Overworld Engine v4 — 2026-10-02
+
+### Neu aufgebauter Landschafts-Generator
+- Outdoor-Floors starten nicht mehr als offene Fläche mit Dekoration, sondern als **zusammenhängende natürliche Barriere** aus Bäumen, Fels, Wasser oder Höhlenwänden.
+- Daraus wird ein klar lesbarer Hauptweg mit bewussten Makro-Kurven, kleinen Lichtungen und optionalen Seitenbereichen herausgeschnitten.
+- Frühe Routen bleiben absichtlich ruhig: eine Side-Area, wenige zusammenhängende Grasfelder und ein klarer Weg zum nächsten Ort.
+- Gras, NPCs, Items und Rogue-Ziele werden erst nach der Topologie platziert. Dadurch bestimmen Gameplay-Ziele nicht mehr chaotisch die Landschaftsform.
+
+### Reference-driven FRLG Terrain Synthesis
+- Neue Engine `scripts/overworld-terrain-engine.js` lernt echte Metatile-Nachbarschaften aus originalen FRLG-Referenzkarten.
+- Einmalige Map-Objekte werden aus der Terrain-Synthese gefiltert; wiederverwendet werden nur belastbare Terrain-Muster.
+- Die Auswahl belohnt echte horizontale und vertikale Nachbarschaften aus der Referenzmap, damit Baumkanten, Boden und Übergänge nicht mehr wie wiederholte Wallpaper-Tiles aussehen.
+- Normale Outdoor-Routen nutzen **Route 1** als Referenz statt Stadt-Tilesets. Wald und Höhle behalten eigene Referenzmaps.
+- Primary-General-Metatiles verwenden wieder die Primary-Paletten; Secondary-Paletten werden nur dort genutzt, wo sie hingehören.
+- Logische Kollision und visuelle FRLG-Tiles bleiben getrennt: Die Welt bleibt deterministisch und validierbar, während der sichtbare Layer natürlicher aussieht.
+
+### QA
+- Generator-Version auf **v4** erhöht.
+- CI prüft zusätzlich Walkable-Space-Verhältnis, frühe Johto-Routen, native FRLG-Abdeckung und konsistente Tileset-Nutzung.
+- Alle bisherigen Determinismus-, Reachability-, Collision-, NPC-, Wetter-, Encounter- und Arena-Tests bleiben aktiv.
+
 ## 1.0.0-alpha.1 Canvas Overworld Engine Rebuild — 2026-10-02
 
 ### Overworld statt Node-Board
